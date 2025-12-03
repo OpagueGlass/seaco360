@@ -155,7 +155,7 @@ export function ChronicDiseasesByGenderBarChart({
 
 export default function HealthComponent() {
   return (
-    <div className="grid grid-cols-1 gap-6">
+    <div className="grid grid-cols-1 gap-8">
       <ChronicDiseasesBubbleChart chronicDiseasesData={chronicDiseasesData} />
       <ChronicDiseasesByGenderBarChart chronicByGenderData={chronicByGenderData} />
     </div>

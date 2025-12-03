@@ -12,7 +12,7 @@ export default function Page() {
       <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
 
       <Tabs defaultValue="economic" className="w-full">
-        <TabsList className="grid grid-cols-3 h-full">
+        <TabsList className="grid grid-cols-3 h-full max-w-md">
           <TabsTrigger value="demographics" className="flex flex-col sm:flex-row items-center gap-2">
             <Users className="w-5 h-5" />
             <span>Demographics</span>
