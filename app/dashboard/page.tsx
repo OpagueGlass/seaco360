@@ -12,16 +12,16 @@ export default function Page() {
       <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
 
       <Tabs defaultValue="economic" className="w-full">
-        <TabsList className="grid grid-cols-3">
-          <TabsTrigger value="demographics" className="flex flex-row items-center justify-center gap-2">
+        <TabsList className="grid grid-cols-3 h-full">
+          <TabsTrigger value="demographics" className="flex flex-col sm:flex-row items-center gap-2">
             <Users className="w-5 h-5" />
             <span>Demographics</span>
           </TabsTrigger>
-          <TabsTrigger value="economic" className="flex flex-row items-center justify-center gap-2">
+          <TabsTrigger value="economic" className="flex flex-col sm:flex-row items-center gap-2">
             <BarChart2 className="w-5 h-5" />
             <span>Economic</span>
           </TabsTrigger>
-          <TabsTrigger value="health" className="flex flex-row items-center justify-center gap-2">
+          <TabsTrigger value="health" className="flex flex-col sm:flex-row items-center gap-2">
             <HeartPulse className="w-5 h-5" />
             <span>Health</span>
           </TabsTrigger>

@@ -23,7 +23,7 @@ function ChronicDiseasesBubbleChart({
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="min-h-[200px] max-h-[400px] w-full h-full">
-          <ScatterChart margin={{ top: 8 }}>
+          <ScatterChart margin={{ top: 8, left: 0 }}>
             <XAxis
               type="number"
               dataKey="x"
@@ -35,6 +35,7 @@ function ChronicDiseasesBubbleChart({
               type="number"
               dataKey="y"
               domain={[0, Math.round(Math.max(...chronicDiseasesData.map((d) => d.proportion)) * 1.1)]}
+              width={24}
             />
             <ZAxis type="number" dataKey="z" range={[100, 1000]} />
             <Tooltip
@@ -107,7 +108,13 @@ export function ChronicDiseasesByGenderBarChart({
               tickMargin={10}
               className="text-xs fill-muted-foreground"
             />
-            <YAxis domain={[0, 70]} tickLine={false} axisLine={false} className="text-xs fill-muted-foreground" />
+            <YAxis
+              domain={[0, 70]}
+              tickLine={false}
+              axisLine={false}
+              className="text-xs fill-muted-foreground"
+              width={24}
+            />
             <ChartTooltip
               content={
                 <ChartTooltipContent

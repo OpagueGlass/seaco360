@@ -66,7 +66,7 @@ function EmploymentStatusBarChart({
           <BarChart accessibilityLayer data={employmentData} margin={{ left: 0 }}>
             <CartesianGrid vertical={false} strokeDasharray="3 3" className="stroke-muted" />
             <XAxis dataKey="category" type="category" tickLine={false} tickMargin={10} axisLine={false} />
-            <YAxis dataKey="count" type="number" tickLine={false} axisLine={false} />
+            <YAxis dataKey="count" type="number" tickLine={false} axisLine={false} width={24} />
             <ChartTooltip content={<ChartTooltipContent hideLabel nameKey="category" />} />
             <Bar dataKey="count" name="Count" radius={[5, 5, 0, 0]} />
           </BarChart>
@@ -98,7 +98,7 @@ function TopIndustriesBubbleChart({
           <ScatterChart>
             <XAxis type="number" dataKey="x" hide domain={[0, industriesData.length + 1]} />
             <YAxis type="number" dataKey="y" hide domain={[0, 2]} />
-            <ZAxis type="number" dataKey="z" range={[0, 5000]} />
+            <ZAxis type="number" dataKey="z" range={[0, 1000]} />
             <Tooltip
               cursor={{ strokeDasharray: "3 3" }}
               content={({ payload }) => {
