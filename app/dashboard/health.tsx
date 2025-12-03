@@ -43,15 +43,20 @@ function ChronicDiseasesBubbleChart({
               content={({ payload }) => {
                 if (payload && payload.length) {
                   return (
-                    <div className="rounded-lg border bg-popover p-1.5 shadow-sm">
-                      <div className="flex items-center gap-2">
+                    <div className="rounded-lg border bg-popover px-1.5 py-1 shadow-sm">
+                      <div className="flex items-center gap-0.5">
                         <div
-                          className="h-2.5 w-2.5 shrink-0 rounded-[2px] border"
+                          className="h-2.5 w-2.5 shrink-0 rounded-[2px] border mr-1"
                           style={{ backgroundColor: payload[0].payload?.fill }}
                         />
-                        <span className="text-xs text-muted-foreground font-medium">{payload[0].payload.category}</span>
-                        <span className="ml-auto text-foreground font-mono font-semibold tabular-nums">
-                          {payload[0].payload.proportion}%
+                        <span className="text-muted-foreground self-center mb-0.5 mr-2">
+                          {payload[0].payload.category}
+                        </span>
+                        <span className="ml-auto text-foreground font-mono font-semibold tabular-nums self-center">
+                          {payload[0].payload.proportion}
+                        </span>
+                        <span className="text-muted-foreground font-normal font-mono font-semibold tabular-nums self-center ml-auto">
+                          %
                         </span>
                       </div>
                     </div>
@@ -133,7 +138,7 @@ export function ChronicDiseasesByGenderBarChart({
                           } as React.CSSProperties
                         }
                       />
-                      {name}
+                      <span className="text-muted-foreground">{name}</span>
                       <div className="text-foreground ml-auto flex items-baseline gap-0.5 font-mono font-medium tabular-nums">
                         {value}
                         <span className="text-muted-foreground font-normal">%</span>
