@@ -16,7 +16,7 @@ export const PercentageTooltipFormatter = (chartConfig: ChartConfig) => (
       }
     />
     <span className="text-muted-foreground">
-    {chartConfig[item?.payload?.category as keyof typeof chartConfig]?.label || name}
+    {chartConfig[item?.payload?.category as keyof typeof chartConfig]?.label ?? name}
     </span>
     <div className="text-foreground ml-auto flex items-baseline gap-0.5 font-mono font-medium tabular-nums">
       {value}

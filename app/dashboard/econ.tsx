@@ -8,7 +8,8 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { PercentageTooltipFormatter } from "@/components/ui/TooltipFormatter";
-import { employmentData, householdData, industriesData, internetTvData, vehicleData } from "@/lib/mockData";
+import { employmentData, householdData, topIndustriesData, internetTvData, vehicleData } from "@/lib/mockData";
+import { colourIndex } from "@/lib/utils";
 import {
   Bar,
   BarChart,
@@ -24,14 +25,29 @@ import {
   ZAxis,
 } from "recharts";
 
+/**
+ * Bar chart showing employment status proportions
+ * 
+ * @param data - Object containing proportions for each employment status category
+ */
 function EmploymentStatusBarChart({
-  employmentData,
+  data,
 }: {
-  employmentData: { category: string; count: number; fill: string }[];
+  data: { employed: number; unemployed: number; student: number; retired: number; homemaker: number };
 }) {
+  const { employed, unemployed, student, retired, homemaker } = data;
+
+  const chartData = [
+    { category: "Employed", proportion: employed, fill: "var(--color-employed)" },
+    { category: "Unemployed", proportion: unemployed, fill: "var(--color-unemployed)" },
+    { category: "Student", proportion: student, fill: "var(--color-student)" },
+    { category: "Retired", proportion: retired, fill: "var(--color-retired)" },
+    { category: "Homemaker", proportion: homemaker, fill: "var(--color-homemaker)" },
+  ];
+
   const chartConfig = {
-    count: {
-      label: "Count",
+    proportion: {
+      label: "Proportion",
     },
     employed: {
       label: "Employed",
@@ -63,12 +79,12 @@ function EmploymentStatusBarChart({
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="min-h-[200px] max-h-[500px] w-full h-full">
-          <BarChart accessibilityLayer data={employmentData} margin={{ left: 0 }}>
+          <BarChart accessibilityLayer data={chartData} margin={{ left: 0 }}>
             <CartesianGrid vertical={false} strokeDasharray="3 3" className="stroke-muted" />
             <XAxis dataKey="category" type="category" tickLine={false} tickMargin={10} axisLine={false} />
-            <YAxis dataKey="count" type="number" tickLine={false} axisLine={false} width={24} />
-            <ChartTooltip content={<ChartTooltipContent hideLabel nameKey="category" />} />
-            <Bar dataKey="count" name="Count" radius={[5, 5, 0, 0]} />
+            <YAxis dataKey="proportion" type="number" tickLine={false} axisLine={false} width={24} />
+            <ChartTooltip content={<ChartTooltipContent formatter={PercentageTooltipFormatter(chartConfig)} />} />
+            <Bar dataKey="proportion" name="Composition" radius={[5, 5, 0, 0]} />
           </BarChart>
         </ChartContainer>
       </CardContent>
@@ -76,11 +92,18 @@ function EmploymentStatusBarChart({
   );
 }
 
+/**
+ * Bubble chart showing top 5 industries by employee proportion
+ * 
+ * @param data - Array of objects containing the top 5 industry categories and proportion
+ */
 function TopIndustriesBubbleChart({
-  industriesData,
+  data,
 }: {
-  industriesData: { category: string; proportion: number; fill: string }[];
+  data: {category: string; proportion: number}[]
 }) {
+  const chartData = data.map(colourIndex);
+
   const chartConfig = {
     name: {
       label: "Industry",
@@ -96,7 +119,7 @@ function TopIndustriesBubbleChart({
       <CardContent>
         <ChartContainer config={chartConfig} className="min-h-[200px] max-h-[500px] w-full h-full">
           <ScatterChart>
-            <XAxis type="number" dataKey="x" hide domain={[0, industriesData.length + 1]} />
+            <XAxis type="number" dataKey="x" hide domain={[0, chartData.length + 1]} />
             <YAxis type="number" dataKey="y" hide domain={[0, 2]} />
             <ZAxis type="number" dataKey="z" range={[0, 1000]} />
             <Tooltip
@@ -126,7 +149,7 @@ function TopIndustriesBubbleChart({
                 return null;
               }}
             />
-            {industriesData.map((entry, index) => (
+            {chartData.map((entry, index) => (
               <Scatter
                 name={entry.category}
                 data={[{ ...entry, x: index + 1, y: 1, z: entry.proportion }]}
@@ -142,11 +165,24 @@ function TopIndustriesBubbleChart({
   );
 }
 
+/**
+ * Bar chart showing household types proportions
+ * 
+ * @param data - Object containing proportions for each household type category
+ */
 function HouseHoldTypesBarChart({
-  householdData,
+  data,
 }: {
-  householdData: { category: string; proportion: number; fill: string }[];
+  data: { nuclearFamily: number; extendedFamily: number; otherTypesOfSharing: number };
 }) {
+  const { nuclearFamily, extendedFamily, otherTypesOfSharing } = data;
+
+  const chartData = [
+    { category: "Nuclear family", proportion: nuclearFamily, fill: "var(--color-nuclearFamily)" },
+    { category: "Extended family", proportion: extendedFamily, fill: "var(--color-extendedFamily)" },
+    { category: "Other types of sharing", proportion: otherTypesOfSharing, fill: "var(--color-other)" },
+  ];
+
   const chartConfig = {
     nuclearFamily: {
       label: "Nuclear family",
@@ -170,7 +206,7 @@ function HouseHoldTypesBarChart({
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="min-h-[200px] max-h-[250px] w-full h-full">
-          <BarChart accessibilityLayer data={householdData} layout="vertical" margin={{ left: 20 }}>
+          <BarChart accessibilityLayer data={chartData} layout="vertical" margin={{ left: 20 }}>
             <YAxis dataKey="category" type="category" tickLine={false} tickMargin={10} axisLine={false} />
             <XAxis dataKey="proportion" type="number" tickLine={false} axisLine={false} hide />
             <ChartTooltip
@@ -186,11 +222,19 @@ function HouseHoldTypesBarChart({
   );
 }
 
-function ConnectivityPieChart({
-  internetTvData,
-}: {
-  internetTvData: { category: string; proportion: number; fill: string }[];
-}) {
+/**
+ * Pie Chart showing connectivity proportions
+ * 
+ * @param data - Object containing proportions for home internet and satellite TV connectivity 
+ */
+function ConnectivityPieChart({ data }: { data: { homeInternet: number; satelliteTv: number } }) {
+  const { homeInternet, satelliteTv } = data;
+
+  const chartData = [
+    { category: "homeInternet", proportion: homeInternet, fill: "var(--color-chart-4)" },
+    { category: "satelliteTv", proportion: satelliteTv, fill: "var(--color-chart-1)" },
+  ];
+
   const chartConfig = {
     homeInternet: {
       label: "Home Internet",
@@ -211,7 +255,7 @@ function ConnectivityPieChart({
       <CardContent>
         <ChartContainer config={chartConfig} className="mx-auto aspect-square max-h-[250px]">
           <PieChart>
-            <Pie data={internetTvData} dataKey="proportion" nameKey="category" />
+            <Pie data={chartData} dataKey="proportion" nameKey="category" />
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent hideLabel formatter={PercentageTooltipFormatter(chartConfig)} />}
@@ -224,11 +268,19 @@ function ConnectivityPieChart({
   );
 }
 
-function VehicleOwnershipPieChart({
-  vehicleData,
-}: {
-  vehicleData: { category: string; proportion: number; fill: string }[];
-}) {
+/**
+ * Pie Chart showing vehicle ownership proportions
+ * 
+ * @param data - Object containing proportions for vehicle ownership categories 
+ */
+function VehicleOwnershipPieChart({ data }: { data: { atLeastOneVehicle: number; noVehicle: number } }) {
+  const { atLeastOneVehicle, noVehicle } = data;
+
+  const chartData = [
+    { category: "atLeastOneVehicle", proportion: atLeastOneVehicle, fill: "var(--color-atLeastOneVehicle)" },
+    { category: "noVehicle", proportion: noVehicle, fill: "var(--color-noVehicle)" },
+  ];
+
   const chartConfig = {
     atLeastOneVehicle: {
       label: "At least one car or motorcycle",
@@ -250,7 +302,7 @@ function VehicleOwnershipPieChart({
         <ChartContainer config={chartConfig} className="mx-auto aspect-square max-h-[250px]">
           <PieChart>
             <Pie
-              data={vehicleData}
+              data={chartData}
               dataKey="proportion"
               nameKey="category"
               innerRadius={60}
@@ -274,13 +326,13 @@ export default function EconComponent() {
   return (
     <div className="mb-8">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-        <EmploymentStatusBarChart employmentData={employmentData} />
-        <TopIndustriesBubbleChart industriesData={industriesData} />
+        <EmploymentStatusBarChart data={employmentData} />
+        <TopIndustriesBubbleChart data={topIndustriesData} />
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <HouseHoldTypesBarChart householdData={householdData} />
-        <ConnectivityPieChart internetTvData={internetTvData} />
-        <VehicleOwnershipPieChart vehicleData={vehicleData} />
+        <HouseHoldTypesBarChart data={householdData} />
+        <ConnectivityPieChart data={internetTvData} />
+        <VehicleOwnershipPieChart data={vehicleData} />
       </div>
     </div>
   );

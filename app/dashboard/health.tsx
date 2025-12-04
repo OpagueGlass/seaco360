@@ -7,13 +7,17 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { chronicByGenderData, chronicDiseasesData } from "@/lib/mockData";
+import { colourIndex } from "@/lib/utils";
 import { Bar, BarChart, CartesianGrid, Legend, Scatter, ScatterChart, Tooltip, XAxis, YAxis, ZAxis } from "recharts";
 
-function ChronicDiseasesBubbleChart({
-  chronicDiseasesData,
-}: {
-  chronicDiseasesData: { category: string; proportion: number; fill: string }[];
-}) {
+/**
+ * Bubble chart showing prevalence of chronic diseases
+ *
+ * @param data - Array of objects containing category and proportion of chronic diseases
+ */
+function ChronicDiseasesBubbleChart({ data }: { data: { category: string; proportion: number }[] }) {
+  const chartData = data.map(colourIndex);
+
   const chartConfig = {};
   return (
     <Card>
@@ -65,7 +69,7 @@ function ChronicDiseasesBubbleChart({
                 return null;
               }}
             />
-            {chronicDiseasesData.map((entry, index) => (
+            {chartData.map((entry, index) => (
               <Scatter
                 name={entry.category}
                 data={[{ ...entry, x: index + 0.5, y: entry.proportion, z: entry.proportion }]}
@@ -81,11 +85,18 @@ function ChronicDiseasesBubbleChart({
   );
 }
 
-export function ChronicDiseasesByGenderBarChart({
-  chronicByGenderData,
-}: {
-  chronicByGenderData: { diseases: string; male: number; female: number }[];
-}) {
+/**
+ * Bar chart showing number of chronic diseases by gender
+ * 
+ * @param data - Array of objects containing the male and female proportions for number of chronic diseases, with 
+ *               the index representing number of diseases, with the last index representing that number or more.
+ */
+export function ChronicDiseasesByGenderBarChart({ data }: { data: { male: number; female: number }[] }) {
+  const chartData = data.map((item, index) => ({
+    diseases: `${index.toString()}${data.length - 1 === index ? "+" : ""}`,
+    ...item,
+  }));
+
   const chartConfig = {
     male: {
       label: "Male",
@@ -104,7 +115,7 @@ export function ChronicDiseasesByGenderBarChart({
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="min-h-[200px] max-h-[400px] w-full h-full">
-          <BarChart data={chronicByGenderData}>
+          <BarChart data={chartData}>
             <CartesianGrid vertical={false} strokeDasharray="3 3" className="stroke-muted" />
             <XAxis
               dataKey="diseases"
@@ -161,8 +172,8 @@ export function ChronicDiseasesByGenderBarChart({
 export default function HealthComponent() {
   return (
     <div className="grid grid-cols-1 gap-8">
-      <ChronicDiseasesBubbleChart chronicDiseasesData={chronicDiseasesData} />
-      <ChronicDiseasesByGenderBarChart chronicByGenderData={chronicByGenderData} />
+      <ChronicDiseasesBubbleChart data={chronicDiseasesData} />
+      <ChronicDiseasesByGenderBarChart data={chronicByGenderData} />
     </div>
   );
 }

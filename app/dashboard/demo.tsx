@@ -11,11 +11,25 @@ import { PercentageTooltipFormatter } from "@/components/ui/TooltipFormatter";
 import { censusResponseData, ethnicData, genderData, seniorData } from "@/lib/mockData";
 import { Bar, BarChart, CartesianGrid, Pie, PieChart, XAxis, YAxis } from "recharts";
 
+/**
+ * Bar chart showing census response data
+ *
+ * @param data - Object containing counts for each census response category
+ */
 function CensusResponseBarChart({
-  censusResponseData,
+  data,
 }: {
-  censusResponseData: { category: string; count: number; fill: string }[];
+  data: { agreed: number; refused: number; notAtHome: number; unoccupied: number };
 }) {
+  const { agreed, refused, notAtHome, unoccupied } = data;
+
+  const chartData = [
+    { category: "Agreed", count: agreed, fill: "var(--color-agreed)" },
+    { category: "Refused", count: refused, fill: "var(--color-refused)" },
+    { category: "Not at Home", count: notAtHome, fill: "var(--color-notAtHome)" },
+    { category: "Unoccupied", count: unoccupied, fill: "var(--color-unoccupied)" },
+  ];
+
   const chartConfig = {
     count: {
       label: "Count",
@@ -46,7 +60,7 @@ function CensusResponseBarChart({
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="min-h-[200px] max-h-[500px] w-full">
-          <BarChart accessibilityLayer data={censusResponseData} layout="vertical" margin={{ left: 20 }}>
+          <BarChart accessibilityLayer data={chartData} layout="vertical" margin={{ left: 20 }}>
             <CartesianGrid horizontal={false} strokeDasharray="3 3" className="stroke-muted" />
             <YAxis dataKey="category" type="category" tickLine={false} tickMargin={10} axisLine={false} />
             <XAxis dataKey="count" type="number" tickLine={false} axisLine={false} />
@@ -59,11 +73,25 @@ function CensusResponseBarChart({
   );
 }
 
+/**
+ * Bar chart showing ethnic composition
+ * 
+ * @param data - Object containing proportions for each ethnic category
+ */
 function EthnicCompositionBarChart({
-  ethnicData,
+  data,
 }: {
-  ethnicData: { category: string; proportion: number; fill: string }[];
+  data: { malay: number; chinese: number; indian: number; orangAsli: number };
 }) {
+  const { malay, chinese, indian, orangAsli } = data;
+
+  const chartData = [
+    { category: "Malay", proportion: malay, fill: "var(--color-malay)" },
+    { category: "Chinese", proportion: chinese, fill: "var(--color-chinese)" },
+    { category: "Indian", proportion: indian, fill: "var(--color-indian)" },
+    { category: "Orang Asli", proportion: orangAsli, fill: "var(--color-orangAsli)" },
+  ];
+
   const chartConfig = {
     malay: {
       label: "Malay",
@@ -91,7 +119,7 @@ function EthnicCompositionBarChart({
       </CardHeader>
       <CardContent className="flex-1 flex flex-col">
         <ChartContainer config={chartConfig} className="max-h-[250px] h-full">
-          <BarChart accessibilityLayer data={ethnicData} height={250}>
+          <BarChart accessibilityLayer data={chartData} height={250}>
             <XAxis dataKey="category" tickLine={false} tickMargin={10} axisLine={false} />
             <YAxis tickLine={false} axisLine={false} hide />
             <ChartTooltip content={<ChartTooltipContent formatter={PercentageTooltipFormatter(chartConfig)} />} />
@@ -103,7 +131,19 @@ function EthnicCompositionBarChart({
   );
 }
 
-function GenderPieChart({ genderData }: { genderData: { category: string; proportion: number; fill: string }[] }) {
+/**
+ * Pie chart showing gender proportions
+ * 
+ * @param data - Object containing gender proportions
+ */
+function GenderPieChart({ data }: { data: { male: number; female: number } }) {
+  const { male, female } = data;
+
+  const chartData = [
+    { category: "male", proportion: male, fill: "var(--color-male)" },
+    { category: "female", proportion: female, fill: "var(--color-female)" },
+  ];
+
   const chartConfig = {
     male: {
       label: "Male",
@@ -124,7 +164,7 @@ function GenderPieChart({ genderData }: { genderData: { category: string; propor
       <CardContent>
         <ChartContainer config={chartConfig} className="mx-auto aspect-square max-h-[250px]">
           <PieChart>
-            <Pie data={genderData} dataKey="proportion" nameKey="category" />
+            <Pie data={chartData} dataKey="proportion" nameKey="category" />
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent hideLabel formatter={PercentageTooltipFormatter(chartConfig)} />}
@@ -137,11 +177,19 @@ function GenderPieChart({ genderData }: { genderData: { category: string; propor
   );
 }
 
-function SeniorPopulationPieChart({
-  seniorData,
-}: {
-  seniorData: { category: string; proportion: number; fill: string }[];
-}) {
+/**
+ * Pie chart showing senior population proportions
+ * 
+ * @param data - Object containing proportions for senior and non-senior population
+ */
+function SeniorPopulationPieChart({ data }: { data: { senior: number; nonSenior: number } }) {
+  const { senior, nonSenior } = data;
+
+  const chartData = [
+    { category: "senior", proportion: senior, fill: "var(--color-senior)" },
+    { category: "nonSenior", proportion: nonSenior, fill: "var(--color-nonSenior)" },
+  ];
+
   const chartConfig = {
     senior: {
       label: "Senior",
@@ -163,7 +211,7 @@ function SeniorPopulationPieChart({
         <ChartContainer config={chartConfig} className="mx-auto aspect-square max-h-[250px]">
           <PieChart>
             <Pie
-              data={seniorData}
+              data={chartData}
               dataKey="proportion"
               nameKey="category"
               innerRadius={60}
@@ -187,12 +235,12 @@ export default function DemoComponent() {
   return (
     <div>
       <div className="mb-8">
-        <CensusResponseBarChart censusResponseData={censusResponseData} />
+        <CensusResponseBarChart data={censusResponseData} />
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <EthnicCompositionBarChart ethnicData={ethnicData} />
-        <GenderPieChart genderData={genderData} />
-        <SeniorPopulationPieChart seniorData={seniorData} />
+        <EthnicCompositionBarChart data={ethnicData} />
+        <GenderPieChart data={genderData} />
+        <SeniorPopulationPieChart data={seniorData} />
       </div>
     </div>
   );
