@@ -10,6 +10,6 @@ export function cn(...inputs: ClassValue[]) {
 export function colourIndex<T>(data: T, index: number) {
   return {
     ...data,
-    fill: `var(--color-chart-${(index % 5) + 1})`,
+    fill: `var(--chart-${(index % 5) + 1})`,
   }
 }

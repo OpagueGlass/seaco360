@@ -8,8 +8,8 @@ import HealthComponent from "./health";
 
 export default function Page() {
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
+    <div className="container p-6 mx-auto">
+      <h1 className="text-3xl font-bold mb-6">Community Briefs</h1>
 
       <Tabs defaultValue="economic" className="w-full">
         <TabsList className="grid grid-cols-3 h-full max-w-md">
