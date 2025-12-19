@@ -45,7 +45,7 @@ export function CollapseMenuButton({ icon: Icon, label, active, submenus, isOpen
       <CollapsibleTrigger className="[&[data-state=open]>div>div>svg]:rotate-180 mb-1" asChild>
         <Button variant={isSubmenuActive ? "secondary" : "ghost"} className="w-full justify-start h-10">
           <div className="w-full items-center flex justify-between">
-            <div className="flex items-center">
+            <div className="flex items-center gap-2">
               <span className="mr-4">
                 <Icon size={18} />
               </span>

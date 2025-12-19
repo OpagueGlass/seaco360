@@ -10,14 +10,25 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { CollapseMenuButton } from "@/components/navigation/collapse-menu-button";
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
+import { useAuth } from "@/context/auth-context";
+import { useRouter } from "next/navigation";
 
 interface MenuProps {
   isOpen: boolean | undefined;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export function Menu({ isOpen }: MenuProps) {
+export function Menu({ isOpen, setIsOpen }: MenuProps) {
   const pathname = usePathname();
   const menuList = getMenuList(pathname);
+  const { session, signOut } = useAuth();
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    setIsOpen(false);
+    router.push("/");
+    await signOut();
+  };
 
   return (
     <ScrollArea className="[&>div>div[style]]:!block">
@@ -91,15 +102,16 @@ export function Menu({ isOpen }: MenuProps) {
               )}
             </li>
           ))}
-          {/* <li className="w-full grow flex items-end">
+          {session && (
+          <li className="w-full grow flex items-end lg:fixed lg:bottom-4 lg:w-[248px]">
             <TooltipProvider disableHoverableContent>
               <Tooltip delayDuration={100}>
                 <TooltipTrigger asChild>
-                  <Button onClick={() => {}} variant="outline" className="w-full justify-center h-10 mt-5">
-                    <span className={cn(isOpen === false ? "" : "mr-4")}>
+                  <Button onClick={handleSignOut} variant="outline" className="w-full justify-center h-10 mt-5">
+                    <span className={cn(isOpen === false ? "" : "mr-4")}> 
                       <LogOut size={18} />
                     </span>
-                    <p className={cn("whitespace-nowrap", isOpen === false ? "opacity-0 hidden" : "opacity-100")}>
+                    <p className={cn("whitespace-nowrap", isOpen === false ? "opacity-0 hidden" : "opacity-100")}> 
                       Sign out
                     </p>
                   </Button>
@@ -107,7 +119,7 @@ export function Menu({ isOpen }: MenuProps) {
                 {isOpen === false && <TooltipContent side="right">Sign out</TooltipContent>}
               </Tooltip>
             </TooltipProvider>
-          </li> */}
+          </li>)}
         </ul>
       </nav>
     </ScrollArea>

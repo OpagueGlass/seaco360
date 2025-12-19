@@ -4,12 +4,15 @@ import { MenuIcon, PanelsTopLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Menu } from "@/components/navigation/menu";
 import { Sheet, SheetHeader, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
+import { useState } from "react";
 
 export function AppSheet() {
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+
   return (
-    <Sheet>
+    <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
       <SheetTrigger asChild>
-        <Button className="h-8" variant="outline" size="icon">
+        <Button className="h-8" variant="outline" size="icon" onClick={() => setIsSheetOpen(true)}>
           <MenuIcon size={20} />
         </Button>
       </SheetTrigger>
@@ -22,7 +25,7 @@ export function AppSheet() {
             </Link>
           </Button>
         </SheetHeader>
-        <Menu isOpen />
+        <Menu isOpen setIsOpen={setIsSheetOpen} />
       </SheetContent>
     </Sheet>
   );

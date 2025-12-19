@@ -14,6 +14,8 @@ import {
   Activity,
 } from "lucide-react";
 
+import { useAuth } from "@/context/auth-context";
+
 type Submenu = {
   href: string;
   label: string;
@@ -34,7 +36,9 @@ type Group = {
 };
 
 export function getMenuList(pathname: string): Group[] {
-  return [
+  const { session } = useAuth();
+
+  const menuList = [
     {
       groupLabel: "Visualisations",
       menus: [
@@ -47,19 +51,24 @@ export function getMenuList(pathname: string): Group[] {
           href: "/round",
           label: "Health Rounds",
           icon: Activity,
+          submenus: [
+            {
+              href: "/round/2013",
+              label: "2013",
+            },
+            {
+              href: "/round/2018",
+              label: "2018",
+            },
+            {
+              href: "/round/2023",
+              label: "2023",
+            },
+          ],
         },
       ],
     },
-    {
-      groupLabel: "Administration",
-      menus: [
-        {
-          href: "/dashboard",
-          label: "Dashboard",
-          icon: LayoutDashboardIcon,
-        },
-      ],
-    }
+
     // {
     //   groupLabel: "Health Rounds",
     //   menus: [
@@ -106,4 +115,19 @@ export function getMenuList(pathname: string): Group[] {
     //   ],
     // },
   ];
+
+  if (session) {
+    menuList.push({
+      groupLabel: "Administration",
+      menus: [
+        {
+          href: "/dashboard",
+          label: "Dashboard",
+          icon: LayoutDashboardIcon,
+        },
+      ],
+    });
+  }
+
+  return menuList;
 }
