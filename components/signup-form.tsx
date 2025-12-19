@@ -1,3 +1,4 @@
+"use client"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -9,16 +10,43 @@ import {
   FieldSeparator,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { useAuth } from "@/context/auth-context"
+import { useRouter } from "next/navigation"
+import { Spinner } from "@/components/ui/spinner"
 
 export function SignupForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const { signUp, authState } = useAuth();
+  const router = useRouter();
+
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const form = e.target as HTMLFormElement;
+    const email = (form.elements.namedItem("email") as HTMLInputElement).value;
+    const password = (form.elements.namedItem("password") as HTMLInputElement).value;
+    const confirmPassword = (form.elements.namedItem("confirm-password") as HTMLInputElement).value;
+
+    if (password !== confirmPassword) {
+      console.log("Passwords do not match");
+      return;
+    }
+    
+    await signUp(email, password);
+    if (!authState.error) {
+      router.push("/login");
+    } else {
+      console.log("Sign up error:", authState.error);
+    }
+  };
+
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden p-0">
         <CardContent className="grid p-0 md:grid-cols-2">
-          <form className="p-6 md:p-8">
+          <form className="p-6 md:p-8" onSubmit={handleSignUp}>
             <FieldGroup>
               <div className="flex flex-col items-center gap-2 text-center">
                 <h1 className="text-2xl font-bold">Create your account</h1>
@@ -80,7 +108,7 @@ export function SignupForm({
           </form>
           <div className="bg-muted relative hidden md:block">
             <img
-              src="/placeholder.svg"
+              src="globe.svg"
               alt="Image"
               className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
             />
