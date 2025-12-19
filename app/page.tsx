@@ -23,10 +23,11 @@ import { Separator } from "@/components/ui/separator";
 import { CountingNumber } from "@/components/ui/counting-number";
 
 const stats = [
-  { value: 40000, label: "Population Tracked", suffix: "+" },
-  { value: new Date().getFullYear() - 2010, label: "Years of Data", suffix: "+" },
-  { value: 5, label: "Districts Covered", suffix: "" },
-  { value: 100, label: "Research Projects", suffix: "+" },
+  { value: 40000, label: "Participants", suffix: "+" },
+  { value: 12000, label: "Households", suffix: "+" },
+  { value: 5, label: "Subdistricts Covered", suffix: "" },
+  { value: new Date().getFullYear() - 2013, label: "Years of Data", suffix: "+" },
+  { value: 50, label: "Academic Publications", suffix: "+" },
 ];
 
 const features = [
@@ -144,7 +145,7 @@ export default function Home() {
 
               {/* Stats */}
               <div
-                className={`grid grid-cols-2 sm:grid-cols-4 gap-4 py-6 transition-all duration-1000 ease-out ${
+                className={`grid grid-cols-3 justify-center sm:grid-cols-5 gap-4 py-6 transition-all duration-1000 ease-out ${
                   heroVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
                 }`}
                 style={{ transitionDelay: "200ms" }}
@@ -230,7 +231,7 @@ export default function Home() {
             </FadeInSection>
 
             <FadeInSection delay={150}>
-              <Link href="/health-rounds" className="group block h-full">
+              <Link href="/round" className="group block h-full">
                 <Card className="h-full overflow-hidden border-2 border-transparent hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
                   <CardHeader className="pb-4">
                     <div className="flex items-center gap-4">
@@ -267,7 +268,9 @@ export default function Home() {
           <FadeInSection className="max-w-2xl mx-auto text-center space-y-4">
             {/* <Badge variant="outline">Platform Capabilities</Badge> */}
             <h2 className="text-3xl font-bold text-foreground">Why Choose SEACO?</h2>
-            <p className="text-muted-foreground text-xl">Access high quality surveillance data suited for multidisciplinary research with confidence</p>
+            <p className="text-muted-foreground text-xl">
+              Access high quality surveillance data suited for multidisciplinary research with confidence
+            </p>
           </FadeInSection>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
