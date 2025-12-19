@@ -1,7 +1,7 @@
 "use client";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, BarChart2, HeartPulse } from "lucide-react";
+import { Users, BarChart2, HeartPulse, PieChart } from "lucide-react";
 import DemoComponent from "./demo";
 import EconComponent from "./econ";
 import HealthComponent from "./health";
@@ -9,7 +9,7 @@ import HealthComponent from "./health";
 export default function Page() {
   return (
     <div className="container p-6 mx-auto">
-      <h1 className="text-3xl font-bold mb-6">Community Briefs</h1>
+      <h1 className="text-3xl font-bold mb-6 flex items-center gap-2">Community Briefs</h1>
 
       <Tabs defaultValue="demographics" className="w-full">
         <TabsList className="grid grid-cols-3 h-full max-w-md">
