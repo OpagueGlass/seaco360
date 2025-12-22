@@ -6,7 +6,7 @@ const TRUE = "1";
 type ExtractMapValue<M> = M extends ReadonlyMap<any, infer V> ? V : never;
 type ColMappingValue = ExtractMapValue<typeof colMappings>;
 
-export type SummaryBySubdistrict = {
+export type SummaryBySubdistrict = & {
   [K in ColMappingValue["name"]]: Record<ExtractMapValue<Extract<ColMappingValue, { name: K }>["mapping"]>, number>;
 } & {
   chronicDiseases: Record<ExtractMapValue<typeof chronicDiseases.mapping>, number>;
@@ -155,9 +155,10 @@ const combineSummaries = (summaries: SummaryBySubdistrict[]): SummaryBySubdistri
     // Combine categorical counts
     for (const [, value] of colMappings) {
       const categoryName = value.name;
+      const category = combined[categoryName] as Record<string, number>;
       for (const [key, value] of Object.entries(summary[categoryName])) {
         const k = key as keyof (typeof combined)[typeof categoryName];
-        combined[categoryName][k] += value;
+        category[k] += value;
       }
     }
 

@@ -107,7 +107,7 @@ export const colMappings = new Map([
   [25, { name: "inadequateVegetable", mapping: new Map(binaryOption) }],
   [27, { name: "bmiCategory", mapping: new Map(bmiCategory) }],
   [28, { name: "centralObesity", mapping: new Map(binaryOption) }],
-]);
+] as const);
 
 export const chronicDiseases = {
   name: "chronicDiseases",
