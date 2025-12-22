@@ -1,4 +1,21 @@
-const ageCategory = new Map<number, string>([
+const response = [
+  [1, "agreed"],
+  [2, "unwilling"],
+  [3, "notAtHome"],
+  [4, "incapable"],
+  [7, "moved"],
+  [8, "passedAway"],
+] as const;
+
+const subdistrict = [
+  [1, "bekok"],
+  [2, "chaah"],
+  [3, "gemereh"],
+  [4, "jabi"],
+  [5, "sgSegamat"],
+] as const;
+
+const ageCategory = [
   [0, "0-4"],
   [1, "5-9"],
   [2, "10-14"],
@@ -16,24 +33,24 @@ const ageCategory = new Map<number, string>([
   [14, "70-74"],
   [15, "75-99"],
   [16, "100+"],
-]);
+] as const;
 
-const sex = new Map<number, string>([
+const sex = [
   [1, "male"],
   [2, "female"],
   [3, "other"],
-]);
+] as const;
 
-const ethnic = new Map<number, string>([
+const ethnic = [
   [1, "malay"],
   [2, "chinese"],
   [3, "indian"],
   [4, "orangAsli"],
   [5, "other"],
   [6, "nonCitizen"],
-]);
+] as const;
 
-const education = new Map<number, string>([
+const education = [
   [1, "noFormalEducation"],
   [2, "primary"],
   [3, "secondary"],
@@ -41,76 +58,60 @@ const education = new Map<number, string>([
   [5, "other"],
   [6, "doNotKnow"],
   [7, "refusedToAnswer"],
-]);
+] as const;
 
-const employment = new Map<number, string>([
+const employment = [
   [2, "student"],
   [3, "homemaker"],
   [4, "notWorking"],
   [5, "working"],
   [10, "pensioner"],
   [11, "selfEmployed"],
-]);
+] as const;
 
-const bmiCategory = new Map<number, string>([
+const bmiCategory = [
   [0, "underweight"],
   [1, "normal"],
   [2, "overweight"],
   [3, "obese"],
-]);
+] as const;
 
-const binaryOption = new Map<number, string>([
+const binaryOption = [
   [0, "no"],
   [1, "yes"],
-]);
+] as const;
 
-export const response: { column: number; map: ReadonlyMap<number, string> } = {
+export const responseMapping = {
   column: 2,
-  map: new Map<number, string>([
-    [1, "agreed"],
-    [2, "unwilling"],
-    [3, "notAtHome"],
-    [4, "incapable"],
-    [7, "moved"],
-    [8, "passedAway"],
-  ]),
+  map: new Map(response),
 };
 
-export const subdistrict: { column: number; map: ReadonlyMap<number, string> } = {
+export const subdistrictMapping = {
   column: 4,
-  map: new Map<number, string>([
-    [1, "bekok"],
-    [2, "chaah"],
-    [3, "gemereh"],
-    [4, "jabi"],
-    [5, "sgSegamat"],
-  ]),
+  map: new Map(subdistrict),
 };
 
-export const colMappings: ReadonlyMap<number, { name: string; mapping: ReadonlyMap<number, string> }> = new Map<
-  number,
-  { name: string; mapping: ReadonlyMap<number, string> }
->([
-  [7, { name: "ageCategory", mapping: ageCategory }],
-  [8, { name: "sex", mapping: sex }],
-  [9, { name: "ethnicity", mapping: ethnic }],
-  [10, { name: "educationLevel", mapping: education }],
-  [11, { name: "employmentStatus", mapping: employment }],
-  [18, { name: "underDialysis", mapping: binaryOption }],
-  [19, { name: "hadDengueBefore", mapping: binaryOption }],
-  [20, { name: "hadDenguePastYear", mapping: binaryOption }],
-  [21, { name: "hadUTIPastYear", mapping: binaryOption }],
-  [22, { name: "hadSmokeBefore", mapping: binaryOption }],
-  [23, { name: "isCurrentlySmoking", mapping: binaryOption }],
-  [24, { name: "inadequateFruit", mapping: binaryOption }],
-  [25, { name: "inadequateVegetable", mapping: binaryOption }],
-  [27, { name: "bmiCategory", mapping: bmiCategory }],
-  [28, { name: "centralObesity", mapping: binaryOption }],
+export const colMappings = new Map([
+  [7, { name: "ageCategory", mapping: new Map(ageCategory) }],
+  [8, { name: "sex", mapping: new Map(sex) }],
+  [9, { name: "ethnicity", mapping: new Map(ethnic) }],
+  [10, { name: "educationLevel", mapping: new Map(education) }],
+  [11, { name: "employmentStatus", mapping: new Map(employment) }],
+  [18, { name: "underDialysis", mapping: new Map(binaryOption) }],
+  [19, { name: "hadDengueBefore", mapping: new Map(binaryOption) }],
+  [20, { name: "hadDenguePastYear", mapping: new Map(binaryOption) }],
+  [21, { name: "hadUTIPastYear", mapping: new Map(binaryOption) }],
+  [22, { name: "hadSmokeBefore", mapping: new Map(binaryOption) }],
+  [23, { name: "isCurrentlySmoking", mapping: new Map(binaryOption) }],
+  [24, { name: "inadequateFruit", mapping: new Map(binaryOption) }],
+  [25, { name: "inadequateVegetable", mapping: new Map(binaryOption) }],
+  [27, { name: "bmiCategory", mapping: new Map(bmiCategory) }],
+  [28, { name: "centralObesity", mapping: new Map(binaryOption) }],
 ]);
 
-export const chronicDiseases: { name: string; mapping: ReadonlyMap<number, string> } = {
+export const chronicDiseases = {
   name: "chronicDiseases",
-  mapping: new Map<number, string>([
+  mapping: new Map([
     [13, "heartDisease"],
     [14, "asthma"],
     [15, "stroke"],
@@ -118,24 +119,23 @@ export const chronicDiseases: { name: string; mapping: ReadonlyMap<number, strin
     [17, "kidneyDisease"],
     [36, "hypertension"],
     [51, "diabetes"],
-  ]),
+  ] as const),
 };
 
-export const scores: ReadonlyMap<number, string> = new Map<number, string>([
+export const scores = new Map([
   [57, "physicalHealth"],
   [58, "psychologicalHealth"],
   [59, "socialRelationships"],
   [60, "environment"],
   [61, "overallQoL"],
-]);
+] as const);
 
-const incomeBrackets: ReadonlyMap<number, string> = new Map<number, string>([
+const incomeBrackets = new Map([
   [0, "RM0-499"],
   [500, "RM500-999"],
   [1000, "RM1000-1499"],
   [1500, "RM1500-1999"],
   [2000, "RM2000+"],
-]);
+] as const);
 
 export const income = { column: 12, brackets: incomeBrackets, name: "income" };
-  
