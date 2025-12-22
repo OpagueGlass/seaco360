@@ -3,10 +3,19 @@
 import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Calendar, HeartPulse } from "lucide-react";
-
-const healthYears = [2013, 2018, 2023];
+import { useEffect, useState } from "react";
+import { getHealthRoundYears } from "@/lib/query";
 
 export default function HealthRoundsPage() {
+  const [healthYears, setHealthYears] =  useState<number[]>([]);
+  useEffect(() => {
+    async function fetchYears() {
+      const years = await getHealthRoundYears();
+      setHealthYears(years);
+    }
+    fetchYears();
+  }, []);
+
   return (
     <div className="container mx-auto p-4 sm:p-6 space-y-6">
       <div className="space-y-2">
