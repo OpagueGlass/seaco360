@@ -7,14 +7,18 @@ import { FileSpreadsheet, Upload } from "lucide-react";
 import { parse, ParseResult } from "papaparse";
 import { Dispatch, DragEvent, SetStateAction, useCallback, useRef, useState } from "react";
 import { CSVFile, UploadStatus } from "./page";
+import { summariseData } from "@/lib/summarise";
+
 
 
 function updateResult(
+  file: File,
   setCurrentFile: Dispatch<SetStateAction<CSVFile | null>>,
   setUploadStatus: (status: UploadStatus) => void,
   setIsLoading: (loading: boolean) => void
 ) {
-  return (results: ParseResult<unknown>, file: File) => {
+  const previewRows = 100;
+  return (results: ParseResult<unknown>) => {
     if (results.errors.length > 0) {
       setUploadStatus({
         type: "error",
@@ -23,18 +27,21 @@ function updateResult(
       setIsLoading(false);
       return;
     } else {
-      const [headers, ...data] = results.data as string[][];
+      const headers = results.data[0] as string[];
+      const data = results.data.slice(1) as string[][];
+      const preview = data.slice(0, previewRows);
+      const summary = summariseData(data);
 
       const newFile: CSVFile = {
         name: file.name,
         size: file.size,
         rows: data.length,
         columns: headers.length,
-        headers: headers,
-        data: data,
-        uploadedAt: new Date(),
+        headers,
+        preview,
+        summary
       };
-
+      
       setCurrentFile(newFile);
       setIsLoading(false);
       setUploadStatus({
@@ -44,7 +51,6 @@ function updateResult(
     }
   };
 }
-
 
 export default function ParseArea({
   setCurrentFile,
@@ -75,9 +81,10 @@ export default function ParseArea({
       setIsLoading(true);
       parse(file, {
         delimiter: ",",
-        newline: "\n",
+        newline: "\r\n",
         header: false,
-        complete: updateResult(setCurrentFile, setUploadStatus, setIsLoading),
+        fastMode: true,
+        complete: updateResult(file, setCurrentFile, setUploadStatus, setIsLoading),
       });
     },
     [setCurrentFile, setUploadStatus]

@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth-context";
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
 import Link from "next/link";
+import { SummaryData } from "@/lib/summarise";
 
 export interface CSVFile {
   name: string;
@@ -16,8 +17,8 @@ export interface CSVFile {
   rows: number;
   columns: number;
   headers: string[];
-  data: string[][];
-  uploadedAt: Date;
+  preview: string[][];
+  summary: SummaryData;
 }
 
 export interface UploadStatus {
@@ -26,7 +27,7 @@ export interface UploadStatus {
 }
 
 function downloadTemplate() {
-  const csvContent = "Name,Age,Email\nJohn Doe,30,john.doe@example.com";
+  const csvContent = "enddate,id,status,area_name,mukim,house_id,age,agecat,sex,mcio,edu,employstatus,income,heartdis,asthma,stroke,arthritis,kidneydis,dialysis,dengue,denpastyear,uti,eversmoke,smoker,inadequate_fruits,inadequate_veg,bmi,bmicat_who,centralob,hypertension_1,hypertension_2,hypertension_3,hypertension_4,hypertension_5,hypertension_6,hpt_screened,hpt_diagnosed,hpt_measured,hpt_population,hpt_treated,sbp,dbp,bp_complete,diabetes_1,diabetes_2,diabetes_3,diabetes_4,diabetes_5,diabetes_6,diabetes_7,dm_screened,dm_diagnosed,dm_measured,dm_population,dm_treated,bg_complete,bg_4,dom1,dom2,dom3,dom4,overall\n";
   const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
   const link = document.createElement("a");
   const url = URL.createObjectURL(blob);

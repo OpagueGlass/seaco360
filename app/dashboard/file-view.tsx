@@ -8,6 +8,7 @@ import { Dispatch, SetStateAction, useCallback, useState } from "react";
 import { CSVFile, UploadStatus } from "./page";
 import { Spinner } from "@/components/ui/spinner";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { addHealthRoundData, ERROR } from "@/lib/query";
 
 function formatFileSize(bytes: number): string {
   if (bytes === 0) return "0 Bytes";
@@ -26,16 +27,20 @@ async function handleSave(
   if (!currentFile) return;
   setIsSaving(true);
 
-  // Simulate save operation
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  const result = await addHealthRoundData(2018, currentFile.summary);
+  setIsSaving(false);
 
+  if (result === ERROR) {
+    setUploadStatus({
+      type: "error",
+      message: `Error saving ${currentFile.name}`,
+    });
+    return;
+  }
   setUploadStatus({
     type: "success",
     message: `${currentFile.name} saved successfully`,
   });
-  setIsSaving(false);
-
-  // Clear current file view after saving
   setCurrentFile(null);
 }
 
@@ -55,7 +60,7 @@ function CSVDataTable({ currentFile }: { currentFile: CSVFile }) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {currentFile.data.slice(0, previewRows).map((row, rowIndex) => (
+              {currentFile.preview.map((row, rowIndex) => (
                 <TableRow key={rowIndex} className={`${rowIndex % 2 === 1 ? "bg-muted/40" : ""}`}>
                   <TableCell className="text-muted-foreground font-medium">{rowIndex + 1}</TableCell>
                   {row.map((cell, cellIndex) => (
@@ -68,11 +73,11 @@ function CSVDataTable({ currentFile }: { currentFile: CSVFile }) {
         </div>
         <ScrollBar orientation="horizontal" className="sticky bottom-0" />
       </ScrollArea>
-      {currentFile.data.length > previewRows && (
+      {currentFile.preview.length > previewRows && (
         <Alert className="p-4 bg-muted/40 mt-2">
           <Info className="size-4 mr-2" />
           <AlertDescription>
-            Showing first {previewRows} of {currentFile.data.length.toLocaleString()} rows.
+            Showing first {previewRows} of {currentFile.preview.length.toLocaleString()} rows.
           </AlertDescription>
         </Alert>
       )}
