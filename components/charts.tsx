@@ -10,6 +10,14 @@ import {
 } from "@/components/ui/chart";
 import { Bar, BarChart, CartesianGrid, Pie, PieChart, XAxis, YAxis, LabelList, Label } from "recharts";
 
+function percentTickFormatter(val: number) {
+  return `${Math.round(val * 1000) / 10}%`;
+}
+
+function percentLabelFormatter(val: number) {
+  return `${(val * 100).toFixed(0)}%`;
+}
+
 function getProportions(data: { count: number }[]) {
   const totalCount = data.reduce((sum, item) => sum + item.count, 0);
   return data.map((item) => ({
@@ -90,7 +98,7 @@ export function ProportionalBarChart({
         tickLine={false}
         axisLine={false}
         hide={hideAxis}
-        tickFormatter={(val) => (val % 1 === 0 ? `${val * 100}%` : `${(val * 100).toFixed(1)}%`)}
+        tickFormatter={percentTickFormatter}
       />
       <YAxis dataKey="category" type="category" tickLine={false} tickMargin={10} axisLine={false} />
       <ChartTooltip content={<ChartTooltipContent hideLabel nameKey="category" formatter={CountTooltipFormatter} />} />
@@ -102,7 +110,7 @@ export function ProportionalBarChart({
             offset={8}
             className="fill-foreground"
             fontSize={12}
-            formatter={(val: number) => `${(val * 100).toFixed(0)}%`}
+            formatter={percentLabelFormatter}
           />
         )}
       </Bar>
@@ -119,7 +127,7 @@ export function ProportionalBarChart({
         width={40}
         tickLine={false}
         axisLine={false}
-        tickFormatter={(val) => (val % 1 === 0 ? `${val * 100}%` : `${(val * 100).toFixed(1)}%`)}
+        tickFormatter={percentTickFormatter}
         hide={hideAxis}
       />
       <ChartTooltip content={<ChartTooltipContent hideLabel nameKey="category" formatter={CountTooltipFormatter} />} />
@@ -207,7 +215,7 @@ export function MultipleProportionalBarChart({
   const verticalBar = (
     <BarChart accessibilityLayer data={percentageChartData} layout="vertical" margin={{ right: 36, ...margin }}>
       <CartesianGrid horizontal={false} strokeDasharray="3 3" className="stroke-muted" />
-      <XAxis type="number" tickLine={false} axisLine={false} hide={hideAxis} tickFormatter={(val) => (val % 1 === 0 ? `${val * 100}%` : `${(val * 100).toFixed(1)}%`)} />
+      <XAxis type="number" tickLine={false} axisLine={false} hide={hideAxis} tickFormatter={percentTickFormatter} />
       <YAxis dataKey="category" type="category" tickLine={false} tickMargin={10} axisLine={false} />
       <ChartTooltip content={<ChartTooltipContent nameKey="category" formatter={MultipleCountTooltipFormatter} />} />
       <ChartLegend content={<ChartLegendContent />} />
@@ -222,7 +230,7 @@ export function MultipleProportionalBarChart({
                 offset={8}
                 className="fill-foreground"
                 fontSize={12}
-                formatter={(val: number) => `${(val * 100).toFixed(0)}%`}
+                formatter={percentLabelFormatter}
               />
             )}
           </Bar>
@@ -239,7 +247,7 @@ export function MultipleProportionalBarChart({
         width={40}
         tickLine={false}
         axisLine={false}
-        tickFormatter={(val) => (val % 1 === 0 ? `${val * 100}%` : `${(val * 100).toFixed(1)}%`)}
+        tickFormatter={percentTickFormatter}
         hide={hideAxis}
       />
       <ChartTooltip content={<ChartTooltipContent nameKey="category" formatter={MultipleCountTooltipFormatter} />} />
@@ -255,7 +263,7 @@ export function MultipleProportionalBarChart({
                 offset={8}
                 className="fill-foreground"
                 fontSize={12}
-                formatter={(val: number) => `${(val * 100).toFixed(0)}%`}
+                formatter={percentLabelFormatter}
               />
             )}
           </Bar>
@@ -310,7 +318,7 @@ export function LabelledPieChart({
         dominantBaseline={props.dominantBaseline}
         fill="hsla(var(--foreground))"
       >
-        {(payload.proportion * 100).toFixed(0)}%
+        {percentLabelFormatter(payload.proportion)}
       </text>
     );
   };
