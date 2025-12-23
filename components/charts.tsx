@@ -69,14 +69,17 @@ export function ProportionalBarChart({
 }: {
   title: string;
   description: string;
-  chartData: { category: string; count: number; fill: string }[];
+  chartData: { category: string; count: number; fill: string; proportion?: number }[];
   chartConfig: ChartConfig;
   margin?: Partial<{ top: number; right: number; bottom: number; left: number }>;
   hideAxis?: boolean;
   hideLabel?: boolean;
   vertical?: boolean;
 }) {
-  const percentageChartData = getProportions(chartData);
+  const percentageChartData =
+    "proportion" in (chartData[0] ?? {})
+      ? chartData
+      : getProportions(chartData as { category: string; count: number; fill: string }[]);
 
   const verticalBar = (
     <BarChart accessibilityLayer data={percentageChartData} layout="vertical" margin={{ right: 36, ...margin }}>
@@ -177,50 +180,41 @@ export function MultipleProportionalBarChart({
     return acc;
   }, {} as ChartConfig);
 
-
-  const totalCounts = chartData
-    .map((item) => {
-      const total = Object.entries(item)
+  const getCategoryProportions = (data: { [key: string]: number | string }[]) => {
+    const keyTotals: Record<string, number> = {};
+    data.forEach((item) => {
+      Object.entries(item)
         .filter(([key]) => key !== "category")
-        .reduce((sum, [, value]) => sum + (value as number), 0);
-      return total;
-    })
-    .reduce((sum, count) => sum + count, 0);
+        .forEach(([key, value]) => {
+          keyTotals[key] = (keyTotals[key] ?? 0) + (value as number);
+        });
+    });
 
-  const percentageChartData = chartData.map((item) => {
-    const newItem: { [key: string]: number | string } = { category: item.category };
-    Object.entries(item)
-      .filter(([key]) => key !== "category")
-      .forEach(([key, value]) => {
-        newItem[key] = value;
-        newItem[`${key}_proportion`] = (value as number) / totalCounts;
-      });
-    return newItem;
-  });
+    return data.map((item) => {
+      const newItem: { [key: string]: number | string } = { category: item.category };
+      Object.entries(item)
+        .filter(([key]) => key !== "category")
+        .forEach(([key, value]) => {
+          newItem[key] = value;
+          newItem[`${key}_proportion`] = (value as number) / (keyTotals[key] || 1);
+        });
+      return newItem;
+    });
+  };
+
+  const percentageChartData = getCategoryProportions(chartData);
 
   const verticalBar = (
     <BarChart accessibilityLayer data={percentageChartData} layout="vertical" margin={{ right: 36, ...margin }}>
       <CartesianGrid horizontal={false} strokeDasharray="3 3" className="stroke-muted" />
-      <XAxis
-        dataKey="proportion"
-        type="number"
-        tickLine={false}
-        axisLine={false}
-        hide={hideAxis}
-        tickFormatter={(val) => `${val * 100}%`}
-      />
+      <XAxis type="number" tickLine={false} axisLine={false} hide={hideAxis} tickFormatter={(val) => `${val * 100}%`} />
       <YAxis dataKey="category" type="category" tickLine={false} tickMargin={10} axisLine={false} />
       <ChartTooltip content={<ChartTooltipContent nameKey="category" formatter={MultipleCountTooltipFormatter} />} />
       <ChartLegend content={<ChartLegendContent />} />
       {Object.keys(percentageChartData[0])
         .filter((key) => key.includes("_proportion"))
         .map((key) => (
-          <Bar
-            dataKey={key}
-            name={`${key} Proportion`}
-            radius={[5, 5, 0, 0]}
-            fill={`var(--color-${key})`}
-          >
+          <Bar dataKey={key} name={`${key} Proportion`} radius={[0, 5, 5, 0]} fill={`var(--color-${key})`}>
             {!hideLabel && (
               <LabelList
                 dataKey={key}
@@ -253,12 +247,7 @@ export function MultipleProportionalBarChart({
       {Object.keys(percentageChartData[0])
         .filter((key) => key.includes("_proportion"))
         .map((key) => (
-          <Bar
-            dataKey={key}
-            name={`${key} Proportion`}
-            radius={[5, 5, 0, 0]}
-            fill={`var(--color-${key})`}
-          >
+          <Bar dataKey={key} name={`${key} Proportion`} radius={[5, 5, 0, 0]} fill={`var(--color-${key})`}>
             {!hideLabel && (
               <LabelList
                 dataKey={key}
@@ -382,7 +371,7 @@ export function LabelledPieChart({
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="min-h-[320px] w-full h-full">
+        <ChartContainer config={chartConfig} className="min-h-[320px] max-h-[320px] w-full h-full">
           <PieChart accessibilityLayer margin={{ top: 10 }}>
             {donut ? donutChart : pieChart}
             <ChartTooltip
