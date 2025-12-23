@@ -90,7 +90,7 @@ export function ProportionalBarChart({
         tickLine={false}
         axisLine={false}
         hide={hideAxis}
-        tickFormatter={(val) => `${val * 100}%`}
+        tickFormatter={(val) => (val % 1 === 0 ? `${val * 100}%` : `${(val * 100).toFixed(1)}%`)}
       />
       <YAxis dataKey="category" type="category" tickLine={false} tickMargin={10} axisLine={false} />
       <ChartTooltip content={<ChartTooltipContent hideLabel nameKey="category" formatter={CountTooltipFormatter} />} />
@@ -119,7 +119,7 @@ export function ProportionalBarChart({
         width={40}
         tickLine={false}
         axisLine={false}
-        tickFormatter={(val) => `${val * 100}%`}
+        tickFormatter={(val) => (val % 1 === 0 ? `${val * 100}%` : `${(val * 100).toFixed(1)}%`)}
         hide={hideAxis}
       />
       <ChartTooltip content={<ChartTooltipContent hideLabel nameKey="category" formatter={CountTooltipFormatter} />} />
