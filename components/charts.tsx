@@ -207,7 +207,7 @@ export function MultipleProportionalBarChart({
   const verticalBar = (
     <BarChart accessibilityLayer data={percentageChartData} layout="vertical" margin={{ right: 36, ...margin }}>
       <CartesianGrid horizontal={false} strokeDasharray="3 3" className="stroke-muted" />
-      <XAxis type="number" tickLine={false} axisLine={false} hide={hideAxis} tickFormatter={(val) => `${val * 100}%`} />
+      <XAxis type="number" tickLine={false} axisLine={false} hide={hideAxis} tickFormatter={(val) => (val % 1 === 0 ? `${val * 100}%` : `${(val * 100).toFixed(1)}%`)} />
       <YAxis dataKey="category" type="category" tickLine={false} tickMargin={10} axisLine={false} />
       <ChartTooltip content={<ChartTooltipContent nameKey="category" formatter={MultipleCountTooltipFormatter} />} />
       <ChartLegend content={<ChartLegendContent />} />
@@ -239,7 +239,7 @@ export function MultipleProportionalBarChart({
         width={40}
         tickLine={false}
         axisLine={false}
-        tickFormatter={(val) => `${val * 100}%`}
+        tickFormatter={(val) => (val % 1 === 0 ? `${val * 100}%` : `${(val * 100).toFixed(1)}%`)}
         hide={hideAxis}
       />
       <ChartTooltip content={<ChartTooltipContent nameKey="category" formatter={MultipleCountTooltipFormatter} />} />
