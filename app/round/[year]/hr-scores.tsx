@@ -128,7 +128,7 @@ function OverallScoreCard({ data }: { data: SummaryBySubdistrict }) {
       <CardContent className="flex-1 flex flex-col justify-center items-center">
         <div className="flex flex-col gap-4 items-center">
           <div className="text-6xl font-mono font-bold text-foreground">
-            {mean}
+            {mean}/20
           </div>
           <div className="flex items-center gap-2">
             <span className="text-muted-foreground text-base">Standard Deviation:</span>
