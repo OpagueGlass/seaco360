@@ -107,6 +107,12 @@ export const colMappings = new Map([
   [25, { name: "inadequateVegetable", mapping: new Map(binaryOption) }],
   [27, { name: "bmiCategory", mapping: new Map(bmiCategory) }],
   [28, { name: "centralObesity", mapping: new Map(binaryOption) }],
+  [35, { name: "hypertensionScreened", mapping: new Map(binaryOption) }],
+  [36, { name: "hypertensionDiagnosed", mapping: new Map(binaryOption) }],
+  [37, { name: "hypertensionMeasured", mapping: new Map(binaryOption) }],
+  [50, { name: "diabetesScreened", mapping: new Map(binaryOption) }],
+  [51, { name: "diabetesDiagnosed", mapping: new Map(binaryOption) }],
+  [52, { name: "diabetesMeasured", mapping: new Map(binaryOption) }],
 ] as const);
 
 export const chronicDiseases = {
@@ -117,8 +123,8 @@ export const chronicDiseases = {
     [15, "stroke"],
     [16, "arthritis"],
     [17, "kidneyDisease"],
-    [36, "hypertension"],
-    [51, "diabetes"],
+    // [36, "hypertension"],
+    // [51, "diabetes"],
   ] as const),
 };
 
