@@ -97,6 +97,11 @@ export const colMappings = new Map([
   [9, { name: "ethnicity", mapping: new Map(ethnic) }],
   [10, { name: "educationLevel", mapping: new Map(education) }],
   [11, { name: "employmentStatus", mapping: new Map(employment) }],
+  [13, { name: "heartDisease", mapping: new Map(binaryOption) }],
+  [14, { name: "asthma", mapping: new Map(binaryOption) }],
+  [15, { name: "stroke", mapping: new Map(binaryOption) }],
+  [16, { name: "arthritis", mapping: new Map(binaryOption) }],
+  [17, { name: "kidneyDisease", mapping: new Map(binaryOption) }],
   [18, { name: "underDialysis", mapping: new Map(binaryOption) }],
   [19, { name: "hadDengueBefore", mapping: new Map(binaryOption) }],
   [20, { name: "hadDenguePastYear", mapping: new Map(binaryOption) }],
@@ -114,19 +119,6 @@ export const colMappings = new Map([
   [51, { name: "diabetesDiagnosed", mapping: new Map(binaryOption) }],
   [52, { name: "diabetesMeasured", mapping: new Map(binaryOption) }],
 ] as const);
-
-export const chronicDiseases = {
-  name: "chronicDiseases",
-  mapping: new Map([
-    [13, "heartDisease"],
-    [14, "asthma"],
-    [15, "stroke"],
-    [16, "arthritis"],
-    [17, "kidneyDisease"],
-    // [36, "hypertension"],
-    // [51, "diabetes"],
-  ] as const),
-};
 
 export const scores = new Map([
   [57, "physicalHealth"],
