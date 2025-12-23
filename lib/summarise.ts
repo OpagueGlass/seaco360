@@ -1,4 +1,4 @@
-import { subdistrictMapping, colMappings, responseMapping, chronicDiseases, scores, income } from "./map";
+import { subdistrictMapping, colMappings, responseMapping, scores, income } from "./map";
 
 const NA = "";
 const TRUE = "1";
@@ -8,8 +8,6 @@ type ColMappingValue = ExtractMapValue<typeof colMappings>;
 
 export type SummaryBySubdistrict = & {
   [K in ColMappingValue["name"]]: Record<ExtractMapValue<Extract<ColMappingValue, { name: K }>["mapping"]>, number>;
-} & {
-  chronicDiseases: Record<ExtractMapValue<typeof chronicDiseases.mapping>, number>;
 } & {
   [K in ExtractMapValue<typeof scores>]: ReturnType<typeof calcMeanAndStdDev>;
 } & {
@@ -48,14 +46,6 @@ const countOccurrences = (data: string[], size: number) => {
   return counts;
 };
 
-const countTrueValues = (data: string[]) => {
-  let total = 0;
-  for (let i = 0, l = data.length; i < l; i++) {
-    if (data[i] === TRUE) total++;
-  }
-  return total;
-};
-
 const calcMeanAndStdDev = (data: string[]) => {
   let summation = 0;
   let sumOfSquares = 0;
@@ -85,15 +75,6 @@ const summarise = <K extends number, V extends string>(data: string[], mapping: 
   const result = {} as Record<V, number>;
   for (const [key, value] of mapping) {
     result[value] = counts[key];
-  }
-  return result;
-};
-
-const summariseChronicDisease = <K extends number, V extends string>(data: string[][], mapping: ReadonlyMap<K, V>) => {
-  const result = {} as Record<V, number>;
-  for (const [key, disease] of mapping) {
-    const diseaseData = data[key];
-    result[disease] = countTrueValues(diseaseData);
   }
   return result;
 };
@@ -132,7 +113,6 @@ const summariseBySubdistrict = (data: string[][]) => {
   for (const [key, value] of colMappings) {
     summary[value.name] = summarise(transposed[key], value.mapping);
   }
-  summary.chronicDiseases = summariseChronicDisease(transposed, chronicDiseases.mapping);
 
   for (const [key, scoreName] of scores) {
     const scoreData = transposed[key];
@@ -160,12 +140,6 @@ const combineSummaries = (summaries: SummaryBySubdistrict[]): SummaryBySubdistri
         const k = key as keyof (typeof combined)[typeof categoryName];
         category[k] += value;
       }
-    }
-
-    // Combine chronic diseases
-    for (const [key, value] of Object.entries(summary.chronicDiseases)) {
-      const k = key as keyof (typeof combined)["chronicDiseases"];
-      combined.chronicDiseases[k] += value;
     }
 
     // Combine income brackets
