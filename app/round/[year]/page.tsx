@@ -5,10 +5,12 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { getHealthRoundData } from "@/lib/query";
 import { SummaryData } from "@/lib/summarise";
 import { cn } from "@/lib/utils";
-import { HeartPulse, MapPin } from "lucide-react";
+import { CircleAlert, HeartPulse,  MapPin, ShieldX } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import HealthRoundCharts from "./hr-tabs";
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
+import Link from "next/link";
 
 export const subdistricts = [
   { name: "Overall", key: "overall" },
@@ -25,14 +27,47 @@ export default function HealthRoundYearPage() {
   const [index, setIndex] = useState(0);
   const selectedSubdistrict = subdistricts[index];
   const [healthData, setHealthData] = useState<SummaryData | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchData() {
       const data = await getHealthRoundData(parseInt(year, 10));
       setHealthData(data);
+      if (!data) {
+        setError("Failed to load health round data.");
+      }
     }
     fetchData();
   }, [year]);
+  
+  if (error) {
+    return (
+      <div className="flex h-[80vh] w-full items-center justify-center">
+        <Empty>
+          <EmptyMedia variant="icon" className="size-16 bg-destructive/10">
+            {/* <ShieldX className="size-8 text-destructive" /> */}
+            <CircleAlert className="size-8 text-destructive" />
+          </EmptyMedia>
+          <EmptyHeader>
+            <EmptyTitle>Year {year} Not Found</EmptyTitle>
+            <EmptyDescription>
+              The health round data for {year} could not be found. Please check the year and try again.
+            </EmptyDescription>
+          </EmptyHeader>
+          <EmptyContent>
+            <div className="flex flex-col sm:flex-row gap-2 justify-center w-full">
+              <Button asChild variant="outline" className="w-full sm:w-auto">
+                <Link href="/">Go Home</Link>
+              </Button>
+              <Button asChild className="w-full sm:w-auto">
+                <Link href="/round">Back to Health Rounds</Link>
+              </Button>
+            </div>
+          </EmptyContent>
+        </Empty>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col xl:flex-row">
