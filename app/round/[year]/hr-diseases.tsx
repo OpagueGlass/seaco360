@@ -229,7 +229,7 @@ function HRDiabetesPrevalenceChart({ data }: { data: SummaryBySubdistrict }) {
 }
 
 function HRDialysisChart({ data }: { data: SummaryBySubdistrict }) {
-  const { no, yes } = data.underDialysis;
+  const { no, yes } = data.underDialysis!;
   const title = "On Dialysis";
   const description = "Proportion of population on dialysis";
   const chartData = [
@@ -333,9 +333,11 @@ export default function HealthRoundDiseases({ data }: { data: SummaryBySubdistri
         <HRDiabetesScreenedChart data={data} />
         <HRDiabetesPrevalenceChart data={data} />
       </div>
-      <div className="mb-8 ">
-        <HRDialysisChart data={data} />
-      </div>
+      {data.underDialysis && (
+        <div className="mb-8 ">
+          <HRDialysisChart data={data} />
+        </div>
+      )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <HRDengueBeforeChart data={data} />
         <HRDenguePastYearChart data={data} />

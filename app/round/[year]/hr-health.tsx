@@ -32,7 +32,13 @@ function HRBMIChart({ data }: { data: SummaryBySubdistrict }) {
     },
   } satisfies ChartConfig;
   return (
-    <ProportionalBarChart title={title} description={description} chartData={chartData} chartConfig={chartConfig} hideAxis/>
+    <ProportionalBarChart
+      title={title}
+      description={description}
+      chartData={chartData}
+      chartConfig={chartConfig}
+      hideAxis
+    />
   );
 }
 
@@ -128,11 +134,11 @@ function HRSmokesNowChart({ data }: { data: SummaryBySubdistrict }) {
 }
 
 function HRInadequateFruitVegChart({ data }: { data: SummaryBySubdistrict }) {
-  const { no: noFruit, yes: yesFruit } = data.inadequateFruit;
-  const { no: noVeg, yes: yesVeg } = data.inadequateVegetable;
+  const { no: noFruit, yes: yesFruit } = data.inadequateFruit!;
+  const { no: noVeg, yes: yesVeg } = data.inadequateVegetable!;
   const title = "Inadequate Fruit & Vegetable Intake";
   const description = "Proportion of population with inadequate fruit and vegetable intake";
-  
+
   const chartData = [
     { category: "No", fruit: noFruit, veg: noVeg },
     { category: "Yes", fruit: yesFruit, veg: yesVeg },
@@ -170,9 +176,11 @@ export default function HealthRoundHealth({ data }: { data: SummaryBySubdistrict
         <HRSmokedBeforeChart data={data} />
         <HRSmokesNowChart data={data} />
       </div>
-      <div className="mt-8">
-        <HRInadequateFruitVegChart data={data} />
-      </div>
+      {data.inadequateFruit && data.inadequateVegetable && (
+        <div className="mt-8">
+          <HRInadequateFruitVegChart data={data} />
+        </div>
+      )}
     </div>
   );
 }
