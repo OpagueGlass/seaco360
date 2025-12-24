@@ -30,7 +30,7 @@ export function Navbar({ children }: { children: React.ReactNode }) {
               </Link>
               {/* <NavigationMenuDemo /> */}
             </div>
-            {!session ? (
+            {/* {!session ? (
               <Button className="flex items-center gap-2" asChild>
                 <Link href="/login">
                   <LogIn /> 
@@ -44,7 +44,7 @@ export function Navbar({ children }: { children: React.ReactNode }) {
                   Dashboard
                 </Link>
               </Button>
-            )}
+            )} */}
           </div>
         </div>
       </nav>

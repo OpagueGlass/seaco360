@@ -102,7 +102,7 @@ export function Menu({ isOpen, setIsOpen }: MenuProps) {
               )}
             </li>
           ))}
-          {session && (
+          {/* {session && (
           <li className="w-full grow flex items-end lg:fixed lg:bottom-4 lg:w-[248px]">
             <TooltipProvider disableHoverableContent>
               <Tooltip delayDuration={100}>
@@ -119,7 +119,7 @@ export function Menu({ isOpen, setIsOpen }: MenuProps) {
                 {isOpen === false && <TooltipContent side="right">Sign out</TooltipContent>}
               </Tooltip>
             </TooltipProvider>
-          </li>)}
+          </li>)} */}
         </ul>
       </nav>
     </ScrollArea>
