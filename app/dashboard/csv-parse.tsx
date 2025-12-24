@@ -30,7 +30,7 @@ function updateResult(
       const headers = results.data[0] as string[];
       const data = results.data.slice(1) as string[][];
       const preview = data.slice(0, previewRows);
-      const summary = summariseData(data);
+      const summary = summariseData(headers, data);
 
       const newFile: CSVFile = {
         name: file.name,

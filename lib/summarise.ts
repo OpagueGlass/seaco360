@@ -1,13 +1,19 @@
-import { subdistrictMapping, colMappings, responseMapping, scores, income } from "./map";
+import { subdistrictMapping, colMappings, responseMapping, scores, income, optMappings } from "./map";
 
 const NA = "";
 const TRUE = "1";
 
+type MapKey<T> = T extends Map<infer K, any> ? K : never;
 type ExtractMapValue<M> = M extends ReadonlyMap<any, infer V> ? V : never;
 type ColMappingValue = ExtractMapValue<typeof colMappings>;
 
-export type SummaryBySubdistrict = & {
+export type SummaryBySubdistrict = {
   [K in ColMappingValue["name"]]: Record<ExtractMapValue<Extract<ColMappingValue, { name: K }>["mapping"]>, number>;
+} & {
+  [K in ExtractMapValue<typeof optMappings>["name"]]?: Record<
+    ExtractMapValue<Extract<ExtractMapValue<typeof optMappings>, { name: K }>["mapping"]>,
+    number
+  >;
 } & {
   [K in ExtractMapValue<typeof scores>]: ReturnType<typeof calcMeanAndStdDev>;
 } & {
@@ -15,6 +21,18 @@ export type SummaryBySubdistrict = & {
 };
 
 export type SummaryData = Record<ExtractMapValue<typeof subdistrictMapping.map> | "overall", SummaryBySubdistrict>;
+
+type ColMappingKeys = MapKey<typeof colMappings>;
+type OptMappingKeys = MapKey<typeof optMappings>;
+type ScoreKeys = MapKey<typeof scores>;
+type IncomeKey = typeof income.column;
+type Headers =
+  | ColMappingKeys
+  | OptMappingKeys
+  | ScoreKeys
+  | IncomeKey
+  | typeof subdistrictMapping.column
+  | typeof responseMapping.column;
 
 function transpose<T>(a: T[][]): T[][] {
   var w = a.length;
@@ -30,6 +48,11 @@ function transpose<T>(a: T[][]): T[][] {
   }
 
   return t;
+}
+
+function createIndexMap(arr: Headers[]): ReadonlyMap<Headers, number> {
+  const keyValuePairs = arr.map((value, index) => [value, index] as const);
+  return new Map<Headers, number>(keyValuePairs);
 }
 
 const getMapSize = (mapping: ReadonlyMap<number, string>) => {
@@ -106,20 +129,29 @@ const summariseIncome = <K extends number, V extends string>(data: string[], bra
   return result;
 };
 
-const summariseBySubdistrict = (data: string[][]) => {
+const summariseBySubdistrict = (indexMap: ReadonlyMap<Headers, number>, data: string[][]) => {
   const transposed = transpose(data);
 
   const summary = {} as SummaryBySubdistrict;
   for (const [key, value] of colMappings) {
-    summary[value.name] = summarise(transposed[key], value.mapping);
+    const colIndex = indexMap.get(key)!;
+    summary[value.name] = summarise(transposed[colIndex], value.mapping);
+  }
+
+  for (const [key, value] of optMappings) {
+    const colIndex = indexMap.get(key);
+    if (colIndex !== undefined) {
+      summary[value.name] = summarise(transposed[colIndex], value.mapping);
+    }
   }
 
   for (const [key, scoreName] of scores) {
-    const scoreData = transposed[key];
+    const colIndex = indexMap.get(key)!;
+    const scoreData = transposed[colIndex];
     const scoreMeanStdDev = calcMeanAndStdDev(scoreData);
     summary[scoreName] = scoreMeanStdDev;
   }
-  summary.income = summariseIncome(transposed[income.column], income.brackets);
+  summary.income = summariseIncome(transposed[indexMap.get(income.column)!], income.brackets);
   return summary;
 };
 
@@ -157,7 +189,7 @@ const combineSummaries = (summaries: SummaryBySubdistrict[]): SummaryBySubdistri
       prevStats.count += currStats.count;
     }
   }
-  
+
   // Finalise mean and stdDev calculations
   for (const [, scoreName] of scores) {
     const stats = combined[scoreName];
@@ -172,23 +204,27 @@ const combineSummaries = (summaries: SummaryBySubdistrict[]): SummaryBySubdistri
   return combined;
 };
 
-export const summariseData = (data: string[][]) => {
+export const summariseData = (headers: string[], data: string[][]) => {
   const { map: sdMap, column: sdCol } = subdistrictMapping;
   const { column: resCol } = responseMapping;
+
+  const indexMap = createIndexMap(headers as Headers[]);
+  const sdIndex = indexMap.get(sdCol)!;
+  const resIndex = indexMap.get(resCol)!;
 
   const size = getMapSize(sdMap);
   const sdData = Array.from({ length: size }, () => <string[][]>[]);
 
   for (let i = 0, l = data.length; i < l; i++) {
     const row = data[i];
-    if (row[resCol] === TRUE) sdData[Number(row[sdCol])].push(row);
+    if (row[resIndex] === TRUE) sdData[Number(row[sdIndex])].push(row);
   }
 
   const result = {} as SummaryData;
   const subdistrictSummaries: SummaryBySubdistrict[] = [];
 
   for (const [id, name] of sdMap) {
-    const summary = summariseBySubdistrict(sdData[id]);
+    const summary = summariseBySubdistrict(indexMap, sdData[id]);
     result[name] = summary;
     subdistrictSummaries.push(summary);
   }

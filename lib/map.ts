@@ -82,50 +82,53 @@ const binaryOption = [
 ] as const;
 
 export const responseMapping = {
-  column: 2,
+  column: "status" as const,
   map: new Map(response),
 };
 
 export const subdistrictMapping = {
-  column: 4,
+  column: "mukim" as const,
   map: new Map(subdistrict),
 };
 
 export const colMappings = new Map([
-  [7, { name: "ageCategory", mapping: new Map(ageCategory) }],
-  [8, { name: "sex", mapping: new Map(sex) }],
-  [9, { name: "ethnicity", mapping: new Map(ethnic) }],
-  [10, { name: "educationLevel", mapping: new Map(education) }],
-  [11, { name: "employmentStatus", mapping: new Map(employment) }],
-  [13, { name: "heartDisease", mapping: new Map(binaryOption) }],
-  [14, { name: "asthma", mapping: new Map(binaryOption) }],
-  [15, { name: "stroke", mapping: new Map(binaryOption) }],
-  [16, { name: "arthritis", mapping: new Map(binaryOption) }],
-  [17, { name: "kidneyDisease", mapping: new Map(binaryOption) }],
-  [18, { name: "underDialysis", mapping: new Map(binaryOption) }],
-  [19, { name: "hadDengueBefore", mapping: new Map(binaryOption) }],
-  [20, { name: "hadDenguePastYear", mapping: new Map(binaryOption) }],
-  [21, { name: "hadUTIPastYear", mapping: new Map(binaryOption) }],
-  [22, { name: "hadSmokeBefore", mapping: new Map(binaryOption) }],
-  [23, { name: "isCurrentlySmoking", mapping: new Map(binaryOption) }],
-  [24, { name: "inadequateFruit", mapping: new Map(binaryOption) }],
-  [25, { name: "inadequateVegetable", mapping: new Map(binaryOption) }],
-  [27, { name: "bmiCategory", mapping: new Map(bmiCategory) }],
-  [28, { name: "centralObesity", mapping: new Map(binaryOption) }],
-  [35, { name: "hypertensionScreened", mapping: new Map(binaryOption) }],
-  [36, { name: "hypertensionDiagnosed", mapping: new Map(binaryOption) }],
-  [37, { name: "hypertensionMeasured", mapping: new Map(binaryOption) }],
-  [50, { name: "diabetesScreened", mapping: new Map(binaryOption) }],
-  [51, { name: "diabetesDiagnosed", mapping: new Map(binaryOption) }],
-  [52, { name: "diabetesMeasured", mapping: new Map(binaryOption) }],
+  ["agecat", { name: "ageCategory", mapping: new Map(ageCategory) }],
+  ["sex", { name: "sex", mapping: new Map(sex) }],
+  ["mcio", { name: "ethnicity", mapping: new Map(ethnic) }],
+  ["edu", { name: "educationLevel", mapping: new Map(education) }],
+  ["employstatus", { name: "employmentStatus", mapping: new Map(employment) }],
+  ["heartdis", { name: "heartDisease", mapping: new Map(binaryOption) }],
+  ["asthma", { name: "asthma", mapping: new Map(binaryOption) }],
+  ["stroke", { name: "stroke", mapping: new Map(binaryOption) }],
+  ["arthritis", { name: "arthritis", mapping: new Map(binaryOption) }],
+  ["kidneydis", { name: "kidneyDisease", mapping: new Map(binaryOption) }],
+  ["dengue", { name: "hadDengueBefore", mapping: new Map(binaryOption) }],
+  ["denpastyear", { name: "hadDenguePastYear", mapping: new Map(binaryOption) }],
+  ["uti", { name: "hadUTIPastYear", mapping: new Map(binaryOption) }],
+  ["eversmoke", { name: "hadSmokeBefore", mapping: new Map(binaryOption) }],
+  ["smoker", { name: "isCurrentlySmoking", mapping: new Map(binaryOption) }],
+  ["bmicat_who", { name: "bmiCategory", mapping: new Map(bmiCategory) }],
+  ["centralob", { name: "centralObesity", mapping: new Map(binaryOption) }],
+  ["hpt_screened", { name: "hypertensionScreened", mapping: new Map(binaryOption) }],
+  ["hpt_diagnosed", { name: "hypertensionDiagnosed", mapping: new Map(binaryOption) }],
+  ["hpt_measured", { name: "hypertensionMeasured", mapping: new Map(binaryOption) }],
+  ["dm_screened", { name: "diabetesScreened", mapping: new Map(binaryOption) }],
+  ["dm_diagnosed", { name: "diabetesDiagnosed", mapping: new Map(binaryOption) }],
+  ["dm_measured", { name: "diabetesMeasured", mapping: new Map(binaryOption) }],
+] as const);
+
+export const optMappings = new Map([
+  ["dialysis", { name: "underDialysis", mapping: new Map(binaryOption) }],
+  ["inadequate_fruits", { name: "inadequateFruit", mapping: new Map(binaryOption) }],
+  ["inadequate_veg", { name: "inadequateVegetable", mapping: new Map(binaryOption) }],
 ] as const);
 
 export const scores = new Map([
-  [57, "physicalHealth"],
-  [58, "psychologicalHealth"],
-  [59, "socialRelationships"],
-  [60, "environment"],
-  [61, "overallQoL"],
+  ["dom1", "physicalHealth"],
+  ["dom2", "psychologicalHealth"],
+  ["dom3", "socialRelationships"],
+  ["dom4", "environment"],
+  ["overall", "overallQoL"],
 ] as const);
 
 const incomeBrackets = new Map([
@@ -136,4 +139,4 @@ const incomeBrackets = new Map([
   [2000, "RM2000+"],
 ] as const);
 
-export const income = { column: 12, brackets: incomeBrackets, name: "income" };
+export const income = { column: "income" as const, brackets: incomeBrackets };
