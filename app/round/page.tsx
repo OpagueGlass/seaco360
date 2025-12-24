@@ -9,7 +9,7 @@ import { HeartPulse } from "lucide-react";
 import Link from "next/link";
 
 export default function HealthRoundsPage() {
-  const { data: healthYears } = useQuery({
+  const { data: healthYears, isLoading } = useQuery({
     queryKey: ["health-round-years"],
     queryFn: () => getHealthRoundYears(),
     staleTime: Infinity,
@@ -26,7 +26,7 @@ export default function HealthRoundsPage() {
         </div>
       </div>
 
-      {!healthYears ? (
+      {isLoading ? (
         <div className="flex items-center justify-center w-full min-h-[40vh]">
           <Empty>
             <EmptyMedia>
@@ -47,7 +47,7 @@ export default function HealthRoundsPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {healthYears.map((year) => (
+          {healthYears?.map((year) => (
             <Link key={year} href={`/round/${year}`}>
               <Card className="hover:bg-primary/10 transition-colors cursor-pointer h-full group">
                 <CardHeader>

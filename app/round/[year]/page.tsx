@@ -26,18 +26,17 @@ export default function HealthRoundYearPage() {
   const year = params.year as string;
   const [index, setIndex] = useState(0);
   const selectedSubdistrict = subdistricts[index];
-  const { data: healthData, error } = useQuery({
+  const { data: healthData, isLoading } = useQuery({
     queryKey: ["health-round", year],
     queryFn: () => getHealthRoundData(parseInt(year, 10)),
     staleTime: Infinity,
   });
 
-  if (error) {
+  if (!healthData && !isLoading) {
     return (
       <div className="flex h-[80vh] w-full items-center justify-center">
         <Empty>
           <EmptyMedia variant="icon" className="size-16 bg-destructive/10">
-            {/* <ShieldX className="size-8 text-destructive" /> */}
             <CircleAlert className="size-8 text-destructive" />
           </EmptyMedia>
           <EmptyHeader>
