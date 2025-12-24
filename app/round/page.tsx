@@ -1,26 +1,19 @@
 "use client";
 
-import Link from "next/link";
-import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Calendar, HeartPulse } from "lucide-react";
-import { useEffect, useState } from "react";
-import { getHealthRoundYears } from "@/lib/query";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
 import { Spinner } from "@/components/ui/spinner";
+import { getHealthRoundYears } from "@/lib/query";
+import { useQuery } from "@tanstack/react-query";
+import { HeartPulse } from "lucide-react";
+import Link from "next/link";
 
 export default function HealthRoundsPage() {
-  const [healthYears, setHealthYears] = useState<number[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-
-  useEffect(() => {
-    async function fetchYears() {
-      const years = await getHealthRoundYears();
-      setHealthYears(years);
-      setLoading(false);
-    }
-    setLoading(true);
-    fetchYears();
-  }, []);
+  const { data: healthYears } = useQuery({
+    queryKey: ["health-round-years"],
+    queryFn: () => getHealthRoundYears(),
+    staleTime: Infinity,
+  });
 
   return (
     <div className="container mx-auto p-4 sm:p-6 space-y-6">
@@ -33,7 +26,7 @@ export default function HealthRoundsPage() {
         </div>
       </div>
 
-      {loading ? (
+      {!healthYears ? (
         <div className="flex items-center justify-center w-full min-h-[40vh]">
           <Empty>
             <EmptyMedia>

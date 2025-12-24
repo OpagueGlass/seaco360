@@ -1,16 +1,16 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { getHealthRoundData } from "@/lib/query";
-import { SummaryData } from "@/lib/summarise";
 import { cn } from "@/lib/utils";
-import { CircleAlert, HeartPulse,  MapPin, ShieldX } from "lucide-react";
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import HealthRoundCharts from "./hr-tabs";
-import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
+import { useQuery } from "@tanstack/react-query";
+import { CircleAlert, HeartPulse, MapPin } from "lucide-react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useState } from "react";
+import HealthRoundCharts from "./hr-tabs";
 
 export const subdistricts = [
   { name: "Overall", key: "overall" },
@@ -26,20 +26,12 @@ export default function HealthRoundYearPage() {
   const year = params.year as string;
   const [index, setIndex] = useState(0);
   const selectedSubdistrict = subdistricts[index];
-  const [healthData, setHealthData] = useState<SummaryData | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const { data: healthData, error } = useQuery({
+    queryKey: ["health-round", year],
+    queryFn: () => getHealthRoundData(parseInt(year, 10)),
+    staleTime: Infinity,
+  });
 
-  useEffect(() => {
-    async function fetchData() {
-      const data = await getHealthRoundData(parseInt(year, 10));
-      setHealthData(data);
-      if (!data) {
-        setError("Failed to load health round data.");
-      }
-    }
-    fetchData();
-  }, [year]);
-  
   if (error) {
     return (
       <div className="flex h-[80vh] w-full items-center justify-center">

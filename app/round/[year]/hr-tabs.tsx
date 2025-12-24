@@ -65,7 +65,7 @@ export default function HealthRoundCharts({
   data,
   subdistrict,
 }: {
-  data: SummaryData | null;
+  data: SummaryData | null | undefined;
   subdistrict: (typeof subdistricts)[number]["key"];
 }) {
   return (
