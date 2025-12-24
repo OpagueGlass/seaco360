@@ -1,4 +1,4 @@
-import { subdistrictMapping, colMappings, responseMapping, scores, income, optMappings } from "./map";
+import { subdistrictMapping, colMappings, responseMapping, scores, income, optMappings, age } from "./map";
 
 const NA = "";
 const TRUE = "1";
@@ -18,6 +18,8 @@ export type SummaryBySubdistrict = {
   [K in ExtractMapValue<typeof scores>]: ReturnType<typeof calcMeanAndStdDev>;
 } & {
   income: Record<ExtractMapValue<typeof income.brackets>, number>;
+} & {
+  ageCategory: Record<ExtractMapValue<typeof age.brackets>, number>;
 };
 
 export type SummaryData = Record<ExtractMapValue<typeof subdistrictMapping.map> | "overall", SummaryBySubdistrict>;
@@ -26,11 +28,13 @@ type ColMappingKeys = MapKey<typeof colMappings>;
 type OptMappingKeys = MapKey<typeof optMappings>;
 type ScoreKeys = MapKey<typeof scores>;
 type IncomeKey = typeof income.column;
+type AgeKey = typeof age.column;
 type Headers =
   | ColMappingKeys
   | OptMappingKeys
   | ScoreKeys
   | IncomeKey
+  | AgeKey
   | typeof subdistrictMapping.column
   | typeof responseMapping.column;
 
@@ -102,7 +106,7 @@ const summarise = <K extends number, V extends string>(data: string[], mapping: 
   return result;
 };
 
-const summariseIncome = <K extends number, V extends string>(data: string[], brackets: ReadonlyMap<K, V>) => {
+const summariseBrackets = <K extends number, V extends string>(data: string[], brackets: ReadonlyMap<K, V>) => {
   const bracketLevels = Array.from(brackets.keys()).sort((a, b) => a - b);
   const size = bracketLevels.length;
   const counts = new Array(size).fill(0);
@@ -151,7 +155,8 @@ const summariseBySubdistrict = (indexMap: ReadonlyMap<Headers, number>, data: st
     const scoreMeanStdDev = calcMeanAndStdDev(scoreData);
     summary[scoreName] = scoreMeanStdDev;
   }
-  summary.income = summariseIncome(transposed[indexMap.get(income.column)!], income.brackets);
+  summary.income = summariseBrackets(transposed[indexMap.get(income.column)!], income.brackets);
+  summary.ageCategory = summariseBrackets(transposed[indexMap.get(age.column)!], age.brackets);
   return summary;
 };
 
@@ -178,6 +183,12 @@ const combineSummaries = (summaries: SummaryBySubdistrict[]): SummaryBySubdistri
     for (const [key, value] of Object.entries(summary.income)) {
       const k = key as keyof (typeof combined)["income"];
       combined.income[k] += value;
+    }
+
+    // Combine age brackets
+    for (const [key, value] of Object.entries(summary.ageCategory)) {
+      const k = key as keyof (typeof combined)["ageCategory"];
+      combined.ageCategory[k] += value;
     }
 
     // Combine scores

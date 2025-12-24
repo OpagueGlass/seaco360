@@ -15,26 +15,6 @@ const subdistrict = [
   [5, "sgSegamat"],
 ] as const;
 
-const ageCategory = [
-  [0, "0-4"],
-  [1, "5-9"],
-  [2, "10-14"],
-  [3, "15-19"],
-  [4, "20-24"],
-  [5, "25-29"],
-  [6, "30-34"],
-  [7, "35-39"],
-  [8, "40-44"],
-  [9, "45-49"],
-  [10, "50-54"],
-  [11, "55-59"],
-  [12, "60-64"],
-  [13, "65-69"],
-  [14, "70-74"],
-  [15, "75-99"],
-  [16, "100+"],
-] as const;
-
 const sex = [
   [1, "male"],
   [2, "female"],
@@ -92,7 +72,6 @@ export const subdistrictMapping = {
 };
 
 export const colMappings = new Map([
-  ["agecat", { name: "ageCategory", mapping: new Map(ageCategory) }],
   ["sex", { name: "sex", mapping: new Map(sex) }],
   ["mcio", { name: "ethnicity", mapping: new Map(ethnic) }],
   ["edu", { name: "educationLevel", mapping: new Map(education) }],
@@ -140,3 +119,25 @@ const incomeBrackets = new Map([
 ] as const);
 
 export const income = { column: "income" as const, brackets: incomeBrackets };
+
+const ageCategories = new Map([
+  [0, "0-4"],
+  [5, "5-9"],
+  [10, "10-14"],
+  [15, "15-19"],
+  [20, "20-24"],
+  [25, "25-29"],
+  [30, "30-34"],
+  [35, "35-39"],
+  [40, "40-44"],
+  [45, "45-49"],
+  [50, "50-54"],
+  [55, "55-59"],
+  [60, "60-64"],
+  [65, "65-69"],
+  [70, "70-74"],
+  [75, "75-99"],
+  [100, "100+"],
+] as const);
+
+export const age = { column: "age" as const, brackets: ageCategories };
