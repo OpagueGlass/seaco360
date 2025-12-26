@@ -79,6 +79,16 @@ const countOccurrences = (data: string[], size: number) => {
   return counts;
 };
 
+const getMeanAndStdDev = (summation: number, sumOfSquares: number, count: number) => {
+  const exactMean = summation / count;
+  const variance = sumOfSquares / count - exactMean * exactMean;
+  const unbiasedVariance = (count / (count - 1)) * variance;
+  const exactStdDev = Math.sqrt(unbiasedVariance);
+  const mean = Math.round(exactMean * 100) / 100;
+  const stdDev = Math.round(exactStdDev * 100) / 100;
+  return { mean, stdDev, summation, sumOfSquares, count };
+};
+
 const calcMeanAndStdDev = (data: string[]) => {
   let summation = 0;
   let sumOfSquares = 0;
@@ -92,13 +102,7 @@ const calcMeanAndStdDev = (data: string[]) => {
       count++;
     }
   }
-  const exactMean = summation / count;
-  const variance = sumOfSquares / count - exactMean * exactMean;
-  const unbiasedVariance = (count / (count - 1)) * variance;
-  const exactStdDev = Math.sqrt(unbiasedVariance);
-  const mean = Math.round(exactMean * 100) / 100;
-  const stdDev = Math.round(exactStdDev * 100) / 100;
-  return { mean, stdDev, summation, sumOfSquares, count };
+  return getMeanAndStdDev(summation, sumOfSquares, count);
 };
 
 const calcMedian = (nums: number[]) => {
@@ -246,12 +250,7 @@ const combineSummaries = (summaries: ReturnType<typeof summariseBySubdistrict>[]
   // Finalise mean and stdDev calculations
   for (const [, scoreName] of scores) {
     const stats = combined[scoreName];
-    const exactMean = stats.summation / stats.count;
-    const variance = stats.sumOfSquares / stats.count - exactMean * exactMean;
-    const unbiasedVariance = (stats.count / (stats.count - 1)) * variance;
-    const exactStdDev = Math.sqrt(unbiasedVariance);
-    stats.mean = Math.round(exactMean * 100) / 100;
-    stats.stdDev = Math.round(exactStdDev * 100) / 100;
+    combined[scoreName] = getMeanAndStdDev(stats.summation, stats.sumOfSquares, stats.count);
   }
 
   // Combine median calculations
