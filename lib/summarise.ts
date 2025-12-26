@@ -199,7 +199,10 @@ export const summariseBySubdistrict = (indexMap: ReadonlyMap<Headers, number>, d
 };
 
 const combineSummaries = (summaries: ReturnType<typeof summariseBySubdistrict>[]): SummaryBySubdistrict => {
-  const combined = summaries[0].summary;
+  if (summaries.length === 0) return {} as SummaryBySubdistrict;
+  if (summaries.length === 1) return summaries[0].summary;
+
+  const combined = JSON.parse(JSON.stringify(summaries[0].summary)) as SummaryBySubdistrict;
 
   for (let i = 1; i < summaries.length; i++) {
     const summary = summaries[i].summary;
