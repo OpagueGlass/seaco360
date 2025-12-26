@@ -4,7 +4,7 @@ import { ChartConfig } from "@/components/ui/chart";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 function HRAgeChart({ data }: { data: SummaryBySubdistrict }) {
-  const {"0-4": _, ...ageGroups} = data.ageCategory;
+  const {"0-4": _, ...ageGroups} = data.age;
 
   const title = "Age Distribution";
   const description = "Population breakdown by age group";
