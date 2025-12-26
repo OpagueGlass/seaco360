@@ -1,5 +1,5 @@
-import { subdistrictMapping, colMappings, responseMapping, scores, optMappings, colCategories } from "./map";
 import quickselect from "quickselect";
+import { colCategories, colMappings, optMappings, responseMapping, scores, subdistrictMapping } from "./map";
 
 const NA = "";
 const TRUE = "1";
@@ -36,7 +36,7 @@ type ColMappingKeys = MapKey<typeof colMappings>;
 type OptMappingKeys = MapKey<typeof optMappings>;
 type CategoryKeys = MapKey<typeof colCategories>;
 type ScoreKeys = MapKey<typeof scores>;
-export type Headers =
+type Headers =
   | ColMappingKeys
   | OptMappingKeys
   | ScoreKeys
@@ -70,15 +70,6 @@ const getMapSize = (mapping: ReadonlyMap<number, string>) => {
   return Math.max(...keys) + 1;
 };
 
-const countOccurrences = (data: string[], size: number) => {
-  const counts = new Array(size).fill(0);
-  for (let i = 0, l = data.length; i < l; i++) {
-    const value = data[i];
-    if (value !== NA) counts[Number(value)]++;
-  }
-  return counts;
-};
-
 const getMeanAndStdDev = (summation: number, sumOfSquares: number, count: number) => {
   const exactMean = summation / count;
   const variance = sumOfSquares / count - exactMean * exactMean;
@@ -87,6 +78,15 @@ const getMeanAndStdDev = (summation: number, sumOfSquares: number, count: number
   const mean = Math.round(exactMean * 100) / 100;
   const stdDev = Math.round(exactStdDev * 100) / 100;
   return { mean, stdDev, summation, sumOfSquares, count };
+};
+
+const countOccurrences = (data: string[], size: number) => {
+  const counts = new Array(size).fill(0);
+  for (let i = 0, l = data.length; i < l; i++) {
+    const value = data[i];
+    if (value !== NA) counts[Number(value)]++;
+  }
+  return counts;
 };
 
 const calcMeanAndStdDev = (data: string[]) => {
