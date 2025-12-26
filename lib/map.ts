@@ -61,6 +61,34 @@ const binaryOption = [
   [1, "yes"],
 ] as const;
 
+const incomeBrackets = new Map([
+  [0, "RM0-499"],
+  [500, "RM500-999"],
+  [1000, "RM1000-1499"],
+  [1500, "RM1500-1999"],
+  [2000, "RM2000+"],
+] as const);
+
+const ageCategories = new Map([
+  [0, "0-4"],
+  [5, "5-9"],
+  [10, "10-14"],
+  [15, "15-19"],
+  [20, "20-24"],
+  [25, "25-29"],
+  [30, "30-34"],
+  [35, "35-39"],
+  [40, "40-44"],
+  [45, "45-49"],
+  [50, "50-54"],
+  [55, "55-59"],
+  [60, "60-64"],
+  [65, "65-69"],
+  [70, "70-74"],
+  [75, "75-99"],
+  [100, "100+"],
+] as const);
+
 export const responseMapping = {
   column: "status" as const,
   map: new Map(response),
@@ -102,6 +130,11 @@ export const optMappings = new Map([
   ["inadequate_veg", { name: "inadequateVegetable", mapping: new Map(binaryOption) }],
 ] as const);
 
+export const colCategories = new Map([
+  ["income", { name: "income", categories: incomeBrackets, medianName: "medianIncome" }],
+  ["age", { name: "age", categories: ageCategories, medianName: "medianAge" }],
+] as const);
+
 export const scores = new Map([
   ["dom1", "physicalHealth"],
   ["dom2", "psychologicalHealth"],
@@ -109,35 +142,3 @@ export const scores = new Map([
   ["dom4", "environment"],
   ["overall", "overallQoL"],
 ] as const);
-
-const incomeBrackets = new Map([
-  [0, "RM0-499"],
-  [500, "RM500-999"],
-  [1000, "RM1000-1499"],
-  [1500, "RM1500-1999"],
-  [2000, "RM2000+"],
-] as const);
-
-export const income = { column: "income" as const, brackets: incomeBrackets };
-
-const ageCategories = new Map([
-  [0, "0-4"],
-  [5, "5-9"],
-  [10, "10-14"],
-  [15, "15-19"],
-  [20, "20-24"],
-  [25, "25-29"],
-  [30, "30-34"],
-  [35, "35-39"],
-  [40, "40-44"],
-  [45, "45-49"],
-  [50, "50-54"],
-  [55, "55-59"],
-  [60, "60-64"],
-  [65, "65-69"],
-  [70, "70-74"],
-  [75, "75-99"],
-  [100, "100+"],
-] as const);
-
-export const age = { column: "age" as const, brackets: ageCategories };

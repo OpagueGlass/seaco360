@@ -28,6 +28,7 @@
     "motion": "^12.23.25",
     "next": "^16.0.7",
     "papaparse": "^5.5.3",
+    "quickselect": "^3.0.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "recharts": "^2.15.4",
