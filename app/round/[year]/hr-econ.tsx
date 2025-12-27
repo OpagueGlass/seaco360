@@ -1,10 +1,11 @@
 import { SummaryBySubdistrict } from "@/lib/summarise";
-import { LabelledPieChart, ProportionalBarChart } from "@/components/charts";
+import { LabelledPieChart, ProportionalBarChart, StatCard } from "@/components/charts";
 import { ChartConfig } from "@/components/ui/chart";
+import { DollarSign } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 function HREmploymentStatusChart({ data }: { data: SummaryBySubdistrict }) {
   const { student, homemaker, notWorking, working, pensioner, selfEmployed } = data.employmentStatus;
-
   const title = "Employment Status";
   const description = "Population breakdown by employment status";
 
@@ -47,15 +48,26 @@ function HREmploymentStatusChart({ data }: { data: SummaryBySubdistrict }) {
     },
   } satisfies ChartConfig;
 
+  const isMobile = useIsMobile();
   return (
     <ProportionalBarChart
       title={title}
       description={description}
       chartData={chartData}
       chartConfig={chartConfig}
-      vertical
-      margin={{ left: 32 }}
+      margin={isMobile ? { left: 32 } : undefined}
+      vertical={isMobile}
+      minHeight={250}
     />
+  );
+}
+
+function HRMedianIncomeStat({ data }: { data: SummaryBySubdistrict }) {
+  const { medianIncome } = data.statistics;
+  const title = "Median Monthly Household Income";
+  const description = "Median monthly household income of the population";
+  return (
+    <StatCard title={title} prefix="RM " value={medianIncome} description={description} icon={DollarSign} centered />
   );
 }
 
@@ -105,13 +117,16 @@ function HRIncomeChart({ data }: { data: SummaryBySubdistrict }) {
       description={description}
       chartData={chartData}
       chartConfig={chartConfig}
+      maxHeight={250}
       hideAxis
+      vertical
+      margin={{ left: 30 }}
     />
   );
 }
 
 function HREducationLevelChart({ data }: { data: SummaryBySubdistrict }) {
-  const {primary, secondary, tertiary, noFormalEducation, other} = data.educationLevel;
+  const { primary, secondary, tertiary, noFormalEducation, other } = data.educationLevel;
 
   const title = "Education Level";
   const description = "Population breakdown by highest education level attained";
@@ -154,7 +169,7 @@ function HREducationLevelChart({ data }: { data: SummaryBySubdistrict }) {
       donut
       gridLegend
     />
-  )
+  );
 }
 
 export default function HealthRoundEconomic({ data }: { data: SummaryBySubdistrict }) {
@@ -163,8 +178,11 @@ export default function HealthRoundEconomic({ data }: { data: SummaryBySubdistri
       <div className="mb-8">
         <HREmploymentStatusChart data={data} />
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-8">
+        <HRMedianIncomeStat data={data} />
         <HRIncomeChart data={data} />
+      </div>
+      <div className="mt-8">
         <HREducationLevelChart data={data} />
       </div>
     </div>
