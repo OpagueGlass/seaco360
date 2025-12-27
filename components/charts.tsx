@@ -311,6 +311,7 @@ export function LabelledPieChart({
   donut = false,
   donutStat = null,
   gridLegend = false,
+  hideLegend = false,
 }: {
   title: string;
   description: string;
@@ -320,6 +321,7 @@ export function LabelledPieChart({
   donut?: boolean;
   donutStat?: { key: string; label: string } | null;
   gridLegend?: boolean;
+  hideLegend?: boolean;
 }) {
   const percentageChartData = getProportions(chartData);
 
@@ -402,7 +404,9 @@ export function LabelledPieChart({
               cursor={false}
               content={<ChartTooltipContent hideLabel formatter={CountTooltipFormatter} />}
             />
-            <ChartLegend content={<ChartLegendContent />} className={gridLegend ? legendClass : undefined} />
+            {!hideLegend && (
+              <ChartLegend content={<ChartLegendContent />} className={gridLegend ? legendClass : undefined} />
+            )}
           </PieChart>
         </ChartContainer>
       </CardContent>

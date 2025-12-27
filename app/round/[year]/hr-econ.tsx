@@ -24,15 +24,15 @@ function HREmploymentStatusChart({ data }: { data: SummaryBySubdistrict }) {
     },
     employed: {
       label: "Employed",
-      color: "var(--chart-1)",
+      color: "var(--chart-2)",
     },
     selfEmployed: {
       label: "Self-Employed",
-      color: "var(--chart-1)",
+      color: "var(--chart-2)",
     },
     unemployed: {
       label: "Unemployed",
-      color: "var(--chart-2)",
+      color: "var(--chart-1)",
     },
     student: {
       label: "Student",
@@ -78,11 +78,11 @@ function HRIncomeChart({ data }: { data: SummaryBySubdistrict }) {
   const description = "Population breakdown by monthly household income";
 
   const chartData = [
-    { category: "RM0-499", count: income["RM0-499"], fill: "var(--color-1)" },
+    { category: "RM0-499", count: income["RM0-499"], fill: "var(--color-2)" },
     { category: "RM500-999", count: income["RM500-999"], fill: "var(--color-2)" },
-    { category: "RM1000-1499", count: income["RM1000-1499"], fill: "var(--color-3)" },
-    { category: "RM1500-1999", count: income["RM1500-1999"], fill: "var(--color-4)" },
-    { category: "RM2000+", count: income["RM2000+"], fill: "var(--color-5)" },
+    { category: "RM1000-1499", count: income["RM1000-1499"], fill: "var(--color-2)" },
+    { category: "RM1500-1999", count: income["RM1500-1999"], fill: "var(--color-2)" },
+    { category: "RM2000+", count: income["RM2000+"], fill: "var(--color-2)" },
   ];
 
   const chartConfig = {
@@ -144,7 +144,7 @@ function HREducationLevelChart({ data }: { data: SummaryBySubdistrict }) {
     },
     primary: {
       label: "Primary",
-      color: "var(--chart-2)",
+      color: "var(--chart-4)",
     },
     secondary: {
       label: "Secondary",
@@ -152,7 +152,7 @@ function HREducationLevelChart({ data }: { data: SummaryBySubdistrict }) {
     },
     tertiary: {
       label: "Tertiary",
-      color: "var(--chart-4)",
+      color: "var(--chart-2)",
     },
     other: {
       label: "Other",

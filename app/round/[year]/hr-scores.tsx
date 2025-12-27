@@ -83,7 +83,7 @@ function HRDomainScoresChart({ data }: { data: SummaryBySubdistrict }) {
     { category: "Psychological Health", fill: "var(--color-psychologicalHealth)", ...psychologicalHealth },
     { category: "Social Relationships", fill: "var(--color-socialRelationships)", ...socialRelationships },
     { category: "Environment", fill: "var(--color-environment)", ...environment },
-  ];
+  ].sort((a, b) => b.mean - a.mean);
 
   const chartConfig = {
     physicalHealth: {

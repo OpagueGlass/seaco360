@@ -85,15 +85,15 @@ function HREthnicityChart({ data }: { data: SummaryBySubdistrict }) {
   const chartConfig = {
     malay: {
       label: "Malay",
-      color: "var(--chart-1)",
+      color: "var(--chart-4)",
     },
     chinese: {
       label: "Chinese",
-      color: "var(--chart-2)",
+      color: "var(--chart-4)",
     },
     indian: {
       label: "Indian",
-      color: "var(--chart-3)",
+      color: "var(--chart-4)",
     },
     orangAsli: {
       label: "Orang Asli",
@@ -101,11 +101,11 @@ function HREthnicityChart({ data }: { data: SummaryBySubdistrict }) {
     },
     nonCitizen: {
       label: "Non Citizen",
-      color: "var(--chart-5)",
+      color: "var(--chart-4)",
     },
     other: {
       label: "Other",
-      color: "var(--chart-1)",
+      color: "var(--chart-4)",
     },
   } satisfies ChartConfig;
 
@@ -134,11 +134,11 @@ function HRGenderChart({ data }: { data: SummaryBySubdistrict }) {
   const chartConfig = {
     male: {
       label: "Male",
-      color: "var(--chart-1)",
+      color: "var(--chart-2)",
     },
     female: {
       label: "Female",
-      color: "var(--chart-2)",
+      color: "var(--chart-1)",
     },
   } satisfies ChartConfig;
 

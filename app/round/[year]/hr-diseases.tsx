@@ -97,7 +97,7 @@ function HRHypertensionScreenedChart({ data }: { data: SummaryBySubdistrict }) {
   const chartConfig = {
     no: {
       label: "No",
-      color: "var(--chart-2)",
+      color: "var(--chart-muted)",
     },
     yes: {
       label: "Yes",
@@ -171,7 +171,7 @@ function HRDiabetesScreenedChart({ data }: { data: SummaryBySubdistrict }) {
   const chartConfig = {
     no: {
       label: "No",
-      color: "var(--chart-3)",
+      color: "var(--chart-muted)",
     },
     yes: {
       label: "Yes",
@@ -244,7 +244,7 @@ function HRDialysisChart({ data }: { data: SummaryBySubdistrict }) {
   const chartConfig = {
     no: {
       label: "No",
-      color: "var(--chart-3)",
+      color: "var(--chart-muted)",
     },
     yes: {
       label: "Yes",
@@ -274,7 +274,7 @@ function HRUTIPastYearChart({ data }: { data: SummaryBySubdistrict }) {
   const chartConfig = {
     no: {
       label: "No",
-      color: "var(--chart-3)",
+      color: "var(--chart-muted)",
     },
     yes: {
       label: "Yes",
@@ -304,11 +304,11 @@ function HRDengueBeforeChart({ data }: { data: SummaryBySubdistrict }) {
   const chartConfig = {
     no: {
       label: "No",
-      color: "var(--chart-2)",
+      color: "var(--chart-muted)",
     },
     yes: {
       label: "Yes",
-      color: "var(--chart-4)",
+      color: "var(--chart-3)",
     },
   } satisfies ChartConfig;
   return (
@@ -334,11 +334,11 @@ function HRDenguePastYearChart({ data }: { data: SummaryBySubdistrict }) {
   const chartConfig = {
     no: {
       label: "No",
-      color: "var(--chart-2)",
+      color: "var(--chart-muted)",
     },
     yes: {
       label: "Yes",
-      color: "var(--chart-5)",
+      color: "var(--chart-3)",
     },
   } satisfies ChartConfig;
 

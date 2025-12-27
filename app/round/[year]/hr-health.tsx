@@ -16,7 +16,7 @@ function HRBMIChart({ data }: { data: SummaryBySubdistrict }) {
   const chartConfig = {
     underweight: {
       label: "Underweight",
-      color: "var(--chart-1)",
+      color: "var(--chart-3)",
     },
     normal: {
       label: "Normal",
@@ -24,11 +24,11 @@ function HRBMIChart({ data }: { data: SummaryBySubdistrict }) {
     },
     overweight: {
       label: "Overweight",
-      color: "var(--chart-3)",
+      color: "var(--chart-4)",
     },
     obese: {
       label: "Obese",
-      color: "var(--chart-4)",
+      color: "var(--chart-1)",
     },
   } satisfies ChartConfig;
   return (
@@ -53,7 +53,7 @@ function HRCentralObesityChart({ data }: { data: SummaryBySubdistrict }) {
   const chartConfig = {
     no: {
       label: "No",
-      color: "var(--chart-2)",
+      color: "var(--chart-muted)",
     },
     yes: {
       label: "Yes",
@@ -83,7 +83,7 @@ function HRSmokedBeforeChart({ data }: { data: SummaryBySubdistrict }) {
   const chartConfig = {
     no: {
       label: "No",
-      color: "var(--chart-3)",
+      color: "var(--chart-muted)",
     },
     yes: {
       label: "Yes",
@@ -114,7 +114,7 @@ function HRSmokesNowChart({ data }: { data: SummaryBySubdistrict }) {
   const chartConfig = {
     no: {
       label: "No",
-      color: "var(--chart-2)",
+      color: "var(--chart-muted)",
     },
     yes: {
       label: "Yes",
