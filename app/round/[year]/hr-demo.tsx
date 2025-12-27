@@ -1,7 +1,37 @@
-import { SummaryBySubdistrict } from "@/lib/summarise";
-import { LabelledPieChart, ProportionalBarChart } from "@/components/charts";
+import { LabelledPieChart, ProportionalBarChart, StatCard } from "@/components/charts";
 import { ChartConfig } from "@/components/ui/chart";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { SummaryBySubdistrict } from "@/lib/summarise";
+import { Hourglass, Users } from "lucide-react";
+
+function HRParticipantsStat({ data }: { data: SummaryBySubdistrict }) {
+  const { participants } = data.statistics;
+  const title = "Total Participants";
+  const description = "Participated in this health round";
+
+  return (
+    <StatCard
+      title={title}
+      value={participants}
+      description={description}
+      icon={Users}
+    />
+  );
+}
+
+function HRMedianAgeStat({ data }: { data: SummaryBySubdistrict }) {
+  const { medianAge } = data.statistics;
+  const title = "Median Age";
+  const description = "Median age of participants";
+  return (
+    <StatCard
+      title={title}
+      value={medianAge}
+      description={description}
+      icon={Hourglass}
+    />
+  );
+}
 
 function HRAgeChart({ data }: { data: SummaryBySubdistrict }) {
   const {"0-4": _, ...ageGroups} = data.age;
@@ -31,7 +61,8 @@ function HRAgeChart({ data }: { data: SummaryBySubdistrict }) {
       description={description}
       chartData={chartData}
       chartConfig={chartConfig}
-      hideLabel={isMobile}
+      vertical={isMobile}
+      minHeight={500}
     />
   );
 }
@@ -125,6 +156,10 @@ function HRGenderChart({ data }: { data: SummaryBySubdistrict }) {
 export default function HealthRoundDemographics({ data }: { data: SummaryBySubdistrict }) {
   return (
     <div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-8">
+        <HRParticipantsStat data={data} />
+        <HRMedianAgeStat data={data} />
+      </div>
       <div className="mb-8">
         <HRAgeChart data={data} />
       </div>
