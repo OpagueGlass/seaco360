@@ -1,6 +1,6 @@
-import { SummaryBySubdistrict } from "@/lib/summarise";
+import { LabelledPieChart, ProportionalBarChart } from "@/components/charts";
 import { ChartConfig } from "@/components/ui/chart";
-import { LabelledPieChart, MultipleProportionalBarChart, ProportionalBarChart } from "@/components/charts";
+import { SummaryBySubdistrict } from "@/lib/summarise";
 
 function HRBMIChart({ data }: { data: SummaryBySubdistrict }) {
   const { underweight, normal, overweight, obese } = data.bmiCategory;
@@ -140,8 +140,8 @@ function HRInadequateFruitVegChart({ data }: { data: SummaryBySubdistrict }) {
   const description = "Proportion of population with inadequate fruit and vegetable intake";
 
   const chartData = [
-    { category: "No", fruit: noFruit, veg: noVeg },
-    { category: "Yes", fruit: yesFruit, veg: yesVeg },
+    { category: "Fruit", count: yesFruit, proportion: yesFruit / (yesFruit + noFruit), fill: "var(--color-fruit)" },
+    { category: "Vegetable", count: yesVeg, proportion: yesVeg / (yesVeg + noVeg), fill: "var(--color-veg)" },
   ];
 
   const chartConfig = {
@@ -156,11 +156,14 @@ function HRInadequateFruitVegChart({ data }: { data: SummaryBySubdistrict }) {
   } satisfies ChartConfig;
 
   return (
-    <MultipleProportionalBarChart
+    <ProportionalBarChart
       title={title}
       description={description}
       chartData={chartData}
       chartConfig={chartConfig}
+      vertical
+      margin={{left: 10}}
+      maxHeight={200}
     />
   );
 }

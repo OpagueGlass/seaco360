@@ -1,6 +1,6 @@
-import { SummaryBySubdistrict } from "@/lib/summarise";
+import { LabelledPieChart, ProportionalBarChart } from "@/components/charts";
 import { ChartConfig } from "@/components/ui/chart";
-import { LabelledPieChart, MultipleProportionalBarChart, ProportionalBarChart } from "@/components/charts";
+import { SummaryBySubdistrict } from "@/lib/summarise";
 
 const getRatio = (binaryData: { yes: number; no: number }) => {
   return binaryData.yes / (binaryData.yes + binaryData.no);
@@ -44,7 +44,7 @@ function HRChronicDiseasesChart({ data }: { data: SummaryBySubdistrict }) {
       proportion: getRatio(kidneyDisease),
       fill: "var(--color-kidneyDisease)",
     },
-  ].sort((a, b) => b.count - a.count);
+  ].sort((a, b) => b.proportion - a.proportion);
 
   const chartConfig = {
     heartDisease: {
@@ -81,6 +81,7 @@ function HRChronicDiseasesChart({ data }: { data: SummaryBySubdistrict }) {
       chartConfig={chartConfig}
       vertical
       margin={{ left: 30 }}
+      minHeight={250}
     />
   );
 }
@@ -117,21 +118,23 @@ function HRHypertensionScreenedChart({ data }: { data: SummaryBySubdistrict }) {
 
 function HRHypertensionPrevalenceChart({ data }: { data: SummaryBySubdistrict }) {
   const { hypertensionMeasured, hypertensionDiagnosed } = data;
-  const { no: noHptMeasured, yes: yesHptMeasured } = hypertensionMeasured;
-  const { no: noHptDiagnosed, yes: yesHptDiagnosed } = hypertensionDiagnosed;
+  const { yes: yesHptMeasured } = hypertensionMeasured;
+  const { yes: yesHptDiagnosed } = hypertensionDiagnosed;
 
   const title = "Hypertension Prevalence";
   const description = "Proportion of population with hypertension diagnosed and measured";
   const chartData = [
     {
-      category: "No",
-      measured: noHptMeasured,
-      diagnosed: noHptDiagnosed,
+      category: "Measured",
+      count: yesHptMeasured,
+      proportion: getRatio(hypertensionMeasured),
+      fill: "var(--color-measured)",
     },
     {
-      category: "Yes",
-      measured: yesHptMeasured,
-      diagnosed: yesHptDiagnosed,
+      category: "Diagnosed",
+      count: yesHptDiagnosed,
+      proportion: getRatio(hypertensionDiagnosed),
+      fill: "var(--color-diagnosed)",
     },
   ];
 
@@ -147,7 +150,7 @@ function HRHypertensionPrevalenceChart({ data }: { data: SummaryBySubdistrict })
   } satisfies ChartConfig;
 
   return (
-    <MultipleProportionalBarChart
+    <ProportionalBarChart
       title={title}
       description={description}
       chartData={chartData}
@@ -195,14 +198,16 @@ function HRDiabetesPrevalenceChart({ data }: { data: SummaryBySubdistrict }) {
   const description = "Proportion of population with diabetes diagnosed and measured";
   const chartData = [
     {
-      category: "No",
-      measured: noDiabMeasured,
-      diagnosed: noDiabDiagnosed,
+      category: "Measured",
+      count: yesDiabMeasured,
+      proportion: getRatio(diabetesMeasured),
+      fill: "var(--color-measured)",
     },
     {
-      category: "Yes",
-      measured: yesDiabMeasured,
-      diagnosed: yesDiabDiagnosed,
+      category: "Diagnosed",
+      count: yesDiabDiagnosed,
+      proportion: getRatio(diabetesDiagnosed),
+      fill: "var(--color-diagnosed)",
     },
   ];
 
@@ -218,7 +223,7 @@ function HRDiabetesPrevalenceChart({ data }: { data: SummaryBySubdistrict }) {
   } satisfies ChartConfig;
 
   return (
-    <MultipleProportionalBarChart
+    <ProportionalBarChart
       title={title}
       description={description}
       chartData={chartData}
@@ -254,6 +259,36 @@ function HRDialysisChart({ data }: { data: SummaryBySubdistrict }) {
       chartConfig={chartConfig}
       donut
       donutStat={{ key: "yes", label: "On Dialysis" }}
+    />
+  );
+}
+
+function HRUTIPastYearChart({ data }: { data: SummaryBySubdistrict }) {
+  const { no, yes } = data.hadUTIPastYear;
+  const title = "Had Urinary Tract Infection (UTI) in Past Year";
+  const description = "Proportion of population who have had UTI in the past year";
+  const chartData = [
+    { category: "no", count: no, fill: "var(--color-no)" },
+    { category: "yes", count: yes, fill: "var(--color-yes)" },
+  ];
+  const chartConfig = {
+    no: {
+      label: "No",
+      color: "var(--chart-3)",
+    },
+    yes: {
+      label: "Yes",
+      color: "var(--chart-5)",
+    },
+  } satisfies ChartConfig;
+  return (
+    <LabelledPieChart
+      title={title}
+      description={description}
+      chartData={chartData}
+      chartConfig={chartConfig}
+      donut
+      donutStat={{ key: "yes", label: "Had UTI" }}
     />
   );
 }
@@ -338,6 +373,9 @@ export default function HealthRoundDiseases({ data }: { data: SummaryBySubdistri
           <HRDialysisChart data={data} />
         </div>
       )}
+      <div className="mb-8">
+        <HRUTIPastYearChart data={data} />
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <HRDengueBeforeChart data={data} />
         <HRDenguePastYearChart data={data} />
