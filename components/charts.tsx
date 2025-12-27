@@ -1,4 +1,3 @@
-import { NameType, Payload, ValueType } from "recharts/types/component/DefaultTooltipContent";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   ChartConfig,
@@ -8,7 +7,10 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { Bar, BarChart, CartesianGrid, Pie, PieChart, XAxis, YAxis, LabelList, Label } from "recharts";
+import { cn } from "@/lib/utils";
+import { JSX } from "react";
+import { Bar, BarChart, CartesianGrid, Label, LabelList, Pie, PieChart, XAxis, YAxis } from "recharts";
+import { NameType, Payload, ValueType } from "recharts/types/component/DefaultTooltipContent";
 
 function percentTickFormatter(val: number) {
   return `${Math.round(val * 1000) / 10}%`;
@@ -74,6 +76,8 @@ export function ProportionalBarChart({
   hideAxis = false,
   hideLabel = false,
   vertical = false,
+  minHeight = 200,
+  maxHeight = 500,
 }: {
   title: string;
   description: string;
@@ -83,6 +87,8 @@ export function ProportionalBarChart({
   hideAxis?: boolean;
   hideLabel?: boolean;
   vertical?: boolean;
+  minHeight?: number;
+  maxHeight?: number;
 }) {
   const percentageChartData =
     "proportion" in (chartData[0] ?? {})
@@ -153,7 +159,11 @@ export function ProportionalBarChart({
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 flex flex-col">
-        <ChartContainer config={chartConfig} className="min-h-[200px] max-h-[500px] w-full h-full">
+        <ChartContainer
+          config={chartConfig}
+          className="w-full h-full"
+          style={{ minHeight: `${minHeight}px`, maxHeight: `${maxHeight}px` }}
+        >
           {vertical ? verticalBar : horizontalBar}
         </ChartContainer>
       </CardContent>
@@ -170,6 +180,7 @@ export function MultipleProportionalBarChart({
   hideAxis = false,
   hideLabel = false,
   vertical = false,
+  maxHeight = 500,
 }: {
   title: string;
   description: string;
@@ -179,6 +190,7 @@ export function MultipleProportionalBarChart({
   hideAxis?: boolean;
   hideLabel?: boolean;
   vertical?: boolean;
+  maxHeight?: number;
 }) {
   const percentageChartConfig = Object.entries(chartConfig).reduce((acc, [key, config]) => {
     acc[`${key}_proportion`] = {
@@ -278,7 +290,11 @@ export function MultipleProportionalBarChart({
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 flex flex-col">
-        <ChartContainer config={percentageChartConfig} className="min-h-[200px] max-h-[500px] w-full h-full">
+        <ChartContainer
+          config={percentageChartConfig}
+          className="w-full h-full"
+          style={{ minHeight: "200px", maxHeight: `${maxHeight}px` }}
+        >
           {vertical ? verticalBar : horizontalBar}
         </ChartContainer>
       </CardContent>
@@ -331,6 +347,7 @@ export function LabelledPieChart({
       label={pieLabel}
       animationDuration={600}
       isAnimationActive={!disableAnimation}
+      outerRadius={"77%"}
     />
   );
 
@@ -340,7 +357,7 @@ export function LabelledPieChart({
       dataKey="proportion"
       nameKey="category"
       innerRadius={"50%"}
-      outerRadius={"80%"}
+      outerRadius={"77%"}
       strokeWidth={2}
       stroke="var(--color-background)"
       label={pieLabel}
@@ -368,8 +385,7 @@ export function LabelledPieChart({
     </Pie>
   );
 
-  // Dynamically set grid-cols based on chartData length (max 6 columns for safety)
-  const colCount = Math.ceil(chartData.length / 2);
+  const colCount = Math.ceil(chartData.length / Math.ceil(chartData.length / 3));
   const legendClass = `grid grid-cols-${colCount} xl:flex xl:flex-row`;
 
   return (
@@ -390,6 +406,52 @@ export function LabelledPieChart({
           </PieChart>
         </ChartContainer>
       </CardContent>
+    </Card>
+  );
+}
+
+export function StatCard({
+  title,
+  subtitle,
+  value,
+  prefix,
+  suffix,
+  description,
+  centered = false,
+  icon: Icon,
+}: {
+  title: string;
+  subtitle?: string;
+  value: number | string;
+  prefix?: string;
+  suffix?: string;
+  description?: JSX.Element | string;
+  centered?: boolean;
+  icon: React.ComponentType<{ className?: string }>;
+}) {
+  return (
+    <Card>
+      <CardHeader className="flex-1 flex-col">
+        <div className="flex items-start justify-between">
+          <div className="space-y-2">
+            <CardTitle>{title}</CardTitle>
+            {subtitle && <CardDescription>{subtitle}</CardDescription>}
+          </div>
+          {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
+        </div>
+        <div className={cn(`space-y-2 py-4`, centered ? "text-center" : "")}>
+          <div className="text-4xl font-bold tracking-tight font-mono">
+            {prefix}
+            {value.toLocaleString()}
+            {suffix}
+          </div>
+          {description && typeof description === "string" ? (
+            <p className="text-sm text-muted-foreground">{description}</p>
+          ) : (
+            description
+          )}
+        </div>
+      </CardHeader>
     </Card>
   );
 }
