@@ -1,16 +1,10 @@
-import { SummaryBySubdistrict } from "@/lib/summarise";
-import { LabelledPieChart, MultipleProportionalBarChart, ProportionalBarChart } from "@/components/charts";
-import { NameType, Payload, ValueType } from "recharts/types/component/DefaultTooltipContent";
+import { StatCard } from "@/components/charts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
-import { Bar, BarChart, CartesianGrid, Pie, PieChart, XAxis, YAxis, LabelList, Label, ErrorBar } from "recharts";
+import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { SummaryBySubdistrict } from "@/lib/summarise";
+import { Star } from "lucide-react";
+import { Bar, BarChart, CartesianGrid, ErrorBar, XAxis, YAxis } from "recharts";
+import { NameType, Payload, ValueType } from "recharts/types/component/DefaultTooltipContent";
 
 function DomainTooltipFormatter(value?: ValueType, name?: NameType, item?: Payload<ValueType, NameType>) {
   return (
@@ -26,11 +20,11 @@ function DomainTooltipFormatter(value?: ValueType, name?: NameType, item?: Paylo
       <div className="grid grid-cols-1">
         <span className="text-muted-foreground">Mean</span>
         <div className="text-foreground flex items-baseline font-mono font-medium tabular-nums">
-          {item?.payload.mean}
+          {item?.payload.mean.toFixed(2)}
         </div>
         <span className="text-muted-foreground">Standard Deviation</span>
         <div className="text-foreground flex items-baseline font-mono font-medium tabular-nums">
-          {`±${item?.payload.stdDev}`}
+          {`±${item?.payload.stdDev.toFixed(2)}`}
         </div>
       </div>
     </>
@@ -62,15 +56,13 @@ function DomainScoreBar({
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 flex flex-col">
-        <ChartContainer config={chartConfig} className="min-h-[200px] max-h-[500px] w-full h-full">
-          <BarChart accessibilityLayer data={chartData} margin={{ top: 20, ...margin }}>
+        <ChartContainer config={chartConfig} className="min-h-[200px] max-h-[250px] w-full h-full">
+          <BarChart accessibilityLayer data={chartData} margin={{ left: 30, ...margin }} layout="vertical">
             <CartesianGrid vertical={false} strokeDasharray="3 3" className="stroke-muted" />
-            <XAxis dataKey="category" type="category" tickLine={false} tickMargin={10} axisLine={false} />
-            <YAxis dataKey="mean" type="number" width={40} tickLine={false} axisLine={false} hide={hideAxis} />
-            <ChartTooltip
-              content={<ChartTooltipContent nameKey="category" formatter={DomainTooltipFormatter} />}
-            />
-            <Bar dataKey="mean" name="Mean" radius={[5, 5, 0, 0]}>
+            <YAxis dataKey="category" type="category" tickLine={false} tickMargin={10} axisLine={false} />
+            <XAxis dataKey="mean" type="number" width={40} tickLine={false} axisLine={false} hide={hideAxis} />
+            <ChartTooltip content={<ChartTooltipContent nameKey="category" formatter={DomainTooltipFormatter} />} />
+            <Bar dataKey="mean" name="Mean" radius={[0, 5, 5, 0]} layout="vertical">
               <ErrorBar stroke="var(--foreground)" dataKey="stdDev" width={4} strokeWidth={2} direction="y" />
             </Bar>
           </BarChart>
@@ -115,39 +107,31 @@ function HRDomainScoresChart({ data }: { data: SummaryBySubdistrict }) {
   return <DomainScoreBar title={title} description={description} chartData={chartData} chartConfig={chartConfig} />;
 }
 
-function OverallScoreCard({ data }: { data: SummaryBySubdistrict }) {
+function HROverallScoreStat({ data }: { data: SummaryBySubdistrict }) {
   const { mean, stdDev } = data.overallQoL;
   return (
-    <Card className="flex flex-col h-full w-full">
-      <CardHeader>
-        <CardTitle>Overall Quality of Life Score</CardTitle>
-        <CardDescription>
-          Average score across all four domains for the population
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="flex-1 flex flex-col justify-center items-center">
-        <div className="flex flex-col gap-4 items-center">
-          <div className="text-6xl font-mono font-bold text-foreground">
-            {mean}/20
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-muted-foreground text-base">Standard Deviation:</span>
-            <span className="font-mono font-medium text-lg text-foreground">±{stdDev}</span>
-          </div>
+    <StatCard
+      title="Overall Quality of Life Score"
+      subtitle="Average score across all four domains for the population"
+      value={mean.toFixed(2)}
+      suffix={" / 20"}
+      description={
+        <div className="flex items-center gap-2 text-center justify-center">
+          <span className="text-muted-foreground text-base">Standard Deviation:</span>
+          <span className="font-mono font-medium text-lg text-foreground">±{stdDev.toFixed(2)}</span>
         </div>
-      </CardContent>
-    </Card>
+      }
+      icon={Star}
+      centered
+    />
   );
 }
 
 export default function HealthRoundScores({ data }: { data: SummaryBySubdistrict }) {
-  return <div>
-    <div className="mb-8 h-92">
-      <OverallScoreCard data={data} />
-
-    </div>
-    <div className="mb-8">
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-8 xl:mb-20">
+      <HROverallScoreStat data={data} />
       <HRDomainScoresChart data={data} />
     </div>
-  </div>;
+  );
 }
