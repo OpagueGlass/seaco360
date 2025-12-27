@@ -85,27 +85,27 @@ function HREthnicityChart({ data }: { data: SummaryBySubdistrict }) {
   const chartConfig = {
     malay: {
       label: "Malay",
-      color: "var(--chart-4)",
+      color: "var(--chart-5)",
     },
     chinese: {
       label: "Chinese",
-      color: "var(--chart-4)",
+      color: "var(--chart-5)",
     },
     indian: {
       label: "Indian",
-      color: "var(--chart-4)",
+      color: "var(--chart-5)",
     },
     orangAsli: {
       label: "Orang Asli",
-      color: "var(--chart-4)",
+      color: "var(--chart-5)",
     },
     nonCitizen: {
       label: "Non Citizen",
-      color: "var(--chart-4)",
+      color: "var(--chart-5)",
     },
     other: {
       label: "Other",
-      color: "var(--chart-4)",
+      color: "var(--chart-5)",
     },
   } satisfies ChartConfig;
 
@@ -156,7 +156,7 @@ function HRGenderChart({ data }: { data: SummaryBySubdistrict }) {
 export default function HealthRoundDemographics({ data }: { data: SummaryBySubdistrict }) {
   return (
     <div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-[1.5fr_1fr] gap-8 mb-8">
         <HRParticipantsStat data={data} />
         <HRMedianAgeStat data={data} />
       </div>
