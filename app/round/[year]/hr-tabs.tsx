@@ -69,10 +69,10 @@ export default function HealthRoundCharts({
   subdistrict: (typeof subdistricts)[number]["key"];
 }) {
   return (
-    <Tabs defaultValue={healthRoundCategories[0].key} className="w-full">
-      <TabsList className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 h-auto">
+    <Tabs defaultValue={healthRoundCategories[0].key} orientation="horizontal" className="w-full">
+      <TabsList className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-5 h-auto">
         {healthRoundCategories.map((category) => (
-          <TabsTrigger key={category.key} value={category.key} className="flex flex-col lg:flex-row items-center gap-2">
+          <TabsTrigger key={category.key} value={category.key} className="flex flex-row items-center gap-2 p-2">
             <category.icon className="w-5 h-5" />
             <span>{category.label}</span>
           </TabsTrigger>
