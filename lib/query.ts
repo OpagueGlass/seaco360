@@ -4,7 +4,7 @@ import { SummaryData } from "./summarise";
 export const ERROR = -1;
 
 export async function getHealthRoundYears() {
-  const { data, error } = await supabase.from("health_rounds").select("year").order("year", { ascending: true });
+  const { data, error } = await supabase.from("health_rounds").select("year").order("year", { ascending: false });
 
   if (error) {
     console.error("Error fetching health round years:", error);

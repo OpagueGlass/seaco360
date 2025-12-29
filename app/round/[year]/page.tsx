@@ -98,7 +98,6 @@ export default function HealthRoundYearPage() {
           </ScrollArea>
         </div>
       </aside>
-
       <main className="flex-1 p-6 sm:p-8 lg:p-10 xl:ml-64">
         <div className="max-w-7xl mx-auto space-y-8">
           <div className="space-y-3">
