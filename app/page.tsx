@@ -152,15 +152,13 @@ export default function Home() {
               >
                 {stats.map((stat, i) => (
                   <div key={i} className="text-center sm:text-left space-y-1">
-                    <div className="text-2xl sm:text-3xl">
-                      <CountingNumber
-                        number={stat.value}
-                        suffix={stat.suffix}
-                        inView={true}
-                        transition={{ stiffness: 100, damping: 30 }}
-                        className="font-semibold"
-                      />
-                    </div>
+                    <CountingNumber
+                      number={stat.value}
+                      suffix={stat.suffix}
+                      inView={true}
+                      transition={{ stiffness: 100, damping: 30 }}
+                      className="font-semibold text-2xl sm:text-3xl"
+                    />
                     <div className="text-xs sm:text-sm text-muted-foreground">{stat.label}</div>
                   </div>
                 ))}
