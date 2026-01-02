@@ -113,7 +113,8 @@ export default function Home() {
   const [heroVisible, setHeroVisible] = useState(false);
 
   useEffect(() => {
-    setHeroVisible(true);
+    const timeout = setTimeout(() => setHeroVisible(true), 50);
+    return () => clearTimeout(timeout);
   }, []);
 
   return (

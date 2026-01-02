@@ -1,7 +1,7 @@
 import { StatCard } from "@/components/charts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { SummaryBySubdistrict } from "@/lib/summarise";
+import { SummaryBySubdistrict } from "@/summary/health-round/types";
 import { Star } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, ErrorBar, XAxis, YAxis } from "recharts";
 import { NameType, Payload, ValueType } from "recharts/types/component/DefaultTooltipContent";

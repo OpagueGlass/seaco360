@@ -1,6 +1,6 @@
 import { LabelledPieChart, ProportionalBarChart } from "@/components/charts";
 import { ChartConfig } from "@/components/ui/chart";
-import { SummaryBySubdistrict } from "@/lib/summarise";
+import { SummaryBySubdistrict } from "@/summary/health-round/types";
 
 const getRatio = (binaryData: { yes: number; no: number }) => {
   return binaryData.yes / (binaryData.yes + binaryData.no);

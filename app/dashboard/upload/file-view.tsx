@@ -99,10 +99,10 @@ export default function CSVFileView({
   const [isSaving, setIsSaving] = useState(false);
   const queryClient = useQueryClient();
 
-  const handleCancel = useCallback(() => {
+  const handleCancel = () => {
     setCurrentFile(null);
     setUploadStatus({ type: null, message: "" });
-  }, []);
+  };
 
   return (
     <Card>

@@ -1,6 +1,6 @@
 import { LabelledPieChart, ProportionalBarChart } from "@/components/charts";
 import { ChartConfig } from "@/components/ui/chart";
-import { SummaryBySubdistrict } from "@/lib/summarise";
+import { SummaryBySubdistrict } from "@/summary/health-round/types";
 
 function HRBMIChart({ data }: { data: SummaryBySubdistrict }) {
   const { underweight, normal, overweight, obese } = data.bmiCategory;

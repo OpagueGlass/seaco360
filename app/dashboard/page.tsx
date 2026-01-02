@@ -79,7 +79,7 @@ function DatasetModal({
     enabled: dataset !== null,
   });
 
-  const handleCopy = (data: Object) => {
+  const handleCopy = (data: object) => {
     navigator.clipboard.writeText(JSON.stringify(data, null, 2));
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);

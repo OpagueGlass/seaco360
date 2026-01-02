@@ -2,7 +2,7 @@ import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTi
 import { Spinner } from "@/components/ui/spinner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChartSpline, ClipboardList, HeartPulse, Stethoscope, Users } from "lucide-react";
-import { SummaryData } from "../../../lib/summarise";
+import { SummaryData } from "@/summary/health-round/types";
 import HealthRoundDemographics from "./hr-demo";
 import HealthRoundDiseases from "./hr-diseases";
 import HealthRoundEconomic from "./hr-econ";

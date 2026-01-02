@@ -1,7 +1,7 @@
 import { LabelledPieChart, ProportionalBarChart, StatCard } from "@/components/charts";
 import { ChartConfig } from "@/components/ui/chart";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { SummaryBySubdistrict } from "@/lib/summarise";
+import { SummaryBySubdistrict } from "@/summary/health-round/types";
 import { Hourglass, Users } from "lucide-react";
 
 function HRParticipantsStat({ data }: { data: SummaryBySubdistrict }) {

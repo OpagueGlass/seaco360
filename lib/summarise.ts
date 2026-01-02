@@ -5,8 +5,8 @@ export const NA = "";
 export const TRUE = "1";
 
 // Types
-export type MapKey<T> = T extends Map<infer K, any> ? K : never;
-export type ExtractMapValue<M> = M extends ReadonlyMap<any, infer V> ? V : never;
+export type MapKey<T> = T extends Map<infer K, unknown> ? K : never;
+export type MapValue<M> = M extends ReadonlyMap<unknown, infer V> ? V : never;
 
 /**
  * Transposes a 2D array. The CSV is tranposed to optimise column-wise operations and simplify the summarisation logic.
@@ -15,8 +15,8 @@ export type ExtractMapValue<M> = M extends ReadonlyMap<any, infer V> ? V : never
  * @returns The transposed 2D array.
  */
 export function transpose<T>(a: T[][]): T[][] {
-  var w = a.length;
-  var h = a[0].length;
+  const w = a.length;
+  const h = a[0].length;
 
   const t = Array(h);
 

@@ -234,7 +234,7 @@ export function MultipleProportionalBarChart({
       {Object.keys(percentageChartData[0])
         .filter((key) => key.includes("_proportion"))
         .map((key) => (
-          <Bar dataKey={key} name={`${key} Proportion`} radius={[0, 5, 5, 0]} fill={`var(--color-${key})`}>
+          <Bar key={key} dataKey={key} name={`${key} Proportion`} radius={[0, 5, 5, 0]} fill={`var(--color-${key})`}>
             {!hideLabel && (
               <LabelList
                 dataKey={key}
@@ -267,7 +267,7 @@ export function MultipleProportionalBarChart({
       {Object.keys(percentageChartData[0])
         .filter((key) => key.includes("_proportion"))
         .map((key) => (
-          <Bar dataKey={key} name={`${key} Proportion`} radius={[5, 5, 0, 0]} fill={`var(--color-${key})`}>
+          <Bar key={key} dataKey={key} name={`${key} Proportion`} radius={[5, 5, 0, 0]} fill={`var(--color-${key})`}>
             {!hideLabel && (
               <LabelList
                 dataKey={key}

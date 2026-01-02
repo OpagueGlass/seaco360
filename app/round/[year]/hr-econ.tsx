@@ -1,4 +1,4 @@
-import { SummaryBySubdistrict } from "@/lib/summarise";
+import { SummaryBySubdistrict } from "@/summary/health-round/types";
 import { LabelledPieChart, ProportionalBarChart, StatCard } from "@/components/charts";
 import { ChartConfig } from "@/components/ui/chart";
 import { DollarSign } from "lucide-react";

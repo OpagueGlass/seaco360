@@ -2,53 +2,16 @@ import {
   calcMeanAndStdDev,
   calcMedian,
   createIndexMap,
-  ExtractMapValue,
   getMapSize,
   getMeanAndStdDev,
-  MapKey,
+  MapValue,
   summariseCategorical,
   summariseNumerical,
   transpose,
-  TRUE,
+  TRUE
 } from "@/lib/summarise";
 import { catMappings, numMappings, optCatMappings, responseMapping, scoreMapping, subdistrictMapping } from "./map";
-
-// Type definition for Health Round CSV headers
-type ColMappingKeys = MapKey<typeof catMappings>;
-type OptMappingKeys = MapKey<typeof optCatMappings>;
-type CategoryKeys = MapKey<typeof numMappings>;
-type ScoreKeys = MapKey<typeof scoreMapping>;
-export type Headers =
-  | ColMappingKeys
-  | OptMappingKeys
-  | ScoreKeys
-  | CategoryKeys
-  | typeof subdistrictMapping.column
-  | typeof responseMapping.column;
-
-// Type definitions for summary results by subdistrict in Health Round CSVs
-type ColMappingValue = ExtractMapValue<typeof catMappings>;
-type OptMappingValue = ExtractMapValue<typeof optCatMappings>;
-type NumMappingValue = ExtractMapValue<typeof numMappings>;
-
-export type SummaryBySubdistrict = {
-  [K in ColMappingValue["name"]]: Record<ExtractMapValue<Extract<ColMappingValue, { name: K }>["mapping"]>, number>;
-} & {
-  [K in OptMappingValue["name"]]?: Record<ExtractMapValue<Extract<OptMappingValue, { name: K }>["mapping"]>, number>;
-} & {
-  [K in NumMappingValue["name"]]: Record<ExtractMapValue<Extract<NumMappingValue, { name: K }>["thresholds"]>, number>;
-} & {
-  [K in ExtractMapValue<typeof scoreMapping>]: ReturnType<typeof calcMeanAndStdDev>;
-} & {
-  statistics: {
-    participants: number;
-  } & {
-    [K in NumMappingValue["medianName"]]: number;
-  };
-};
-
-// Type definition for summary data with all subdistricts and overall summary in Health Round CSVs
-export type SummaryData = Record<ExtractMapValue<typeof subdistrictMapping.map> | "overall", SummaryBySubdistrict>;
+import { SummaryBySubdistrict, SummaryData, Headers } from "./types";
 
 /**
  * Summarises data for a specific subdistrict by calculating categorical counts, category counts, and score statistics.
@@ -63,7 +26,7 @@ function summariseBySubdistrict(indexMap: ReadonlyMap<Headers, number>, data: st
   const summary = {} as SummaryBySubdistrict;
   summary.statistics = {} as SummaryBySubdistrict["statistics"];
   summary.statistics.participants = data.length; // Total number of participants in the subdistrict
-  const medianNums = {} as Record<ExtractMapValue<typeof numMappings>["medianName"], number[]>;
+  const medianNums = {} as Record<MapValue<typeof numMappings>["medianName"], number[]>;
 
   // Summarise necessary categorical columns
   for (const [key, value] of catMappings) {
