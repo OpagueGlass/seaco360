@@ -6,7 +6,7 @@ import { useState } from "react";
 import CSVFileView from "./file-view";
 import ParseArea from "./csv-parse";
 import { Button } from "@/components/ui/button";
-import { SummaryData } from "@/lib/summarise";
+import { SummaryData } from "@/summary/health-round/types";
 import { DatasetType } from "../page";
 import { useRouter } from "next/navigation";
 
