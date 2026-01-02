@@ -35,3 +35,14 @@ export async function addHealthRoundData(year: number, data: SummaryData) {
 
   return year;
 }
+
+export async function deleteHealthRoundData(year: number) {
+  const { error } = await supabase.from("health_rounds").delete().eq("year", year);
+  
+  if (error) {
+    console.error(`Error deleting health round data for year ${year}:`, error);
+    return ERROR;
+  }
+
+  return year;
+}

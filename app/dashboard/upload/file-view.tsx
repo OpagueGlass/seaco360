@@ -7,8 +7,9 @@ import { Spinner } from "@/components/ui/spinner";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { addHealthRoundData, ERROR } from "@/lib/query";
 import { FileSpreadsheet, Info, Save, X } from "lucide-react";
-import { Dispatch, SetStateAction, useCallback, useState } from "react";
+import { Dispatch, SetStateAction, use, useCallback, useState } from "react";
 import { CSVFile, UploadStatus } from "./page";
+import { useQueryClient } from "@tanstack/react-query";
 
 function formatFileSize(bytes: number): string {
   if (bytes === 0) return "0 Bytes";
@@ -20,6 +21,7 @@ function formatFileSize(bytes: number): string {
 
 async function handleSave(
   currentFile: CSVFile | null,
+  queryClient: ReturnType<typeof useQueryClient>,
   setCurrentFile: Dispatch<SetStateAction<CSVFile | null>>,
   setUploadStatus: (status: UploadStatus) => void,
   setIsSaving: Dispatch<SetStateAction<boolean>>
@@ -27,7 +29,7 @@ async function handleSave(
   if (!currentFile) return;
   setIsSaving(true);
 
-  const result = await addHealthRoundData(2018, currentFile.summary);
+  const result = await addHealthRoundData(currentFile.year, currentFile.summary);
   setIsSaving(false);
 
   if (result === ERROR) {
@@ -37,6 +39,7 @@ async function handleSave(
     });
     return;
   }
+  queryClient.invalidateQueries({ queryKey: ["health-round-years"] });
   setUploadStatus({
     type: "success",
     message: `${currentFile.name} saved successfully`,
@@ -45,7 +48,6 @@ async function handleSave(
 }
 
 function CSVDataTable({ currentFile }: { currentFile: CSVFile }) {
-  const previewRows = 100; // Number of rows to preview
   return (
     <>
       <ScrollArea className="rounded-md border overflow-y-auto">
@@ -73,11 +75,11 @@ function CSVDataTable({ currentFile }: { currentFile: CSVFile }) {
         </div>
         <ScrollBar orientation="horizontal" className="sticky bottom-0" />
       </ScrollArea>
-      {currentFile.preview.length > previewRows && (
+      {currentFile.rows > currentFile.preview.length && (
         <Alert className="p-4 bg-muted/40 mt-2">
           <Info className="size-4 mr-2" />
           <AlertDescription>
-            Showing first {previewRows} of {currentFile.preview.length.toLocaleString()} rows.
+            Showing first {currentFile.preview.length} of {currentFile.rows.toLocaleString()} rows.
           </AlertDescription>
         </Alert>
       )}
@@ -95,6 +97,7 @@ export default function CSVFileView({
   setUploadStatus: (status: UploadStatus) => void;
 }) {
   const [isSaving, setIsSaving] = useState(false);
+  const queryClient = useQueryClient();
 
   const handleCancel = useCallback(() => {
     setCurrentFile(null);
@@ -129,7 +132,7 @@ export default function CSVFileView({
           Cancel
         </Button>
         <Button
-          onClick={() => handleSave(currentFile, setCurrentFile, setUploadStatus, setIsSaving)}
+          onClick={() => handleSave(currentFile, queryClient, setCurrentFile, setUploadStatus, setIsSaving)}
           disabled={isSaving}
           className="w-full sm:w-auto"
         >
