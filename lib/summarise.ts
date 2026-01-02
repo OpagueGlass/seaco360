@@ -1,5 +1,5 @@
 import quickselect from "quickselect";
-import { numMappings, catMappings, optCatMappings, responseMapping, scoreMapping, subdistrictMapping } from "./map";
+import { catMappings, numMappings, optCatMappings, responseMapping, scoreMapping, subdistrictMapping } from "./map";
 
 // Constants
 const NA = "";
@@ -77,7 +77,7 @@ function transpose<T>(a: T[][]): T[][] {
  * @param arr - The array of header names from the CSV.
  * @returns A readonly map where keys are header names and values are their corresponding indices in the CSV data.
  */
-export function createIndexMap(arr: Headers[]): ReadonlyMap<Headers, number> {
+function createIndexMap(arr: Headers[]): ReadonlyMap<Headers, number> {
   const keyValuePairs = arr.map((value, index) => [value, index] as const);
   return new Map<Headers, number>(keyValuePairs);
 }
@@ -89,7 +89,7 @@ export function createIndexMap(arr: Headers[]): ReadonlyMap<Headers, number> {
  * @param mapping - The categorical mapping.
  * @returns The size of the mapping.
  */
-const getMapSize = (mapping: ReadonlyMap<number, string>) => {
+function getMapSize(mapping: ReadonlyMap<number, string>) {
   const keys = Array.from(mapping.keys());
   return Math.max(...keys) + 1;
 };
@@ -102,7 +102,7 @@ const getMapSize = (mapping: ReadonlyMap<number, string>) => {
  * @param count - The number of values.
  * @returns An object containing the mean, standard deviation, summation, sum of squares, and count.
  */
-const getMeanAndStdDev = (summation: number, sumOfSquares: number, count: number) => {
+function getMeanAndStdDev(summation: number, sumOfSquares: number, count: number) {
   const exactMean = summation / count;
   const variance = sumOfSquares / count - exactMean * exactMean;
   const unbiasedVariance = (count / (count - 1)) * variance;
@@ -120,7 +120,7 @@ const getMeanAndStdDev = (summation: number, sumOfSquares: number, count: number
  * @param size - The size of the categorical mapping, which is the largest key + 1 to account for zero-based indexing.
  * @returns An array of counts for each category.
  */
-const countOccurrences = (data: string[], size: number) => {
+function countOccurrences(data: string[], size: number) {
   const counts = new Array(size).fill(0); // Initialise counts array with zeros
   for (let i = 0, l = data.length; i < l; i++) {
     const value = data[i];
@@ -132,18 +132,18 @@ const countOccurrences = (data: string[], size: number) => {
 /**
  * Calculates the mean and standard deviation for an array of numerical string values. In addition to mean and stdDev,
  * also outputs the summation, sum of squares, and count for efficient combination of overall statistics.
- * 
+ *
  * @param data - The array of numerical string values.
  * @returns An object containing the mean, standard deviation, summation, sum of squares, and count.
  */
-const calcMeanAndStdDev = (data: string[]) => {
+function calcMeanAndStdDev(data: string[]) {
   let summation = 0;
   let sumOfSquares = 0;
   let count = 0;
   for (let i = 0, l = data.length; i < l; i++) {
     const value = data[i];
     // Adds the sum, sum of squares, and count while ignoring NA values
-    if (value !== NA) { 
+    if (value !== NA) {
       const num = Number(value);
       summation += num;
       sumOfSquares += num * num;
@@ -156,16 +156,16 @@ const calcMeanAndStdDev = (data: string[]) => {
 
 /**
  * Calculates the median of an array of numbers using the Quickselect algorithm for efficiency.
- * 
+ *
  * @param nums - The array of numbers.
  * @returns The median of the array.
  */
-const calcMedian = (nums: number[]) => {
+function calcMedian(nums: number[]) {
   const n = nums.length;
   if (n === 0) return 0;
 
   // Finds the middle position and partitions the array in place into lower and upper halves
-  const mid = Math.floor(n / 2); 
+  const mid = Math.floor(n / 2);
   quickselect(nums, mid);
   if (n % 2 === 1) {
     // If odd length, return the middle element
@@ -179,7 +179,7 @@ const calcMedian = (nums: number[]) => {
 
 /**
  * Summarises categorical data by counting occurrences of each category based on the provided mapping.
- * 
+ *
  * @param data - The array of categorical string values.
  * @param mapping - The mapping from category keys to descriptive names.
  * @returns An object where keys are descriptive category names and values are their respective counts.
@@ -188,7 +188,7 @@ const calcMedian = (nums: number[]) => {
  * const mapping = new Map([[0, "Male"], [1, "Female"]]);
  * const result = summarise(data, mapping); // { Male: 2, Female: 3 }
  */
-const summariseCategorical = <K extends number, V extends string>(data: string[], mapping: ReadonlyMap<K, V>) => {
+function summariseCategorical<K extends number, V extends string>(data: string[], mapping: ReadonlyMap<K, V>) {
   const size = getMapSize(mapping);
   const counts = countOccurrences(data, size);
 
@@ -202,7 +202,7 @@ const summariseCategorical = <K extends number, V extends string>(data: string[]
 
 /**
  * Summarises numerical data into defined categories and collects numerical values for median calculation.
- * 
+ *
  * @param data - The array of numerical string values.
  * @param categories - The mapping from numerical thresholds to descriptive category names.
  * @returns An object containing the counts for each category and an array of numerical values.
@@ -213,13 +213,13 @@ const summariseCategorical = <K extends number, V extends string>(data: string[]
  * // result: { Low: 2, Medium: 2, High: 3 }
  * // nums: [1500, 2999, 3000, 4500, 6000, 7500, 5000]
  */
-const summariseNumerical = <K extends number, V extends string>(data: string[], categories: ReadonlyMap<K, V>) => {
+function summariseNumerical<K extends number, V extends string>(data: string[], categories: ReadonlyMap<K, V>) {
   const bracketLevels = Array.from(categories.keys()).sort((a, b) => a - b); // Sorted array of category thresholds
   const size = bracketLevels.length;
   const counts = new Array(size).fill(0); // Initialise counts array with zeros
 
   // Helper function to get the category index for a given numerical value
-  const getCategoryIndex = (num: number): number => {
+  function getCategoryIndex(num: number): number {
     for (let i = 0; i < size; i++) {
       if (num < bracketLevels[i]) return i - 1;
     }
@@ -245,16 +245,16 @@ const summariseNumerical = <K extends number, V extends string>(data: string[], 
     categoryIndex++;
   }
   return { result, nums };
-};
+}
 
 /**
  * Summarises data for a specific subdistrict by calculating categorical counts, category counts, and score statistics.
- * 
+ *
  * @param indexMap - A readonly map of header names to their respective indices in the CSV data.
  * @param data - The 2D array of Health Round CSV data rows for the subdistrict.
  * @returns An object containing the summary for the subdistrict and numerical values for median calculations.
  */
-export const summariseBySubdistrict = (indexMap: ReadonlyMap<Headers, number>, data: string[][]) => {
+function summariseBySubdistrict(indexMap: ReadonlyMap<Headers, number>, data: string[][]) {
   const transposed = transpose(data); // Transpose data for column-wise operations
 
   const summary = {} as SummaryBySubdistrict;
@@ -280,7 +280,7 @@ export const summariseBySubdistrict = (indexMap: ReadonlyMap<Headers, number>, d
   for (const [key, value] of numMappings) {
     const colIndex = indexMap.get(key)!;
     const { result, nums } = summariseNumerical(transposed[colIndex], value.thresholds);
-    summary[value.name] = result;  
+    summary[value.name] = result;
     summary.statistics[value.medianName] = calcMedian(nums); // Calculate and store median for the numerical column
     medianNums[value.medianName] = nums; // Store numerical values for overall median calculation
   }
@@ -294,16 +294,16 @@ export const summariseBySubdistrict = (indexMap: ReadonlyMap<Headers, number>, d
   }
 
   return { summary, medianNums };
-};
+}
 
 /**
- * Generates the overall summary from individual subdistrict summaries by combining categorical counts, median and score 
+ * Generates the overall summary from individual subdistrict summaries by combining categorical counts, median and score
  * statistics.
- * 
+ *
  * @param summaries - An array of subdistrict summaries to combine.
  * @returns The combined overall summary.
  */
-const combineSummaries = (summaries: ReturnType<typeof summariseBySubdistrict>[]): SummaryBySubdistrict => {
+function combineSummaries(summaries: ReturnType<typeof summariseBySubdistrict>[]) {
   if (summaries.length === 0) return {} as SummaryBySubdistrict;
   if (summaries.length === 1) return summaries[0].summary;
 
@@ -372,16 +372,16 @@ const combineSummaries = (summaries: ReturnType<typeof summariseBySubdistrict>[]
     combined.statistics[medianName] = calcMedian(nums); // Calculate and store overall median
   }
   return combined;
-};
+}
 
 /**
  * Summarises the Health Round CSV data by subdistrict and overall.
- * 
+ *
  * @param headers - The array of header names from the CSV.
  * @param data - The 2D array of Health Round CSV data rows.
  * @returns An object containing the summary data by subdistrict and overall.
  */
-export const summariseData = (headers: Headers[], data: string[][]) => {
+export function summariseData(headers: Headers[], data: string[][]) {
   const { map: sdMap, column: sdCol } = subdistrictMapping;
   const { column: resCol } = responseMapping;
 
@@ -408,8 +408,8 @@ export const summariseData = (headers: Headers[], data: string[][]) => {
     result[name] = res.summary;
     subdistrictSummaries.push(res);
   }
-  
+
   // Combine subdistrict summaries to get overall summary
   result.overall = combineSummaries(subdistrictSummaries);
   return result;
-};
+}
