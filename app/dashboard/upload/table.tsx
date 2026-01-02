@@ -6,10 +6,10 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Spinner } from "@/components/ui/spinner";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { addHealthRoundData, ERROR } from "@/lib/query";
-import { FileSpreadsheet, Info, Save, X } from "lucide-react";
-import { Dispatch, SetStateAction, use, useCallback, useState } from "react";
-import { CSVFile, UploadStatus } from "./page";
 import { useQueryClient } from "@tanstack/react-query";
+import { FileSpreadsheet, Info, Save, X } from "lucide-react";
+import { Dispatch, SetStateAction, useState } from "react";
+import { CSVFile, UploadStatus } from "./types";
 
 function formatFileSize(bytes: number): string {
   if (bytes === 0) return "0 Bytes";
@@ -87,7 +87,7 @@ function CSVDataTable({ currentFile }: { currentFile: CSVFile }) {
   );
 }
 
-export default function CSVFileView({
+export default function TableView({
   currentFile,
   setCurrentFile,
   setUploadStatus,

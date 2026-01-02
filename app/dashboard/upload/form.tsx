@@ -11,13 +11,7 @@ import { Headers } from "@/summary/health-round/types";
 import { Calendar, FileSpreadsheet, Upload } from "lucide-react";
 import { parse, ParseResult } from "papaparse";
 import { Dispatch, DragEvent, SetStateAction, useCallback, useRef, useState } from "react";
-import { datasetMap, DatasetType } from "../page";
-import { CSVFile, UploadStatus } from "./page";
-
-const csvTypes = Array.from(datasetMap.entries()).map(([value, { name }]) => ({
-  value: value.toString(),
-  label: name,
-}));
+import { CSVFile, csvTypes, DatasetType, UploadStatus } from "./types";
 
 function updateResult(
   file: File,
@@ -79,7 +73,7 @@ function updateResult(
   };
 }
 
-export default function ParseArea({
+export default function FormView({
   setCurrentFile,
   setUploadStatus,
 }: {
@@ -93,7 +87,7 @@ export default function ParseArea({
   const [year, setYear] = useState<number | undefined>(undefined);
   const [csvType, setCsvType] = useState<string | undefined>(undefined);
 
-  const handleFileUpload = (uploadedFiles: FileList | null) => {
+  const handleFileUpload = useCallback((uploadedFiles: FileList | null) => {
     if (!uploadedFiles || uploadedFiles.length === 0) return;
 
     const file = uploadedFiles[0]; // Only take the first file
@@ -140,7 +134,7 @@ export default function ParseArea({
       fastMode: true,
       complete: updateResult(file, finalYear, Number(finalCsvType), setCurrentFile, setUploadStatus, setIsLoading),
     });
-  };
+  }, [csvType, setCurrentFile, setUploadStatus, year]);
 
   const handleDragEnter = useCallback((e: DragEvent) => {
     e.preventDefault();

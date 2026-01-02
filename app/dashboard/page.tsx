@@ -7,44 +7,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { deleteHealthRoundData, getHealthRoundData, getHealthRoundYears } from "@/lib/query";
+import { deleteHealthRoundData, getHealthRoundYears } from "@/lib/query";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { BarChart3, Check, Copy, FileJson, Trash2, Upload } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-
-export enum DatasetType {
-  HealthRound = 1,
-  Census,
-}
-
-export const datasetMap = new Map([
-  [
-    DatasetType.HealthRound,
-    {
-      name: "Health Round",
-      variant: "default",
-      getQueryOptions: (year: number) => ({
-        queryKey: ["health-round", year],
-        queryFn: () => getHealthRoundData(year).then((data) => data || {}),
-        staleTime: Infinity,
-      }),
-    },
-  ],
-  [
-    DatasetType.Census,
-    {
-      name: "Census",
-      variant: "secondary",
-      getQueryOptions: (year: number) => ({
-        queryKey: ["census", year],
-        queryFn: () => Promise.resolve({}),
-        staleTime: Infinity,
-      }),
-    },
-  ],
-] as const);
+import { DatasetType, datasetMap } from "./types";
 
 type Dataset = {
   id: string;

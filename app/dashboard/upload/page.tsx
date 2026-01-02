@@ -1,31 +1,13 @@
 "use client";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, ArrowLeft, CheckCircle2, Download } from "lucide-react";
-import { useState } from "react";
-import CSVFileView from "./file-view";
-import ParseArea from "./csv-parse";
 import { Button } from "@/components/ui/button";
-import { SummaryData } from "@/summary/health-round/types";
-import { DatasetType } from "../page";
+import { AlertCircle, ArrowLeft, CheckCircle2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-
-export interface CSVFile {
-  name: string;
-  size: number;
-  rows: number;
-  columns: number;
-  headers: string[];
-  preview: string[][];
-  summary: SummaryData;
-  type: DatasetType;
-  year: number;
-}
-
-export interface UploadStatus {
-  type: "success" | "error" | null;
-  message: string;
-}
+import { useState } from "react";
+import FormView from "./form";
+import TableView from "./table";
+import { CSVFile, UploadStatus } from "./types";
 
 function downloadTemplate() {
   const csvContent =
@@ -89,9 +71,9 @@ export default function DashboardPage() {
       )}
 
       {!currentFile ? (
-        <ParseArea setCurrentFile={setCurrentFile} setUploadStatus={setUploadStatus} />
+        <FormView setCurrentFile={setCurrentFile} setUploadStatus={setUploadStatus} />
       ) : (
-        <CSVFileView currentFile={currentFile} setCurrentFile={setCurrentFile} setUploadStatus={setUploadStatus} />
+        <TableView currentFile={currentFile} setCurrentFile={setCurrentFile} setUploadStatus={setUploadStatus} />
       )}
     </div>
   );
