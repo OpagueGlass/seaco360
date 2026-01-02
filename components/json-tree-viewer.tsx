@@ -1,16 +1,16 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { ChevronRight, ChevronDown, Copy, Check, MoreHorizontal, ChevronUp } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import * as React from "react";
+import { ChevronRight, ChevronDown, Copy, Check, MoreHorizontal, ChevronUp } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 type JsonViewerProps = {
-  data: any
-  rootName?: string
-  defaultExpanded?: boolean
-  className?: string
-}
+  data: any;
+  rootName?: string;
+  defaultExpanded?: boolean;
+  className?: string;
+};
 
 export function JsonViewer({ data, rootName = "", defaultExpanded = true, className }: JsonViewerProps) {
   return (
@@ -19,42 +19,43 @@ export function JsonViewer({ data, rootName = "", defaultExpanded = true, classN
         <JsonNode name={rootName} data={data} isRoot={true} defaultExpanded={defaultExpanded} />
       </div>
     </TooltipProvider>
-  )
+  );
 }
 
 type JsonNodeProps = {
-  name: string
-  data: any
-  isRoot?: boolean
-  defaultExpanded?: boolean
-  level?: number
-}
+  name: string;
+  data: any;
+  isRoot?: boolean;
+  defaultExpanded?: boolean;
+  level?: number;
+};
 
 function JsonNode({ name, data, isRoot = false, defaultExpanded = false, level = 0 }: JsonNodeProps) {
-  const [isExpanded, setIsExpanded] = React.useState(defaultExpanded)
-  const [isCopied, setIsCopied] = React.useState(false)
+  const [isExpanded, setIsExpanded] = React.useState(defaultExpanded);
+  const [isCopied, setIsCopied] = React.useState(false);
 
   const handleToggle = () => {
-    setIsExpanded(!isExpanded)
-  }
+    setIsExpanded(!isExpanded);
+  };
 
   const copyToClipboard = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    navigator.clipboard.writeText(JSON.stringify(data, null, 2))
-    setIsCopied(true)
-    setTimeout(() => setIsCopied(false), 2000)
-  }
+    e.stopPropagation();
+    navigator.clipboard.writeText(JSON.stringify(data, null, 2));
+    setIsCopied(true);
+    setTimeout(() => setIsCopied(false), 2000);
+  };
 
-  const dataType = data === null ? "null" : Array.isArray(data) ? "array" : typeof data
-  const isExpandable = data !== null && data !== undefined && !(data instanceof Date) && (dataType === "object" || dataType === "array")
-  const itemCount = isExpandable && data !== null && data !== undefined ? Object.keys(data).length : 0
+  const dataType = data === null ? "null" : Array.isArray(data) ? "array" : typeof data;
+  const isExpandable =
+    data !== null && data !== undefined && !(data instanceof Date) && (dataType === "object" || dataType === "array");
+  const itemCount = isExpandable && data !== null && data !== undefined ? Object.keys(data).length : 0;
 
   return (
     <div className={cn("pl-4 group/object", level > 0 && "border-l border-border")}>
       <div
         className={cn(
           "flex items-center gap-1 py-1 hover:bg-muted/50 rounded px-1 -ml-4 cursor-pointer group/property",
-          isRoot && "text-primary font-semibold",
+          isRoot && "text-primary font-semibold"
         )}
         onClick={isExpandable ? handleToggle : undefined}
       >
@@ -108,38 +109,40 @@ function JsonNode({ name, data, isRoot = false, defaultExpanded = false, level =
       {isExpandable && isExpanded && data !== null && data !== undefined && (
         // Sort keys numerically if possible, otherwise alphabetically
         <div className="pl-4">
-          {Object.keys(data).sort((a,b) => parseInt(a) - parseInt(b) || a.localeCompare(b)).map((key) => ( 
-            <JsonNode
-              key={key}
-              name={dataType === "array" ? `${key}` : key}
-              data={data[key]}
-              level={level + 1}
-              defaultExpanded={level < 0} // Reduced by 1 to avoid performance issues
-            />
-          ))}
+          {Object.keys(data)
+            .sort((a, b) => parseInt(a) - parseInt(b) || a.localeCompare(b))
+            .map((key) => (
+              <JsonNode
+                key={key}
+                name={dataType === "array" ? `${key}` : key}
+                data={data[key]}
+                level={level + 1}
+                defaultExpanded={level < 0} // Reduced by 1 to avoid performance issues
+              />
+            ))}
           <div className="text-muted-foreground pl-4 py-1">{dataType === "array" ? "]" : "}"}</div>
         </div>
       )}
     </div>
-  )
+  );
 }
 
 // Update the JsonValue function to make the entire row clickable with an expand icon
 function JsonValue({ data }: { data: any }) {
-  const [isExpanded, setIsExpanded] = React.useState(false)
-  const dataType = typeof data
-  const TEXT_LIMIT = 80 // Character limit before truncation
+  const [isExpanded, setIsExpanded] = React.useState(false);
+  const dataType = typeof data;
+  const TEXT_LIMIT = 80; // Character limit before truncation
 
   if (data === null) {
-    return <span className="text-rose-500">null</span>
+    return <span className="text-rose-500">null</span>;
   }
 
   if (data === undefined) {
-    return <span className="text-muted-foreground">undefined</span>
+    return <span className="text-muted-foreground">undefined</span>;
   }
 
   if (data instanceof Date) {
-    return <span className="text-purple-500">{data.toISOString()}</span>
+    return <span className="text-purple-500">{data.toISOString()}</span>;
   }
 
   switch (dataType) {
@@ -149,8 +152,8 @@ function JsonValue({ data }: { data: any }) {
           <div
             className="text-emerald-500 flex-1 flex items-center relative group cursor-pointer"
             onClick={(e) => {
-              e.stopPropagation()
-              setIsExpanded(!isExpanded)
+              e.stopPropagation();
+              setIsExpanded(!isExpanded);
             }}
           >
             {`"`}
@@ -175,14 +178,14 @@ function JsonValue({ data }: { data: any }) {
               )}
             </div>
           </div>
-        )
+        );
       }
-      return <span className="text-emerald-500">{`"${data}"`}</span>
+      return <span className="text-emerald-500">{`"${data}"`}</span>;
     case "number":
-      return <span className="text-blue-500">{data}</span>
+      return <span className="text-blue-500">{data}</span>;
     case "boolean":
-      return <span className="text-amber-500">{data.toString()}</span>
+      return <span className="text-amber-500">{data.toString()}</span>;
     default:
-      return <span>{String(data)}</span>
+      return <span>{String(data)}</span>;
   }
 }
