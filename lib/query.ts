@@ -1,5 +1,5 @@
 import { supabase } from "./supabase";
-import { SummaryData } from "./summarise";
+import { SummaryData } from "@/summary/health-round/config";
 
 export const ERROR = -1;
 
