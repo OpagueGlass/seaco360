@@ -1,3 +1,8 @@
+/*
+ * Mappings derived from the dataset codebook, with keys as the codes and values as descriptive labels. Codebook
+ * mappings are marked with "as const" for immutability so that their maps can be used in type definitions.
+ */
+
 const response = [
   [1, "agreed"],
   [2, "unwilling"],
@@ -61,6 +66,15 @@ const binaryOption = [
   [1, "yes"],
 ] as const;
 
+/*
+ * Categorical mapping to group numerical values into descriptive ranges with thresholds.
+ * 
+ * Keys are the thresholds, which are the lower bounds of each range, and values are the descriptive labels. 
+ * The smallest key must be equal to the minimum possible value in the dataset to ensure all values are categorised.
+ *
+ * Input for maps marked with "as const" for type definitions.
+ */
+
 const incomeBrackets = new Map([
   [0, "RM0-499"],
   [500, "RM500-999"],
@@ -89,17 +103,32 @@ const ageCategories = new Map([
   [100, "100+"],
 ] as const);
 
+/**
+ * Contains the column name and mapping for response codes.
+ */
 export const responseMapping = {
   column: "status" as const,
   map: new Map(response),
 };
 
+/**
+ * Contains the column name and mapping for subdistrict codes.
+ */
 export const subdistrictMapping = {
   column: "mukim" as const,
   map: new Map(subdistrict),
 };
 
-export const colMappings = new Map([
+/**
+ * Map with the necessary categorical columns for Health Round CSVs. All Health Round CSVs must contain these columns.
+ *
+ * Keys are the expected column names in the CSV file, and values are an object containing the descriptive name and
+ * mapping for that column. The mapping is used to interpret the coded values in the dataset, while the name is used to
+ * reference the result in the aggregated output.
+ *
+ * Input for maps marked with "as const" for type definitions.
+ */
+export const catMappings = new Map([
   ["sex", { name: "sex", mapping: new Map(sex) }],
   ["mcio", { name: "ethnicity", mapping: new Map(ethnic) }],
   ["edu", { name: "educationLevel", mapping: new Map(education) }],
@@ -124,21 +153,49 @@ export const colMappings = new Map([
   ["dm_measured", { name: "diabetesMeasured", mapping: new Map(binaryOption) }],
 ] as const);
 
-export const optMappings = new Map([
-  ["dialysis", { name: "underDialysis", mapping: new Map(binaryOption) }],
-  ["inadequate_fruits", { name: "inadequateFruit", mapping: new Map(binaryOption) }],
-  ["inadequate_veg", { name: "inadequateVegetable", mapping: new Map(binaryOption) }],
+/**
+ * Map with the necessary numerical columns for Health Round CSVs. All Health Round CSVs must contain these columns.
+ *
+ * Keys are the expected column names in the CSV file, and values are an object containing the descriptive name,
+ * categories, and median name for that column. The categories mapping is used to group numerical values into ranges,
+ * while the name is used to reference the result in the aggregated output. The medianName is used to reference the
+ * median value for the numeric column.
+ *
+ * Input for maps marked with "as const" for type definitions.
+ */
+export const numMappings = new Map([
+  ["income", { name: "income", thresholds: incomeBrackets, medianName: "medianIncome" }],
+  ["age", { name: "age", thresholds: ageCategories, medianName: "medianAge" }],
 ] as const);
 
-export const colCategories = new Map([
-  ["income", { name: "income", categories: incomeBrackets, medianName: "medianIncome" }],
-  ["age", { name: "age", categories: ageCategories, medianName: "medianAge" }],
-] as const);
-
-export const scores = new Map([
+/**
+ * Map with the domain and overall score columns for Health Round CSVs. All Health Round CSVs must contain these columns.
+ *
+ * Keys are the expected column names in the CSV file, and values are the corresponding descriptive names used to
+ * reference the scores in the aggregated output. A mapping is not necessary since the mean and standard deviation can
+ * be calculated directly from the numerical values.
+ *
+ * Input for maps marked with "as const" for type definitions.
+ */
+export const scoreMapping = new Map([
   ["dom1", "physicalHealth"],
   ["dom2", "psychologicalHealth"],
   ["dom3", "socialRelationships"],
   ["dom4", "environment"],
   ["overall", "overallQoL"],
+] as const);
+
+/**
+ * Map with the optional columns for Health Round CSVs. Some Health Round CSVs may not contain these columns.
+ *
+ * Keys are the expected column names in the CSV file, and values are an object containing the descriptive name and
+ * mapping for that column. The mapping is used to interpret the coded values in the dataset, while the name is used to
+ * reference the result in the aggregated output.
+ *
+ * Input for maps marked with "as const" for type definitions.
+ */
+export const optCatMappings = new Map([
+  ["dialysis", { name: "underDialysis", mapping: new Map(binaryOption) }],
+  ["inadequate_fruits", { name: "inadequateFruit", mapping: new Map(binaryOption) }],
+  ["inadequate_veg", { name: "inadequateVegetable", mapping: new Map(binaryOption) }],
 ] as const);
