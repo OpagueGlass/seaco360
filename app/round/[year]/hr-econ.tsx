@@ -1,10 +1,10 @@
-import { SummaryBySubdistrict } from "@/summary/health-round/types";
+import { HealthRoundBySubdistrict } from "@/summary/health-round";
 import { LabelledPieChart, ProportionalBarChart, StatCard } from "@/components/charts";
 import { ChartConfig } from "@/components/ui/chart";
 import { DollarSign } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
-function HREmploymentStatusChart({ data }: { data: SummaryBySubdistrict }) {
+function HREmploymentStatusChart({ data }: { data: HealthRoundBySubdistrict }) {
   const { student, homemaker, notWorking, working, pensioner, selfEmployed } = data.employmentStatus;
   const title = "Employment Status";
   const description = "Population breakdown by employment status";
@@ -62,7 +62,7 @@ function HREmploymentStatusChart({ data }: { data: SummaryBySubdistrict }) {
   );
 }
 
-function HRMedianIncomeStat({ data }: { data: SummaryBySubdistrict }) {
+function HRMedianIncomeStat({ data }: { data: HealthRoundBySubdistrict }) {
   const { medianIncome } = data.statistics;
   const title = "Median Monthly Household Income";
   const description = "Median monthly household income of the population";
@@ -71,7 +71,7 @@ function HRMedianIncomeStat({ data }: { data: SummaryBySubdistrict }) {
   );
 }
 
-function HRIncomeChart({ data }: { data: SummaryBySubdistrict }) {
+function HRIncomeChart({ data }: { data: HealthRoundBySubdistrict }) {
   const income = data.income;
 
   const title = "Monthly Household Income";
@@ -125,7 +125,7 @@ function HRIncomeChart({ data }: { data: SummaryBySubdistrict }) {
   );
 }
 
-function HREducationLevelChart({ data }: { data: SummaryBySubdistrict }) {
+function HREducationLevelChart({ data }: { data: HealthRoundBySubdistrict }) {
   const { primary, secondary, tertiary, noFormalEducation, other } = data.educationLevel;
 
   const title = "Education Level";
@@ -172,7 +172,7 @@ function HREducationLevelChart({ data }: { data: SummaryBySubdistrict }) {
   );
 }
 
-export default function HealthRoundEconomic({ data }: { data: SummaryBySubdistrict }) {
+export default function HealthRoundEconomic({ data }: { data: HealthRoundBySubdistrict }) {
   return (
     <div>
       <div className="mb-8">

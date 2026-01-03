@@ -1,8 +1,8 @@
 import { LabelledPieChart, ProportionalBarChart } from "@/components/charts";
 import { ChartConfig } from "@/components/ui/chart";
-import { SummaryBySubdistrict } from "@/summary/health-round/types";
+import { HealthRoundBySubdistrict } from "@/summary/health-round";
 
-function HRBMIChart({ data }: { data: SummaryBySubdistrict }) {
+function HRBMIChart({ data }: { data: HealthRoundBySubdistrict }) {
   const { underweight, normal, overweight, obese } = data.bmiCategory;
 
   const title = "BMI Categories";
@@ -42,7 +42,7 @@ function HRBMIChart({ data }: { data: SummaryBySubdistrict }) {
   );
 }
 
-function HRCentralObesityChart({ data }: { data: SummaryBySubdistrict }) {
+function HRCentralObesityChart({ data }: { data: HealthRoundBySubdistrict }) {
   const { no, yes } = data.centralObesity;
   const title = "Central Obesity Prevalence";
   const description = "Proportion of population with central obesity";
@@ -72,7 +72,7 @@ function HRCentralObesityChart({ data }: { data: SummaryBySubdistrict }) {
   );
 }
 
-function HRSmokedBeforeChart({ data }: { data: SummaryBySubdistrict }) {
+function HRSmokedBeforeChart({ data }: { data: HealthRoundBySubdistrict }) {
   const { no, yes } = data.hadDengueBefore;
   const title = "Smoked Before";
   const description = "Proportion of population who have smoked before";
@@ -103,7 +103,7 @@ function HRSmokedBeforeChart({ data }: { data: SummaryBySubdistrict }) {
   );
 }
 
-function HRSmokesNowChart({ data }: { data: SummaryBySubdistrict }) {
+function HRSmokesNowChart({ data }: { data: HealthRoundBySubdistrict }) {
   const { no, yes } = data.isCurrentlySmoking;
   const title = "Smokes Now";
   const description = "Proportion of population who currently smoke";
@@ -133,7 +133,7 @@ function HRSmokesNowChart({ data }: { data: SummaryBySubdistrict }) {
   );
 }
 
-function HRInadequateFruitVegChart({ data }: { data: SummaryBySubdistrict }) {
+function HRInadequateFruitVegChart({ data }: { data: HealthRoundBySubdistrict }) {
   const { no: noFruit, yes: yesFruit } = data.inadequateFruit!;
   const { no: noVeg, yes: yesVeg } = data.inadequateVegetable!;
   const title = "Inadequate Fruit & Vegetable Intake";
@@ -168,7 +168,7 @@ function HRInadequateFruitVegChart({ data }: { data: SummaryBySubdistrict }) {
   );
 }
 
-export default function HealthRoundHealth({ data }: { data: SummaryBySubdistrict }) {
+export default function HealthRoundHealth({ data }: { data: HealthRoundBySubdistrict }) {
   return (
     <div>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-8">

@@ -6,8 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
 import { YearPicker } from "@/components/ui/year-picker";
-import { summariseData } from "@/summary/health-round/config";
-import { Headers } from "@/summary/health-round/types";
+import { summariseHealthRound } from "@/summary/health-round";
 import { Calendar, FileSpreadsheet, Upload } from "lucide-react";
 import { parse, ParseResult } from "papaparse";
 import { Dispatch, DragEvent, SetStateAction, useCallback, useRef, useState } from "react";
@@ -32,10 +31,10 @@ function updateResult(
       return;
     } else {
       try {
-        const headers = results.data[0] as Headers[];
+        const headers = results.data[0] as string[];
         const data = results.data.slice(1) as string[][];
         const preview = data.slice(0, previewRows);
-        const summary = summariseData(headers, data);
+        const summary = summariseHealthRound(headers, data);
 
         const newFile: CSVFile = {
           name: file.name,

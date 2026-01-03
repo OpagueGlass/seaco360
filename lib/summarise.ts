@@ -7,6 +7,56 @@ export const TRUE = "1";
 // Types
 export type MapKey<T> = T extends Map<infer K, unknown> ? K : never;
 export type MapValue<M> = M extends ReadonlyMap<unknown, infer V> ? V : never;
+export type RecValue<T> = T[keyof T]
+
+// Type definition for Health Round CSV headers
+// type ColMappingKeys<T> = MapKey<T>;
+// type OptMappingKeys<T> = MapKey<T>;
+// type NumKeys<T> = MapKey<T>;
+// type ScoreKeys<T> = MapKey<T>;
+// export type Headers<CatMappings, OptCatMappings, NumMapping, ScoreMapping> =
+//   | ColMappingKeys<CatMappings>
+//   | OptMappingKeys<OptCatMappings>
+//   | ScoreKeys<ScoreMapping>
+//   | NumKeys<NumMapping>
+//   | typeof subdistrictMapping.column
+//   | typeof responseMapping.column;
+
+// Type definitions for summary results by subdistrict in Health Round CSVs
+
+export type Summary<
+  CatKey extends string,
+  CatValue extends { name: string; mapping: ReadonlyMap<number, string> },
+  OptKey extends string,
+  OptValue extends { name: string; mapping: ReadonlyMap<number, string> },
+  NumKey extends string,
+  NumValue extends { name: string; medianName: string; thresholds: ReadonlyMap<number, string> },
+  ScoreKey extends string,
+  ScoreValue extends string
+> = {
+  [K in MapValue<ReadonlyMap<CatKey, CatValue>>["name"]]: Record<
+    MapValue<Extract<MapValue<ReadonlyMap<CatKey, CatValue>>, { name: K }>["mapping"]>,
+    number
+  >;
+} & {
+  [K in MapValue<ReadonlyMap<OptKey, OptValue>>["name"]]?: Record<
+    MapValue<Extract<MapValue<ReadonlyMap<OptKey, OptValue>>, { name: K }>["mapping"]>,
+    number
+  >;
+} & {
+  [K in MapValue<ReadonlyMap<NumKey, NumValue>>["name"]]: Record<
+    MapValue<Extract<MapValue<ReadonlyMap<NumKey, NumValue>>, { name: K }>["thresholds"]>,
+    number
+  >;
+} & {
+  [K in MapValue<ReadonlyMap<ScoreKey, ScoreValue>>]: ReturnType<typeof calcMeanAndStdDev>;
+} & {
+  statistics: {
+    participants: number;
+  } & {
+    [K in MapValue<ReadonlyMap<NumKey, NumValue>>["medianName"]]: number;
+  };
+};
 
 /**
  * Transposes a 2D array. The CSV is tranposed to optimise column-wise operations and simplify the summarisation logic.
@@ -202,5 +252,239 @@ export function summariseNumerical<K extends number, V extends string>(
     result[label] = counts[categoryIndex];
     categoryIndex++;
   }
+  return result;
+}
+
+/**
+ * Summarises data for a specific subdistrict by calculating categorical counts, category counts, and score statistics.
+ *
+ * @param indexMap - A readonly map of header names to their respective indices in the CSV data.
+ * @param data - The 2D array of Health Round CSV data rows for the subdistrict.
+ * @returns An object containing the summary for the subdistrict and numerical values for median calculations.
+ */
+export function summarise<
+  CatKey extends string,
+  CatValue extends { name: string; mapping: ReadonlyMap<number, string> },
+  OptKey extends string,
+  OptValue extends { name: string; mapping: ReadonlyMap<number, string> },
+  NumKey extends string,
+  NumValue extends { name: string; medianName: string; thresholds: ReadonlyMap<number, string> },
+  ScoreKey extends string,
+  ScoreValue extends string
+>(
+  catMappings: ReadonlyMap<CatKey, CatValue>,
+  optCatMappings: ReadonlyMap<OptKey, OptValue>,
+  numMappings: ReadonlyMap<NumKey, NumValue>,
+  scoreMapping: ReadonlyMap<ScoreKey, ScoreValue>,
+  indexMap: ReadonlyMap<string, number>,
+  data: string[][]
+) {
+  type SummaryType = Summary<CatKey, CatValue, OptKey, OptValue, NumKey, NumValue, ScoreKey, ScoreValue>;
+
+  const transposed = transpose(data); // Transpose data for column-wise operations
+
+  const result = {} as Record<string, Record<string, number>>;
+  result.statistics = {} as SummaryType["statistics"];
+  result.statistics.participants = data.length; // Total number of participants in the subdistrict
+  const midNums = {} as Record<string, number[]>;
+
+  // Summarise necessary categorical columns
+  for (const [key, value] of catMappings) {
+    const colIndex = indexMap.get(key)!;
+    result[value.name] = summariseCategorical(transposed[colIndex], value.mapping);
+  }
+
+  // Summarise optional categorical columns if they exist in the CSV
+  for (const [key, value] of optCatMappings) {
+    const colIndex = indexMap.get(key);
+    if (colIndex !== undefined) {
+      result[value.name] = summariseCategorical(transposed[colIndex], value.mapping);
+    }
+  }
+
+  // Summarise necessary numerical columns
+  for (const [key, value] of numMappings) {
+    const colIndex = indexMap.get(key)!;
+    const nums = [] as number[];
+    result[value.name] = summariseNumerical(transposed[colIndex], value.thresholds, nums);
+    result.statistics[value.medianName] = calcMedian(nums); // Calculate and store median for the numerical column
+    midNums[value.medianName] = nums; // Store numerical values for overall median calculation
+  }
+
+  // Summarise scores
+  for (const [key, scoreName] of scoreMapping) {
+    const colIndex = indexMap.get(key)!;
+    const scoreData = transposed[colIndex];
+    const scoreMeanStdDev = calcMeanAndStdDev(scoreData);
+    result[scoreName] = scoreMeanStdDev;
+  }
+
+  return {
+    summary: result as SummaryType,
+    medianNums: midNums as Record<MapValue<typeof numMappings>["medianName"], number[]>,
+  };
+}
+
+/**
+ * Generates the overall summary from individual subdistrict summaries by combining categorical counts, median and score
+ * statistics. Instead of recalculating from raw data, it efficiently merges already computed summaries.
+ *
+ * @param summaries - An array of subdistrict summaries to combine.
+ * @returns The combined overall summary.
+ */
+function combineSummaries<
+  CatKey extends string,
+  CatValue extends { name: string; mapping: ReadonlyMap<number, string> },
+  OptKey extends string,
+  OptValue extends { name: string; mapping: ReadonlyMap<number, string> },
+  NumKey extends string,
+  NumValue extends { name: string; medianName: string; thresholds: ReadonlyMap<number, string> },
+  ScoreKey extends string,
+  ScoreValue extends string
+>(
+  catMappings: ReadonlyMap<CatKey, CatValue>,
+  optCatMappings: ReadonlyMap<OptKey, OptValue>,
+  numMappings: ReadonlyMap<NumKey, NumValue>,
+  scoreMapping: ReadonlyMap<ScoreKey, ScoreValue>,
+  summaries: ReturnType<typeof summarise>[]
+) {
+  type SummaryType = Summary<CatKey, CatValue, OptKey, OptValue, NumKey, NumValue, ScoreKey, ScoreValue>;
+  if (summaries.length === 0) return {} as SummaryType;
+  if (summaries.length === 1) return summaries[0].summary;
+
+  // Deep copy the first summary to avoid mutating original data
+  const combined = JSON.parse(JSON.stringify(summaries[0].summary)) as Record<string, Record<string, number>>;
+
+  for (let i = 1; i < summaries.length; i++) {
+    const summary = summaries[i].summary;
+    combined.statistics.participants += summary.statistics.participants;
+
+    // Combine categorical counts
+    for (const [, value] of catMappings) {
+      const categoryName = value.name;
+      const category = combined[categoryName] as Record<string, number>;
+      for (const [key, value] of Object.entries(summary[categoryName])) {
+        const k = key as keyof (typeof combined)[typeof categoryName];
+        category[k] += value;
+      }
+    }
+
+    // Combine optional categorical counts
+    for (const [, value] of optCatMappings) {
+      const categoryName = value.name;
+      const category = combined[categoryName] as Record<string, number> | undefined;
+      if (category) {
+        for (const [key, value] of Object.entries(summary[categoryName]!)) {
+          const k = key as keyof (typeof combined)[typeof categoryName];
+          category[k] += value;
+        }
+      }
+    }
+
+    // Combine category counts
+    for (const [, value] of numMappings) {
+      const categoryName = value.name;
+      const category = combined[categoryName] as Record<string, number>;
+      for (const [key, value] of Object.entries(summary[categoryName])) {
+        const k = key as keyof (typeof combined)[typeof categoryName];
+        category[k] += value;
+      }
+    }
+
+    // Combine scores
+    for (const [, scoreName] of scoreMapping) {
+      const prevStats = combined[scoreName];
+      const currStats = summary[scoreName];
+      prevStats.summation += currStats.summation;
+      prevStats.sumOfSquares += currStats.sumOfSquares;
+      prevStats.count += currStats.count;
+    }
+  }
+
+  // Finalise mean and stdDev calculations
+  for (const [, scoreName] of scoreMapping) {
+    const stats = combined[scoreName];
+    combined[scoreName] = getMeanAndStdDev(stats.summation, stats.sumOfSquares, stats.count);
+  }
+
+  // Find medians of numerical columns
+  for (const [, value] of numMappings) {
+    const medianName = value.medianName;
+    const nums: number[] = [];
+    for (const summary of summaries) {
+      nums.push(...summary.medianNums[medianName]); // Collect all numerical values from subdistricts
+    }
+    combined.statistics[medianName] = calcMedian(nums); // Calculate and store overall median
+  }
+  return combined as SummaryType;
+}
+
+/**
+ * Summarises the Health Round CSV data by subdistrict and overall.
+ *
+ * @param headers - The array of header names from the CSV.
+ * @param data - The 2D array of Health Round CSV data rows.
+ * @returns An object containing the summary data by subdistrict and overall.
+ */
+export function summariseBy<
+  Sub extends { map: ReadonlyMap<number, string>; column: string },
+  Res extends { column: string },
+  CatKey extends string,
+  CatValue extends { name: string; mapping: ReadonlyMap<number, string> },
+  OptKey extends string,
+  OptValue extends { name: string; mapping: ReadonlyMap<number, string> },
+  NumKey extends string,
+  NumValue extends { name: string; medianName: string; thresholds: ReadonlyMap<number, string> },
+  ScoreKey extends string,
+  ScoreValue extends string
+>(
+  subdistrictMapping: Sub,
+  responseMapping: Res,
+  catMappings: ReadonlyMap<CatKey, CatValue>,
+  optCatMappings: ReadonlyMap<OptKey, OptValue>,
+  numMappings: ReadonlyMap<NumKey, NumValue>,
+  scoreMapping: ReadonlyMap<ScoreKey, ScoreValue>,
+  headers: string[],
+  data: string[][]
+) {
+  const { map: sdMap, column: sdCol } = subdistrictMapping;
+  const { column: resCol } = responseMapping;
+
+  // Create index map for header lookups
+  const indexMap = createIndexMap(headers);
+  const sdIndex = indexMap.get(sdCol)!;
+  const resIndex = indexMap.get(resCol)!;
+
+  const size = getMapSize(sdMap);
+  const sdData = Array.from({ length: size }, () => <string[][]>[]);
+
+  // Filter by agreed responses and group data by subdistrict
+  for (let i = 0, l = data.length; i < l; i++) {
+    const row = data[i];
+    if (row[resIndex] === TRUE) sdData[Number(row[sdIndex])].push(row);
+  }
+
+  type SummariseType = ReturnType<
+    typeof summarise<CatKey, CatValue, OptKey, OptValue, NumKey, NumValue, ScoreKey, ScoreValue>
+  >;
+
+  const result = {} as Record<MapValue<Sub["map"]> | "overall", SummariseType["summary"]>;
+  const subdistrictSummaries: SummariseType[] = [];
+
+  // Summarise each subdistrict and store results
+  for (const [id, name] of sdMap) {
+    const res = summarise(catMappings, optCatMappings, numMappings, scoreMapping, indexMap, sdData[id]);
+    const mapName = name as MapValue<Sub["map"]>;
+    result[mapName] = res.summary;
+    subdistrictSummaries.push(res);
+  }
+  // Combine subdistrict summaries to get overall summary
+  result.overall = combineSummaries(
+    catMappings,
+    optCatMappings,
+    numMappings,
+    scoreMapping,
+    subdistrictSummaries
+  ) as SummariseType["summary"];
   return result;
 }

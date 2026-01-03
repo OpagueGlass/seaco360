@@ -1,3 +1,5 @@
+import { RecValue, summariseBy } from "@/lib/summarise";
+
 /*
  * Mappings derived from the dataset codebook, with keys as the codes and values as descriptive labels. Codebook
  * mappings are marked with "as const" for immutability so that their maps can be used in type definitions.
@@ -68,8 +70,8 @@ const binaryOption = [
 
 /*
  * Categorical mapping to group numerical values into descriptive ranges with thresholds.
- * 
- * Keys are the thresholds, which are the lower bounds of each range, and values are the descriptive labels. 
+ *
+ * Keys are the thresholds, which are the lower bounds of each range, and values are the descriptive labels.
  * The smallest key must be equal to the minimum possible value in the dataset to ensure all values are categorised.
  *
  * Input for maps marked with "as const" for type definitions.
@@ -199,3 +201,19 @@ export const optCatMappings = new Map([
   ["inadequate_fruits", { name: "inadequateFruit", mapping: new Map(binaryOption) }],
   ["inadequate_veg", { name: "inadequateVegetable", mapping: new Map(binaryOption) }],
 ] as const);
+
+export function summariseHealthRound(headers: string[], data: string[][]) {
+  return summariseBy(
+    subdistrictMapping,
+    responseMapping,
+    catMappings,
+    optCatMappings,
+    numMappings,
+    scoreMapping,
+    headers,
+    data
+  );
+}
+
+export type HealthRound = ReturnType<typeof summariseHealthRound>
+export type HealthRoundBySubdistrict = RecValue<HealthRound>

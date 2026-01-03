@@ -1,7 +1,7 @@
 import { StatCard } from "@/components/charts";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { SummaryBySubdistrict } from "@/summary/health-round/types";
+import { HealthRoundBySubdistrict } from "@/summary/health-round" ;
 import { Star } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, ErrorBar, XAxis, YAxis } from "recharts";
 import { NameType, Payload, ValueType } from "recharts/types/component/DefaultTooltipContent";
@@ -72,7 +72,7 @@ function DomainScoreBar({
   );
 }
 
-function HRDomainScoresChart({ data }: { data: SummaryBySubdistrict }) {
+function HRDomainScoresChart({ data }: { data: HealthRoundBySubdistrict }) {
   const { physicalHealth, psychologicalHealth, socialRelationships, environment } = data;
 
   const title = "Quality of Life Scores by Domain";
@@ -107,7 +107,7 @@ function HRDomainScoresChart({ data }: { data: SummaryBySubdistrict }) {
   return <DomainScoreBar title={title} description={description} chartData={chartData} chartConfig={chartConfig} />;
 }
 
-function HROverallScoreStat({ data }: { data: SummaryBySubdistrict }) {
+function HROverallScoreStat({ data }: { data: HealthRoundBySubdistrict }) {
   const { mean, stdDev } = data.overallQoL;
   return (
     <StatCard
@@ -127,7 +127,7 @@ function HROverallScoreStat({ data }: { data: SummaryBySubdistrict }) {
   );
 }
 
-export default function HealthRoundScores({ data }: { data: SummaryBySubdistrict }) {
+export default function HealthRoundScores({ data }: { data: HealthRoundBySubdistrict }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-8 xl:mb-20">
       <HROverallScoreStat data={data} />

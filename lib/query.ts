@@ -1,5 +1,5 @@
 import { supabase } from "./supabase";
-import { SummaryData } from "@/summary/health-round/types";
+import { HealthRound } from "@/summary/health-round";
 
 export const ERROR = -1;
 
@@ -14,7 +14,7 @@ export async function getHealthRoundYears() {
   return data.map((row) => row.year);
 }
 
-export async function getHealthRoundData(year: number): Promise<SummaryData | null> {
+export async function getHealthRoundData(year: number): Promise<HealthRound | null> {
   const { data, error } = await supabase.from("health_rounds").select("data").eq("year", year).single();
 
   if (error) {
@@ -22,10 +22,10 @@ export async function getHealthRoundData(year: number): Promise<SummaryData | nu
     return null;
   }
 
-  return data?.data as SummaryData;
+  return data?.data as HealthRound
 }
 
-export async function addHealthRoundData(year: number, data: SummaryData) {
+export async function addHealthRoundData(year: number, data: HealthRound) {
   const { error } = await supabase.from("health_rounds").insert({ year, data });
 
   if (error) {

@@ -1,10 +1,10 @@
 import { LabelledPieChart, ProportionalBarChart, StatCard } from "@/components/charts";
 import { ChartConfig } from "@/components/ui/chart";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { SummaryBySubdistrict } from "@/summary/health-round/types";
+import { HealthRoundBySubdistrict } from "@/summary/health-round";
 import { Hourglass, Users } from "lucide-react";
 
-function HRParticipantsStat({ data }: { data: SummaryBySubdistrict }) {
+function HRParticipantsStat({ data }: { data: HealthRoundBySubdistrict }) {
   const { participants } = data.statistics;
   const title = "Total Participants";
   const description = "Participated in this health round";
@@ -19,7 +19,7 @@ function HRParticipantsStat({ data }: { data: SummaryBySubdistrict }) {
   );
 }
 
-function HRMedianAgeStat({ data }: { data: SummaryBySubdistrict }) {
+function HRMedianAgeStat({ data }: { data: HealthRoundBySubdistrict }) {
   const { medianAge } = data.statistics;
   const title = "Median Age";
   const description = "Median age of participants";
@@ -33,7 +33,7 @@ function HRMedianAgeStat({ data }: { data: SummaryBySubdistrict }) {
   );
 }
 
-function HRAgeChart({ data }: { data: SummaryBySubdistrict }) {
+function HRAgeChart({ data }: { data: HealthRoundBySubdistrict }) {
   const {"0-4": _, ...ageGroups} = data.age;
 
   const title = "Age Distribution";
@@ -67,7 +67,7 @@ function HRAgeChart({ data }: { data: SummaryBySubdistrict }) {
   );
 }
 
-function HREthnicityChart({ data }: { data: SummaryBySubdistrict }) {
+function HREthnicityChart({ data }: { data: HealthRoundBySubdistrict }) {
   const { malay, chinese, indian, orangAsli, nonCitizen, other } = data.ethnicity;
 
   const title = "Ethnic Composition";
@@ -121,7 +121,7 @@ function HREthnicityChart({ data }: { data: SummaryBySubdistrict }) {
   );
 }
 
-function HRGenderChart({ data }: { data: SummaryBySubdistrict }) {
+function HRGenderChart({ data }: { data: HealthRoundBySubdistrict }) {
   const { male, female } = data.sex;
   const title = "Gender Distribution";
   const description = "Population breakdown by gender";
@@ -153,7 +153,7 @@ function HRGenderChart({ data }: { data: SummaryBySubdistrict }) {
   );
 }
 
-export default function HealthRoundDemographics({ data }: { data: SummaryBySubdistrict }) {
+export default function HealthRoundDemographics({ data }: { data: HealthRoundBySubdistrict }) {
   return (
     <div>
       <div className="grid grid-cols-1 sm:grid-cols-[1.5fr_1fr] gap-8 mb-8">
