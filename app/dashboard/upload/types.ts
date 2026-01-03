@@ -1,4 +1,4 @@
-import { SummaryData } from "@/summary/health-round/types";
+import { HealthRound } from "@/summary/health-round";
 import { datasetMap, DatasetType } from "../types";
 
 export { DatasetType };
@@ -10,7 +10,7 @@ export interface CSVFile {
   columns: number;
   headers: string[];
   preview: string[][];
-  summary: SummaryData;
+  summary: HealthRound;
   type: DatasetType;
   year: number;
 }
