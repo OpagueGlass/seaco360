@@ -3,6 +3,10 @@ import quickselect from "quickselect";
 // Constants
 const NA = "";
 const TRUE = "1";
+export const binaryOption = new Map([
+  [0, "no"],
+  [1, "yes"],
+] as const);
 
 // Types
 type MapKey<T> = T extends Map<infer K, unknown> ? K : never;
@@ -231,12 +235,7 @@ function summariseCategories<
   CatKey extends string,
   CatValue extends Readonly<{ name: string; map: ReadonlyMap<number, string> }>
 >(catMappings: ReadonlyMap<CatKey, CatValue>, indexMap: ReadonlyMap<CatKey, number>, transposed: string[][]) {
-  const result = {} as {
-    [K in MapValue<ReadonlyMap<CatKey, CatValue>>["name"]]: Record<
-      MapValue<Extract<MapValue<ReadonlyMap<CatKey, CatValue>>, { name: K }>["map"]>,
-      number
-    >;
-  };
+  const result = {} as { [K in CatValue["name"]]: Record<MapValue<Extract<CatValue, { name: K }>["map"]>, number> };
 
   for (const [key, { name, map }] of catMappings) {
     const colIndex = indexMap.get(key);
@@ -267,12 +266,7 @@ function summariseOptionalCategories<
   OptKey extends string,
   OptValue extends Readonly<{ name: string; map: ReadonlyMap<number, string> }>
 >(optCatMappings: ReadonlyMap<OptKey, OptValue>, indexMap: ReadonlyMap<OptKey, number>, transposed: string[][]) {
-  const result = {} as {
-    [K in MapValue<ReadonlyMap<OptKey, OptValue>>["name"]]?: Record<
-      MapValue<Extract<MapValue<ReadonlyMap<OptKey, OptValue>>, { name: K }>["map"]>,
-      number
-    >;
-  };
+  const result = {} as { [K in OptValue["name"]]?: Record<MapValue<Extract<OptValue, { name: K }>["map"]>, number> };
 
   for (const [key, { name, map }] of optCatMappings) {
     const colIndex = indexMap.get(key);
@@ -304,10 +298,7 @@ function summariseNums<
   NumValue extends Readonly<{ name: string; medianName: string; thresholds: ReadonlyMap<number, string> }>
 >(numMappings: ReadonlyMap<NumKey, NumValue>, indexMap: ReadonlyMap<NumKey, number>, transposed: string[][]) {
   const numsSummary = {} as {
-    [K in MapValue<ReadonlyMap<NumKey, NumValue>>["name"]]: Record<
-      MapValue<Extract<MapValue<ReadonlyMap<NumKey, NumValue>>, { name: K }>["thresholds"]>,
-      number
-    >;
+    [K in NumValue["name"]]: Record<MapValue<Extract<NumValue, { name: K }>["thresholds"]>, number>;
   };
   const medianNums = new Map<NumValue["medianName"], number[]>();
 
@@ -330,7 +321,7 @@ function summariseNums<
  * - Keys are the expected column names in the CSV file, and values are the corresponding descriptive names used to
  * reference the scores in the aggregated output. A map is not necessary since the mean and standard deviation can
  * be calculated directly from the numerical values.
- * - Input for the map must be marked with **as const** for type support. 
+ * - Input for the map must be marked with **as const** for type support.
  * @param indexMap - The index map created from {@link createIndexMap}
  * @param transposed - The transposed dataset CSV
  * @returns The result object containing the given name as keys and the associated mean and standard deviation as values
@@ -354,7 +345,7 @@ function summariseScores<ScoreKey extends string, ScoreValue extends string>(
 
 /**
  * Obtains the size of the dataset and median of numerical columns
- * 
+ *
  * @param medianNums - The medianNums map from {@link summariseNums}
  * @param data - The dataset CSV matrix
  * @returns The result object containing the given name and participants as keys and the associated number as values
@@ -385,7 +376,7 @@ function getStatistics<
  * - Map with the **necessary numerical columns** for the dataset CSVs. **All dataset CSVs must contain these columns**.
  * Refer to {@link summariseNums} and {@link getStatistics}
  * @param scoreMappings
- * - Map with the **score columns** for the dataset CSVs. **All dataset CSVs must contain these columns.** Refer to 
+ * - Map with the **score columns** for the dataset CSVs. **All dataset CSVs must contain these columns.** Refer to
  * {@link summariseScores}
  * @param headers - The array of header names from the CSV.
  * @param data - The matrix of data rows and columns from the CSV.
@@ -437,7 +428,7 @@ function summarise<
  * - Map with the **necessary numerical columns** for the dataset CSVs. **All dataset CSVs must contain these columns**.
  * Refer to {@link summariseNums} and {@link getStatistics}
  * @param scoreMappings
- * - Map with the **score columns** for the dataset CSVs. **All dataset CSVs must contain these columns.** Refer to 
+ * - Map with the **score columns** for the dataset CSVs. **All dataset CSVs must contain these columns.** Refer to
  * {@link summariseScores}
  * @param summaries - An array of summaries to combine.
  * @returns The combined overall summary.
@@ -544,7 +535,7 @@ function combineSummaries<
  * - Map with the **necessary numerical columns** for the dataset CSVs. **All dataset CSVs must contain these columns**.
  * Refer to {@link summariseNums} and {@link getStatistics}
  * @param scoreMappings
- * - Map with the **score columns** for the dataset CSVs. **All dataset CSVs must contain these columns.** Refer to 
+ * - Map with the **score columns** for the dataset CSVs. **All dataset CSVs must contain these columns.** Refer to
  * {@link summariseScores}
  * @param headers - The array of header names from the CSV.
  * @param data - The matrix of data rows and columns from the CSV.
