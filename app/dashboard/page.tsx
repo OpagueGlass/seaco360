@@ -75,17 +75,21 @@ function DatasetModal({
   return (
     <>
       <Dialog open={open} onOpenChange={setIsOpen}>
-        <DialogContent className="max-w-4xl max-h-[85vh]">
-          <DialogHeader>
-            <DialogTitle className="flex items-center justify-between">
-              <span>{datasetInfo.name}</span>
-              {/* <Badge variant="default">
-              {datasetInfo.name} {dataset.year}
-            </Badge> */}
-            </DialogTitle>
-            <DialogDescription>
-              Detailed view of the {datasetInfo.name} dataset for {dataset.year}
-            </DialogDescription>
+        <DialogContent className="max-w-4xl max-h-[85vh] grid grid-col-2">
+          <DialogHeader className="flex flex-row items-center justify-between gap-4">
+            <div className="flex flex-col text-left">
+              <DialogTitle className="mt-1">{datasetInfo.name}</DialogTitle>
+              <DialogDescription className="mt-2">
+                Detailed view of the {datasetInfo.name} dataset for {dataset.year}
+              </DialogDescription>
+            </div>
+
+            <Button variant="default" asChild className="mt-3">
+              <Link href={`/round/${dataset.year}`} target="_blank" rel="noopener noreferrer">
+                <BarChart3 className="mr-2 h-4 w-4" />
+                View
+              </Link>
+            </Button>
           </DialogHeader>
 
           <ScrollArea className="h-[50vh] w-full rounded-md border">
@@ -93,30 +97,19 @@ function DatasetModal({
           </ScrollArea>
 
           <div className="flex gap-2 justify-between">
-            <div className="flex gap-2">
-              <Button variant="default" asChild>
-                <Link href={`/round/${dataset.year}`} target="_blank" rel="noopener noreferrer">
-                  <>
-                    <BarChart3 className="mr-2 h-4 w-4" />
-                    View
-                  </>
-                </Link>
-              </Button>
-
-              <Button variant="outline" onClick={() => handleCopy(data ?? {})}>
-                {copied ? (
-                  <>
-                    <Check className="mr-2 h-4 w-4" />
-                    Copied!
-                  </>
-                ) : (
-                  <>
-                    <Copy className="mr-2 h-4 w-4" />
-                    Copy
-                  </>
-                )}
-              </Button>
-            </div>
+            <Button variant="outline" onClick={() => handleCopy(data ?? {})}>
+              {copied ? (
+                <>
+                  <Check className="mr-2 h-4 w-4" />
+                  Copied!
+                </>
+              ) : (
+                <>
+                  <Copy className="mr-2 h-4 w-4" />
+                  Copy
+                </>
+              )}
+            </Button>
             <Button
               variant="destructive"
               onClick={() => {
