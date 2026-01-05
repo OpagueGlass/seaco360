@@ -1,8 +1,8 @@
 import { RecValue, summariseBy } from "@/lib/summarise";
 
 /*
- * Mappings derived from the dataset codebook, with keys as the codes and values as descriptive labels. Codebook
- * mappings are marked with "as const" for immutability so that their maps can be used in type definitions.
+ * Maps derived from the dataset codebook, with keys as the codes and values as descriptive labels. Codebook maps are 
+ * marked with "as const" for immutability so that their maps can be used in type definitions.
  */
 
 const response = [
@@ -69,7 +69,7 @@ const binaryOption = [
 ] as const;
 
 /*
- * Categorical mapping to group numerical values into descriptive ranges with thresholds.
+ * Categorical maps to group numerical values into descriptive ranges with thresholds.
  *
  * Keys are the thresholds, which are the lower bounds of each range, and values are the descriptive labels.
  * The smallest key must be equal to the minimum possible value in the dataset to ensure all values are categorised.
@@ -106,80 +106,81 @@ const ageCategories = new Map([
 ] as const);
 
 /**
- * Contains the column name and mapping for response codes.
+ * Contains the column name and map for response codes.
  */
-export const responseMapping = {
-  column: "status" as const,
+const responseMapping = {
+  name: "status",
   map: new Map(response),
-};
+} as const
 
 /**
- * Contains the column name and mapping for subdistrict codes.
+ * Contains the column name and map for subdistrict codes.
  */
-export const subdistrictMapping = {
-  column: "mukim" as const,
+const subdistrictMapping = {
+  name: "mukim",
   map: new Map(subdistrict),
-};
+} as const;
 
 /**
- * Map with the necessary categorical columns for Health Round CSVs. All Health Round CSVs must contain these columns.
+ * Mapping with the necessary categorical columns for Health Round CSVs. All Health Round CSVs must contain these 
+ * columns.
  *
  * Keys are the expected column names in the CSV file, and values are an object containing the descriptive name and
- * mapping for that column. The mapping is used to interpret the coded values in the dataset, while the name is used to
+ * map for that column. The map is used to interpret the coded values in the dataset, while the name is used to
  * reference the result in the aggregated output.
  *
  * Input for maps marked with "as const" for type definitions.
  */
-export const catMappings = new Map([
-  ["sex", { name: "sex", mapping: new Map(sex) }],
-  ["mcio", { name: "ethnicity", mapping: new Map(ethnic) }],
-  ["edu", { name: "educationLevel", mapping: new Map(education) }],
-  ["employstatus", { name: "employmentStatus", mapping: new Map(employment) }],
-  ["heartdis", { name: "heartDisease", mapping: new Map(binaryOption) }],
-  ["asthma", { name: "asthma", mapping: new Map(binaryOption) }],
-  ["stroke", { name: "stroke", mapping: new Map(binaryOption) }],
-  ["arthritis", { name: "arthritis", mapping: new Map(binaryOption) }],
-  ["kidneydis", { name: "kidneyDisease", mapping: new Map(binaryOption) }],
-  ["dengue", { name: "hadDengueBefore", mapping: new Map(binaryOption) }],
-  ["denpastyear", { name: "hadDenguePastYear", mapping: new Map(binaryOption) }],
-  ["uti", { name: "hadUTIPastYear", mapping: new Map(binaryOption) }],
-  ["eversmoke", { name: "hadSmokeBefore", mapping: new Map(binaryOption) }],
-  ["smoker", { name: "isCurrentlySmoking", mapping: new Map(binaryOption) }],
-  ["bmicat_who", { name: "bmiCategory", mapping: new Map(bmiCategory) }],
-  ["centralob", { name: "centralObesity", mapping: new Map(binaryOption) }],
-  ["hpt_screened", { name: "hypertensionScreened", mapping: new Map(binaryOption) }],
-  ["hpt_diagnosed", { name: "hypertensionDiagnosed", mapping: new Map(binaryOption) }],
-  ["hpt_measured", { name: "hypertensionMeasured", mapping: new Map(binaryOption) }],
-  ["dm_screened", { name: "diabetesScreened", mapping: new Map(binaryOption) }],
-  ["dm_diagnosed", { name: "diabetesDiagnosed", mapping: new Map(binaryOption) }],
-  ["dm_measured", { name: "diabetesMeasured", mapping: new Map(binaryOption) }],
+const catMappings = new Map([
+  ["sex", { name: "sex", map: new Map(sex) }],
+  ["mcio", { name: "ethnicity", map: new Map(ethnic) }],
+  ["edu", { name: "educationLevel", map: new Map(education) }],
+  ["employstatus", { name: "employmentStatus", map: new Map(employment) }],
+  ["heartdis", { name: "heartDisease", map: new Map(binaryOption) }],
+  ["asthma", { name: "asthma", map: new Map(binaryOption) }],
+  ["stroke", { name: "stroke", map: new Map(binaryOption) }],
+  ["arthritis", { name: "arthritis", map: new Map(binaryOption) }],
+  ["kidneydis", { name: "kidneyDisease", map: new Map(binaryOption) }],
+  ["dengue", { name: "hadDengueBefore", map: new Map(binaryOption) }],
+  ["denpastyear", { name: "hadDenguePastYear", map: new Map(binaryOption) }],
+  ["uti", { name: "hadUTIPastYear", map: new Map(binaryOption) }],
+  ["eversmoke", { name: "hadSmokeBefore", map: new Map(binaryOption) }],
+  ["smoker", { name: "isCurrentlySmoking", map: new Map(binaryOption) }],
+  ["bmicat_who", { name: "bmiCategory", map: new Map(bmiCategory) }],
+  ["centralob", { name: "centralObesity", map: new Map(binaryOption) }],
+  ["hpt_screened", { name: "hypertensionScreened", map: new Map(binaryOption) }],
+  ["hpt_diagnosed", { name: "hypertensionDiagnosed", map: new Map(binaryOption) }],
+  ["hpt_measured", { name: "hypertensionMeasured", map: new Map(binaryOption) }],
+  ["dm_screened", { name: "diabetesScreened", map: new Map(binaryOption) }],
+  ["dm_diagnosed", { name: "diabetesDiagnosed", map: new Map(binaryOption) }],
+  ["dm_measured", { name: "diabetesMeasured", map: new Map(binaryOption) }],
 ] as const);
 
 /**
- * Map with the necessary numerical columns for Health Round CSVs. All Health Round CSVs must contain these columns.
+ * Mapping with the necessary numerical columns for Health Round CSVs. All Health Round CSVs must contain these columns.
  *
  * Keys are the expected column names in the CSV file, and values are an object containing the descriptive name,
- * categories, and median name for that column. The categories mapping is used to group numerical values into ranges,
+ * categories, and median name for that column. The categories map is used to group numerical values into ranges,
  * while the name is used to reference the result in the aggregated output. The medianName is used to reference the
  * median value for the numeric column.
  *
  * Input for maps marked with "as const" for type definitions.
  */
-export const numMappings = new Map([
+const numMappings = new Map([
   ["income", { name: "income", thresholds: incomeBrackets, medianName: "medianIncome" }],
   ["age", { name: "age", thresholds: ageCategories, medianName: "medianAge" }],
 ] as const);
 
 /**
- * Map with the domain and overall score columns for Health Round CSVs. All Health Round CSVs must contain these columns.
+ * Mapping with the domain and overall score columns for Health Round CSVs. All Health Round CSVs must contain these columns.
  *
  * Keys are the expected column names in the CSV file, and values are the corresponding descriptive names used to
- * reference the scores in the aggregated output. A mapping is not necessary since the mean and standard deviation can
+ * reference the scores in the aggregated output. Maps are not necessary since the mean and standard deviation can
  * be calculated directly from the numerical values.
  *
  * Input for maps marked with "as const" for type definitions.
  */
-export const scoreMapping = new Map([
+const scoreMappings = new Map([
   ["dom1", "physicalHealth"],
   ["dom2", "psychologicalHealth"],
   ["dom3", "socialRelationships"],
@@ -188,18 +189,18 @@ export const scoreMapping = new Map([
 ] as const);
 
 /**
- * Map with the optional columns for Health Round CSVs. Some Health Round CSVs may not contain these columns.
+ * Mapping with the optional columns for Health Round CSVs. Some Health Round CSVs may not contain these columns.
  *
  * Keys are the expected column names in the CSV file, and values are an object containing the descriptive name and
- * mapping for that column. The mapping is used to interpret the coded values in the dataset, while the name is used to
+ * map for that column. The map is used to interpret the coded values in the dataset, while the name is used to
  * reference the result in the aggregated output.
  *
  * Input for maps marked with "as const" for type definitions.
  */
-export const optCatMappings = new Map([
-  ["dialysis", { name: "underDialysis", mapping: new Map(binaryOption) }],
-  ["inadequate_fruits", { name: "inadequateFruit", mapping: new Map(binaryOption) }],
-  ["inadequate_veg", { name: "inadequateVegetable", mapping: new Map(binaryOption) }],
+const optCatMappings = new Map([
+  ["dialysis", { name: "underDialysis", map: new Map(binaryOption) }],
+  ["inadequate_fruits", { name: "inadequateFruit", map: new Map(binaryOption) }],
+  ["inadequate_veg", { name: "inadequateVegetable", map: new Map(binaryOption) }],
 ] as const);
 
 export function summariseHealthRound(headers: string[], data: string[][]) {
@@ -209,7 +210,7 @@ export function summariseHealthRound(headers: string[], data: string[][]) {
     catMappings,
     optCatMappings,
     numMappings,
-    scoreMapping,
+    scoreMappings,
     headers,
     data
   );

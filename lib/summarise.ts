@@ -1,70 +1,21 @@
 import quickselect from "quickselect";
 
 // Constants
-export const NA = "";
-export const TRUE = "1";
+const NA = "";
+const TRUE = "1";
 
 // Types
-export type MapKey<T> = T extends Map<infer K, unknown> ? K : never;
-export type MapValue<M> = M extends ReadonlyMap<unknown, infer V> ? V : never;
-export type RecValue<T> = T[keyof T]
-
-// Type definition for Health Round CSV headers
-// type ColMappingKeys<T> = MapKey<T>;
-// type OptMappingKeys<T> = MapKey<T>;
-// type NumKeys<T> = MapKey<T>;
-// type ScoreKeys<T> = MapKey<T>;
-// export type Headers<CatMappings, OptCatMappings, NumMapping, ScoreMapping> =
-//   | ColMappingKeys<CatMappings>
-//   | OptMappingKeys<OptCatMappings>
-//   | ScoreKeys<ScoreMapping>
-//   | NumKeys<NumMapping>
-//   | typeof subdistrictMapping.column
-//   | typeof responseMapping.column;
-
-// Type definitions for summary results by subdistrict in Health Round CSVs
-
-export type Summary<
-  CatKey extends string,
-  CatValue extends { name: string; mapping: ReadonlyMap<number, string> },
-  OptKey extends string,
-  OptValue extends { name: string; mapping: ReadonlyMap<number, string> },
-  NumKey extends string,
-  NumValue extends { name: string; medianName: string; thresholds: ReadonlyMap<number, string> },
-  ScoreKey extends string,
-  ScoreValue extends string
-> = {
-  [K in MapValue<ReadonlyMap<CatKey, CatValue>>["name"]]: Record<
-    MapValue<Extract<MapValue<ReadonlyMap<CatKey, CatValue>>, { name: K }>["mapping"]>,
-    number
-  >;
-} & {
-  [K in MapValue<ReadonlyMap<OptKey, OptValue>>["name"]]?: Record<
-    MapValue<Extract<MapValue<ReadonlyMap<OptKey, OptValue>>, { name: K }>["mapping"]>,
-    number
-  >;
-} & {
-  [K in MapValue<ReadonlyMap<NumKey, NumValue>>["name"]]: Record<
-    MapValue<Extract<MapValue<ReadonlyMap<NumKey, NumValue>>, { name: K }>["thresholds"]>,
-    number
-  >;
-} & {
-  [K in MapValue<ReadonlyMap<ScoreKey, ScoreValue>>]: ReturnType<typeof calcMeanAndStdDev>;
-} & {
-  statistics: {
-    participants: number;
-  } & {
-    [K in MapValue<ReadonlyMap<NumKey, NumValue>>["medianName"]]: number;
-  };
-};
+type MapKey<T> = T extends Map<infer K, unknown> ? K : never;
+type MapValue<M> = M extends ReadonlyMap<unknown, infer V> ? V : never;
+export type RecValue<T> = T[keyof T];
 
 /**
- * Transposes a 2D array. The CSV is tranposed to optimise column-wise operations and simplify the summarisation logic.
+ * Transposes a matrix. The CSV is tranposed to optimise column-wise operations and simplify the summarisation logic.
  *
- * @param a - The 2D array to transpose.
- * @returns The transposed 2D array.
+ * @param a - The matrix to transpose.
+ * @returns The transposed matrix.
  */
-export function transpose<T>(a: T[][]): T[][] {
+function transpose<T>(a: T[][]): T[][] {
   const w = a.length;
   const h = a[0].length;
 
@@ -87,7 +38,7 @@ export function transpose<T>(a: T[][]): T[][] {
  * @param arr - The array of header names from the CSV.
  * @returns A readonly map where keys are header names and values are their corresponding indices in the CSV data.
  */
-export function createIndexMap<K extends string>(arr: K[]): ReadonlyMap<K, number> {
+function createIndexMap<K extends string>(arr: K[]): ReadonlyMap<K, number> {
   const keyValuePairs = arr.map((value, index) => [value, index] as const);
   return new Map<K, number>(keyValuePairs);
 }
@@ -96,11 +47,11 @@ export function createIndexMap<K extends string>(arr: K[]): ReadonlyMap<K, numbe
  * Helper function to get the size of a categorical mapping by finding the maximum key and adding one to account for
  * zero-based indexing.
  *
- * @param mapping - The categorical mapping.
+ * @param map - The categorical mapping.
  * @returns The size of the mapping.
  */
-export function getMapSize(mapping: ReadonlyMap<number, string>) {
-  const keys = Array.from(mapping.keys());
+function getMapSize(map: ReadonlyMap<number, string>) {
+  const keys = Array.from(map.keys());
   return Math.max(...keys) + 1;
 }
 
@@ -112,7 +63,7 @@ export function getMapSize(mapping: ReadonlyMap<number, string>) {
  * @param size - The size of the categorical mapping, which is the largest key + 1 to account for zero-based indexing.
  * @returns An array of counts for each category.
  */
-export function countOccurrences(data: string[], size: number) {
+function countOccurrences(data: string[], size: number) {
   const counts = new Array(size).fill(0); // Initialise counts array with zeros
   for (let i = 0, l = data.length; i < l; i++) {
     const value = data[i];
@@ -129,7 +80,7 @@ export function countOccurrences(data: string[], size: number) {
  * @param count - The number of values.
  * @returns An object containing the mean, standard deviation, summation, sum of squares, and count.
  */
-export function getMeanAndStdDev(summation: number, sumOfSquares: number, count: number) {
+function getMeanAndStdDev(summation: number, sumOfSquares: number, count: number) {
   const exactMean = summation / count;
   const variance = sumOfSquares / count - exactMean * exactMean;
   const unbiasedVariance = (count / (count - 1)) * variance;
@@ -146,7 +97,7 @@ export function getMeanAndStdDev(summation: number, sumOfSquares: number, count:
  * @param data - The array of numerical string values.
  * @returns An object containing the mean, standard deviation, summation, sum of squares, and count.
  */
-export function calcMeanAndStdDev(data: string[]) {
+function calcMeanAndStdDev(data: string[]) {
   let summation = 0;
   let sumOfSquares = 0;
   let count = 0;
@@ -165,12 +116,12 @@ export function calcMeanAndStdDev(data: string[]) {
 }
 
 /**
- * Calculates the median of an array of numbers using the Quickselect algorithm instead of sorting for efficiency.
+ * Calculates the median of an array of numbers. Uses the Quickselect algorithm instead of sorting for efficiency.
  *
  * @param nums - The array of numbers to partition in place and find the median from.
  * @returns The median of the array.
  */
-export function calcMedian(nums: number[]) {
+function calcMedian(nums: number[]) {
   const n = nums.length;
   if (n === 0) return 0;
 
@@ -191,20 +142,20 @@ export function calcMedian(nums: number[]) {
  * Summarises categorical data by counting occurrences of each category based on the provided mapping.
  *
  * @param data - The array of categorical string values.
- * @param mapping - The mapping from category keys to descriptive names.
+ * @param map - The mapping from category keys to descriptive names.
  * @returns An object where keys are descriptive category names and values are their respective counts.
  * @example
  * const data = ["0", "1", "0", "", "1", "1", ""];
- * const mapping = new Map([[0, "Male"], [1, "Female"]]);
- * const result = summarise(data, mapping); // { Male: 2, Female: 3 }
+ * const map = new Map([[0, "No"], [1, "Yes"]] as const);
+ * const result = summariseCategorical(data, map); // { No: 2, Yes: 3 }
  */
-export function summariseCategorical<K extends number, V extends string>(data: string[], mapping: ReadonlyMap<K, V>) {
-  const size = getMapSize(mapping);
+function summariseCategorical<K extends number, V extends string>(data: string[], map: ReadonlyMap<K, V>) {
+  const size = getMapSize(map);
   const counts = countOccurrences(data, size);
 
   // Map counts array back to descriptive category names
   const result = {} as Record<V, number>;
-  for (const [key, value] of mapping) {
+  for (const [key, value] of map) {
     result[value] = counts[key];
   }
   return result;
@@ -214,11 +165,19 @@ export function summariseCategorical<K extends number, V extends string>(data: s
  * Summarises numerical data into defined categories and optionally collects numerical values for median calculation.
  *
  * @param data - The array of numerical string values.
- * @param thresholds - The mapping from numerical thresholds to descriptive category names.
+ * @param thresholds - The map from numerical thresholds to descriptive category names. Thresholds must start from the
+ * minimum to include all numbers in the data
  * @param numsOut - An optional array to collect numerical values for median calculation.
  * @returns An object containing the counts for each category.
+ * @example
+ * const data = ["1499", "500", "", "1500", "1800", "2000", "8000", "5000", ""]
+ * const thresholds = new Map([[0, "RM0-1499"], [1500, "RM1500-1999"], [2000, "RM2000+"]] as const);
+ * const nums = []
+ * const result = summariseNumerical(data, thresholds, nums);
+ * // result: { RM0-1499: 2, RM1500-1999: 2, RM2000+: 3 }
+ * // nums = [1499, 500, 1500, 1800, 2000, 8000, 5000]
  */
-export function summariseNumerical<K extends number, V extends string>(
+function summariseNumerical<K extends number, V extends string>(
   data: string[],
   thresholds: ReadonlyMap<K, V>,
   numsOut?: number[]
@@ -256,62 +215,133 @@ export function summariseNumerical<K extends number, V extends string>(
 }
 
 /**
- * Summarises data for a specific subdistrict by calculating categorical counts, category counts, and score statistics.
+ * Summarises all necessary categories with {@link summariseCategorical}, storing the result with the given name.
  *
- * @param indexMap - A readonly map of header names to their respective indices in the CSV data.
- * @param data - The 2D array of Health Round CSV data rows for the subdistrict.
- * @returns An object containing the summary for the subdistrict and numerical values for median calculations.
+ * @param catMappings - Finds the number of times each category appears in the columns with {@link summariseCategorical}
+ * - Keys are the expected column names in the CSV file, and values are an object containing the descriptive name and
+ * map for that column.
+ * - The name is used to reference this result in the aggregated output, while the map is used to count the occurrences
+ * and interpret the coded values in the dataset.
+ * - Input for the map must be marked with **as const** for type support.
+ * @param indexMap - The index map created from {@link createIndexMap}
+ * @param transposed - The transposed dataset CSV
+ * @returns The result object containing the given names as keys and summarised categories as values.
  */
-export function summarise<
+function summariseCategories<
   CatKey extends string,
-  CatValue extends { name: string; mapping: ReadonlyMap<number, string> },
-  OptKey extends string,
-  OptValue extends { name: string; mapping: ReadonlyMap<number, string> },
-  NumKey extends string,
-  NumValue extends { name: string; medianName: string; thresholds: ReadonlyMap<number, string> },
-  ScoreKey extends string,
-  ScoreValue extends string
->(
-  catMappings: ReadonlyMap<CatKey, CatValue>,
-  optCatMappings: ReadonlyMap<OptKey, OptValue>,
-  numMappings: ReadonlyMap<NumKey, NumValue>,
-  scoreMapping: ReadonlyMap<ScoreKey, ScoreValue>,
-  indexMap: ReadonlyMap<string, number>,
-  data: string[][]
-) {
-  type SummaryType = Summary<CatKey, CatValue, OptKey, OptValue, NumKey, NumValue, ScoreKey, ScoreValue>;
+  CatValue extends Readonly<{ name: string; map: ReadonlyMap<number, string> }>
+>(catMappings: ReadonlyMap<CatKey, CatValue>, indexMap: ReadonlyMap<CatKey, number>, transposed: string[][]) {
+  const result = {} as {
+    [K in MapValue<ReadonlyMap<CatKey, CatValue>>["name"]]: Record<
+      MapValue<Extract<MapValue<ReadonlyMap<CatKey, CatValue>>, { name: K }>["map"]>,
+      number
+    >;
+  };
 
-  const transposed = transpose(data); // Transpose data for column-wise operations
-
-  const result = {} as Record<string, Record<string, number>>;
-  result.statistics = {} as SummaryType["statistics"];
-  result.statistics.participants = data.length; // Total number of participants in the subdistrict
-  const midNums = {} as Record<string, number[]>;
-
-  // Summarise necessary categorical columns
-  for (const [key, value] of catMappings) {
-    const colIndex = indexMap.get(key)!;
-    result[value.name] = summariseCategorical(transposed[colIndex], value.mapping);
-  }
-
-  // Summarise optional categorical columns if they exist in the CSV
-  for (const [key, value] of optCatMappings) {
+  for (const [key, { name, map }] of catMappings) {
     const colIndex = indexMap.get(key);
     if (colIndex !== undefined) {
-      result[value.name] = summariseCategorical(transposed[colIndex], value.mapping);
+      result[name as CatValue["name"]] = summariseCategorical(transposed[colIndex], map);
     }
   }
 
-  // Summarise necessary numerical columns
-  for (const [key, value] of numMappings) {
-    const colIndex = indexMap.get(key)!;
-    const nums = [] as number[];
-    result[value.name] = summariseNumerical(transposed[colIndex], value.thresholds, nums);
-    result.statistics[value.medianName] = calcMedian(nums); // Calculate and store median for the numerical column
-    midNums[value.medianName] = nums; // Store numerical values for overall median calculation
+  return result;
+}
+
+/**
+ * Summarises all optional categories with {@link summariseCategorical} if it exists, storing the result with the
+ * given name.
+ *
+ * @param optCatMappings - Finds the number of times each category appears in the column with
+ * {@link summariseCategorical}, if it exists.
+ * - Keys are the expected column names in the CSV file, and values are an object containing the descriptive name and
+ * map for that column.
+ * - The name is used to reference this result in the aggregated output, while the map is used to to count the
+ * occurences and interpret the coded values in the dataset.
+ * - Input for the map must be marked with **as const** for type support.
+ * @param indexMap - The index map created from {@link createIndexMap}
+ * @param transposed - The transposed dataset CSV
+ * @returns The result object containing the given names as keys and summarised categories as values
+ */
+function summariseOptionalCategories<
+  OptKey extends string,
+  OptValue extends Readonly<{ name: string; map: ReadonlyMap<number, string> }>
+>(optCatMappings: ReadonlyMap<OptKey, OptValue>, indexMap: ReadonlyMap<OptKey, number>, transposed: string[][]) {
+  const result = {} as {
+    [K in MapValue<ReadonlyMap<OptKey, OptValue>>["name"]]?: Record<
+      MapValue<Extract<MapValue<ReadonlyMap<OptKey, OptValue>>, { name: K }>["map"]>,
+      number
+    >;
+  };
+
+  for (const [key, { name, map }] of optCatMappings) {
+    const colIndex = indexMap.get(key);
+    if (colIndex !== undefined) {
+      result[name as OptValue["name"]] = summariseCategorical(transposed[colIndex], map);
+    }
   }
 
-  // Summarise scores
+  return result;
+}
+
+/**
+ * Summarises all numerical columns with {@link summariseNumerical}, storing the result with the given name.
+ *
+ * @param numMappings - Finds the number of times each group in the threshold appears in that column with
+ * {@link summariseNumerical}, and calculates the median value for that column in {@link getStatistics}.
+ * - Keys are the expected column names in the CSV file, and values are an object containing the descriptive name,
+ * median name, and thresholds map for that column.
+ * - The thresholds map is used to group numerical values into ranges and count their occurences, while the name is used
+ * to reference this result in the aggregated output. The medianName is used to reference the median value for the
+ * numeric column.
+ * - Input for the map must be marked with **as const** for type support.
+ * @param indexMap - The index map created from {@link createIndexMap}
+ * @param transposed - The transposed dataset CSV
+ * @returns The result object containing the given names as keys and summarised groups and median nums as values
+ */
+function summariseNums<
+  NumKey extends string,
+  NumValue extends Readonly<{ name: string; medianName: string; thresholds: ReadonlyMap<number, string> }>
+>(numMappings: ReadonlyMap<NumKey, NumValue>, indexMap: ReadonlyMap<NumKey, number>, transposed: string[][]) {
+  const numsSummary = {} as {
+    [K in MapValue<ReadonlyMap<NumKey, NumValue>>["name"]]: Record<
+      MapValue<Extract<MapValue<ReadonlyMap<NumKey, NumValue>>, { name: K }>["thresholds"]>,
+      number
+    >;
+  };
+  const medianNums = new Map<NumValue["medianName"], number[]>();
+
+  // Summarise necessary numerical columns
+  for (const [key, { name, medianName, thresholds }] of numMappings) {
+    const colIndex = indexMap.get(key)!;
+    const nums = [] as number[];
+    numsSummary[name as NumValue["name"]] = summariseNumerical(transposed[colIndex], thresholds, nums);
+    medianNums.set(medianName, nums); // Store numerical values for overall median calculation
+  }
+
+  return { numsSummary, medianNums };
+}
+
+/**
+ * Finds the mean and standard deviation of all score columns with {@link calcMeanAndStdDev}, storing the result with
+ * the given name.
+ *
+ * @param scoreMapping - Finds the mean and standard deviation for the columns with {@link calcMeanAndStdDev}.
+ * - Keys are the expected column names in the CSV file, and values are the corresponding descriptive names used to
+ * reference the scores in the aggregated output. A map is not necessary since the mean and standard deviation can
+ * be calculated directly from the numerical values.
+ * - Input for the map must be marked with **as const** for type support. 
+ * @param indexMap - The index map created from {@link createIndexMap}
+ * @param transposed - The transposed dataset CSV
+ * @returns The result object containing the given name as keys and the associated mean and standard deviation as values
+ */
+function summariseScores<ScoreKey extends string, ScoreValue extends string>(
+  scoreMapping: ReadonlyMap<ScoreKey, ScoreValue>,
+  indexMap: ReadonlyMap<ScoreKey, number>,
+  transposed: string[][]
+) {
+  const result = {} as Record<ScoreValue, ReturnType<typeof calcMeanAndStdDev>>;
+
   for (const [key, scoreName] of scoreMapping) {
     const colIndex = indexMap.get(key)!;
     const scoreData = transposed[colIndex];
@@ -319,49 +349,130 @@ export function summarise<
     result[scoreName] = scoreMeanStdDev;
   }
 
-  return {
-    summary: result as SummaryType,
-    medianNums: midNums as Record<MapValue<typeof numMappings>["medianName"], number[]>,
-  };
+  return result;
 }
 
 /**
- * Generates the overall summary from individual subdistrict summaries by combining categorical counts, median and score
- * statistics. Instead of recalculating from raw data, it efficiently merges already computed summaries.
- *
- * @param summaries - An array of subdistrict summaries to combine.
- * @returns The combined overall summary.
+ * Obtains the size of the dataset and median of numerical columns
+ * 
+ * @param medianNums - The medianNums map from {@link summariseNums}
+ * @param data - The dataset CSV matrix
+ * @returns The result object containing the given name and participants as keys and the associated number as values
  */
-function combineSummaries<
+function getStatistics<
+  NumValue extends Readonly<{ name: string; medianName: string; thresholds: ReadonlyMap<number, string> }>
+>(medianNums: ReadonlyMap<NumValue["medianName"], number[]>, data: string[][]) {
+  const result = {} as Record<NumValue["medianName"] | "participants", number>;
+  result.participants = data.length;
+
+  // Calculate and store median for numerical columns
+  for (const [key, value] of medianNums) {
+    result[key] = calcMedian(value);
+  }
+
+  return result;
+}
+
+/**
+ * Summarises data by calculating categorical counts, category counts, and score statistics.
+ *
+ * @param catMappings - Map with the **necessary categorical columns** for the dataset CSVs. **All dataset CSVs must
+ * contain these columns**. Refer to {@link summariseCategories}
+ * @param optCatMappings
+ * - Map with the **optional categorical columns** for the dataset CSVs. **Some CSVs may not contain these columns**.
+ * Refer to {@link summariseOptionalCategories}
+ * @param numMappings
+ * - Map with the **necessary numerical columns** for the dataset CSVs. **All dataset CSVs must contain these columns**.
+ * Refer to {@link summariseNums} and {@link getStatistics}
+ * @param scoreMappings
+ * - Map with the **score columns** for the dataset CSVs. **All dataset CSVs must contain these columns.** Refer to 
+ * {@link summariseScores}
+ * @param headers - The array of header names from the CSV.
+ * @param data - The matrix of data rows and columns from the CSV.
+ * @param indexMap - The index map created from {@link createIndexMap}
+ * @returns An object containing the summary and numerical values for median calculations.
+ */
+function summarise<
   CatKey extends string,
-  CatValue extends { name: string; mapping: ReadonlyMap<number, string> },
+  CatValue extends Readonly<{ name: string; map: ReadonlyMap<number, string> }>,
   OptKey extends string,
-  OptValue extends { name: string; mapping: ReadonlyMap<number, string> },
+  OptValue extends Readonly<{ name: string; map: ReadonlyMap<number, string> }>,
   NumKey extends string,
-  NumValue extends { name: string; medianName: string; thresholds: ReadonlyMap<number, string> },
+  NumValue extends Readonly<{ name: string; medianName: string; thresholds: ReadonlyMap<number, string> }>,
   ScoreKey extends string,
   ScoreValue extends string
 >(
   catMappings: ReadonlyMap<CatKey, CatValue>,
   optCatMappings: ReadonlyMap<OptKey, OptValue>,
   numMappings: ReadonlyMap<NumKey, NumValue>,
-  scoreMapping: ReadonlyMap<ScoreKey, ScoreValue>,
-  summaries: ReturnType<typeof summarise>[]
+  scoreMappings: ReadonlyMap<ScoreKey, ScoreValue>,
+  indexMap: ReadonlyMap<string, number>,
+  data: string[][]
 ) {
-  type SummaryType = Summary<CatKey, CatValue, OptKey, OptValue, NumKey, NumValue, ScoreKey, ScoreValue>;
+  const transposed = transpose(data); // Transpose data for column-wise operations
+
+  const { numsSummary, medianNums } = summariseNums(numMappings, indexMap, transposed);
+
+  const summary = {
+    ...summariseCategories(catMappings, indexMap, transposed),
+    ...summariseOptionalCategories(optCatMappings, indexMap, transposed),
+    ...numsSummary,
+    ...summariseScores(scoreMappings, indexMap, transposed),
+    statistics: getStatistics(medianNums, data),
+  };
+
+  return { summary, medianNums };
+}
+
+/**
+ * Generates the overall summary from individual summaries by combining categorical counts, median and score
+ * statistics. Efficiently merges already computed summaries instead of recalculating from raw data.
+ *
+ * @param catMappings - Map with the **necessary categorical columns** for the dataset CSVs. **All dataset CSVs must
+ * contain these columns**. Refer to {@link summariseCategories}
+ * @param optCatMappings
+ * - Map with the **optional categorical columns** for the dataset CSVs. **Some CSVs may not contain these columns**.
+ * Refer to {@link summariseOptionalCategories}
+ * @param numMappings
+ * - Map with the **necessary numerical columns** for the dataset CSVs. **All dataset CSVs must contain these columns**.
+ * Refer to {@link summariseNums} and {@link getStatistics}
+ * @param scoreMappings
+ * - Map with the **score columns** for the dataset CSVs. **All dataset CSVs must contain these columns.** Refer to 
+ * {@link summariseScores}
+ * @param summaries - An array of summaries to combine.
+ * @returns The combined overall summary.
+ */
+function combineSummaries<
+  CatKey extends string,
+  CatValue extends Readonly<{ name: string; map: ReadonlyMap<number, string> }>,
+  OptKey extends string,
+  OptValue extends Readonly<{ name: string; map: ReadonlyMap<number, string> }>,
+  NumKey extends string,
+  NumValue extends Readonly<{ name: string; medianName: string; thresholds: ReadonlyMap<number, string> }>,
+  ScoreKey extends string,
+  ScoreValue extends string
+>(
+  catMappings: ReadonlyMap<CatKey, CatValue>,
+  optCatMappings: ReadonlyMap<OptKey, OptValue>,
+  numMappings: ReadonlyMap<NumKey, NumValue>,
+  scoreMappings: ReadonlyMap<ScoreKey, ScoreValue>,
+  summaries: ReturnType<typeof summarise<CatKey, CatValue, OptKey, OptValue, NumKey, NumValue, ScoreKey, ScoreValue>>[]
+) {
+  type SummaryType = ReturnType<
+    typeof summarise<CatKey, CatValue, OptKey, OptValue, NumKey, NumValue, ScoreKey, ScoreValue>
+  >["summary"];
   if (summaries.length === 0) return {} as SummaryType;
   if (summaries.length === 1) return summaries[0].summary;
 
   // Deep copy the first summary to avoid mutating original data
   const combined = JSON.parse(JSON.stringify(summaries[0].summary)) as Record<string, Record<string, number>>;
-
   for (let i = 1; i < summaries.length; i++) {
     const summary = summaries[i].summary;
     combined.statistics.participants += summary.statistics.participants;
 
     // Combine categorical counts
     for (const [, value] of catMappings) {
-      const categoryName = value.name;
+      const categoryName = value.name as CatValue["name"];
       const category = combined[categoryName] as Record<string, number>;
       for (const [key, value] of Object.entries(summary[categoryName])) {
         const k = key as keyof (typeof combined)[typeof categoryName];
@@ -371,7 +482,7 @@ function combineSummaries<
 
     // Combine optional categorical counts
     for (const [, value] of optCatMappings) {
-      const categoryName = value.name;
+      const categoryName = value.name as OptValue["name"];
       const category = combined[categoryName] as Record<string, number> | undefined;
       if (category) {
         for (const [key, value] of Object.entries(summary[categoryName]!)) {
@@ -383,7 +494,7 @@ function combineSummaries<
 
     // Combine category counts
     for (const [, value] of numMappings) {
-      const categoryName = value.name;
+      const categoryName = value.name as NumValue["name"];
       const category = combined[categoryName] as Record<string, number>;
       for (const [key, value] of Object.entries(summary[categoryName])) {
         const k = key as keyof (typeof combined)[typeof categoryName];
@@ -392,7 +503,7 @@ function combineSummaries<
     }
 
     // Combine scores
-    for (const [, scoreName] of scoreMapping) {
+    for (const [, scoreName] of scoreMappings) {
       const prevStats = combined[scoreName];
       const currStats = summary[scoreName];
       prevStats.summation += currStats.summation;
@@ -402,17 +513,17 @@ function combineSummaries<
   }
 
   // Finalise mean and stdDev calculations
-  for (const [, scoreName] of scoreMapping) {
+  for (const [, scoreName] of scoreMappings) {
     const stats = combined[scoreName];
     combined[scoreName] = getMeanAndStdDev(stats.summation, stats.sumOfSquares, stats.count);
   }
 
   // Find medians of numerical columns
   for (const [, value] of numMappings) {
-    const medianName = value.medianName;
+    const medianName = value.medianName as NumValue["medianName"];
     const nums: number[] = [];
     for (const summary of summaries) {
-      nums.push(...summary.medianNums[medianName]); // Collect all numerical values from subdistricts
+      nums.push(...summary.medianNums.get(medianName)!); // Collect all numerical values from subdistricts
     }
     combined.statistics[medianName] = calcMedian(nums); // Calculate and store overall median
   }
@@ -420,35 +531,62 @@ function combineSummaries<
 }
 
 /**
- * Summarises the Health Round CSV data by subdistrict and overall.
+ * Summarises the CSV data by subdistrict and overall.
  *
+ * @param subdistrictMapping - An object containing the column name and map for response codes.
+ * @param responseMapping - An object containing the column name and map for subdistrict codes.
+ * @param catMappings - Map with the **necessary categorical columns** for the dataset CSVs. **All dataset CSVs must
+ * contain these columns**. Refer to {@link summariseCategories}
+ * @param optCatMappings
+ * - Map with the **optional categorical columns** for the dataset CSVs. **Some CSVs may not contain these columns**.
+ * Refer to {@link summariseOptionalCategories}
+ * @param numMappings
+ * - Map with the **necessary numerical columns** for the dataset CSVs. **All dataset CSVs must contain these columns**.
+ * Refer to {@link summariseNums} and {@link getStatistics}
+ * @param scoreMappings
+ * - Map with the **score columns** for the dataset CSVs. **All dataset CSVs must contain these columns.** Refer to 
+ * {@link summariseScores}
  * @param headers - The array of header names from the CSV.
- * @param data - The 2D array of Health Round CSV data rows.
- * @returns An object containing the summary data by subdistrict and overall.
+ * @param data - The matrix of data rows and columns from the CSV.
+ * @returns An object containing the summary data, separated by subdistrict with overall summary.
+ *
+ * @example
+ * const subdistrictMapping = { name: "mukim", map: new Map(subdistrict)} as const;
+ * const responseMapping = { name: "status", map: new Map(response)} as const
+ * const catMappings = new Map([["sex", { name: "sex", map: new Map(sex) }]] as const) // Marking input as const
+ * const optCatMappings = new Map([["dialysis", { name: "underDialysis", map: new Map(binaryOption) }]] as const)
+ * const numMappings = new Map([["income", { name: "income", thresholds: incomeBrackets, medianName: "medianIncome" }]] as const)
+ * const scoreMappings = new Map([["dom1", "physicalHealth"]] as const)
+ *
+ * export function summariseHealthRound(headers: string[], data: string[][]) {
+ *   return summariseBy(subdistrictMapping, responseMapping, catMappings, optCatMappings, numMappings, scoreMappings, headers, data);
+ * }
+ * export type HealthRound = ReturnType<typeof summariseHealthRound>
+ * export type HealthRoundBySubdistrict = RecValue<HealthRound>
  */
-export function summariseBy<
-  Sub extends { map: ReadonlyMap<number, string>; column: string },
-  Res extends { column: string },
+function summariseBy<
+  Sub extends Readonly<{ map: ReadonlyMap<number, string>; name: string }>,
+  Res extends Readonly<{ name: string }>,
   CatKey extends string,
-  CatValue extends { name: string; mapping: ReadonlyMap<number, string> },
+  CatValue extends Readonly<{ name: string; map: ReadonlyMap<number, string> }>,
   OptKey extends string,
-  OptValue extends { name: string; mapping: ReadonlyMap<number, string> },
+  OptValue extends Readonly<{ name: string; map: ReadonlyMap<number, string> }>,
   NumKey extends string,
-  NumValue extends { name: string; medianName: string; thresholds: ReadonlyMap<number, string> },
+  NumValue extends Readonly<{ name: string; medianName: string; thresholds: ReadonlyMap<number, string> }>,
   ScoreKey extends string,
   ScoreValue extends string
 >(
   subdistrictMapping: Sub,
   responseMapping: Res,
   catMappings: ReadonlyMap<CatKey, CatValue>,
-  optCatMappings: ReadonlyMap<OptKey, OptValue>,
+  optCatMappings: ReadonlyMap<OptKey, OptValue> = new Map([] as const),
   numMappings: ReadonlyMap<NumKey, NumValue>,
-  scoreMapping: ReadonlyMap<ScoreKey, ScoreValue>,
+  scoreMappings: ReadonlyMap<ScoreKey, ScoreValue>,
   headers: string[],
   data: string[][]
 ) {
-  const { map: sdMap, column: sdCol } = subdistrictMapping;
-  const { column: resCol } = responseMapping;
+  const { map: sdMap, name: sdCol } = subdistrictMapping;
+  const { name: resCol } = responseMapping;
 
   // Create index map for header lookups
   const indexMap = createIndexMap(headers);
@@ -473,18 +611,14 @@ export function summariseBy<
 
   // Summarise each subdistrict and store results
   for (const [id, name] of sdMap) {
-    const res = summarise(catMappings, optCatMappings, numMappings, scoreMapping, indexMap, sdData[id]);
+    const res = summarise(catMappings, optCatMappings, numMappings, scoreMappings, indexMap, sdData[id]);
     const mapName = name as MapValue<Sub["map"]>;
     result[mapName] = res.summary;
     subdistrictSummaries.push(res);
   }
   // Combine subdistrict summaries to get overall summary
-  result.overall = combineSummaries(
-    catMappings,
-    optCatMappings,
-    numMappings,
-    scoreMapping,
-    subdistrictSummaries
-  ) as SummariseType["summary"];
+  result.overall = combineSummaries(catMappings, optCatMappings, numMappings, scoreMappings, subdistrictSummaries);
   return result;
 }
+
+export { summariseBy };
