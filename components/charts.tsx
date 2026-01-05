@@ -207,8 +207,8 @@ function ProportionalBarChart({
  * @see {@link GroupProportionalBarChartProps}
  * @example 
  * const chartData = [
- *  { category: "no", measured: 2, diagnosed: 3, fill: "var(--color-no)" },
- *  { category: "yes", measured: 8, diagnosed: 10, fill: "var(--color-yes)" },
+ *  { category: "no", measured: 2, diagnosed: 10 },
+ *  { category: "yes", measured: 8, diagnosed: 3 },
  * ];
  * 
  * const chartConfig = {
