@@ -1,3 +1,9 @@
+import {
+  GroupProportionalBarChartProps,
+  LabelledPieChartProps,
+  ProportionalBarChartProps,
+  StatCardProps,
+} from "@/components/types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   ChartConfig,
@@ -8,18 +14,22 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { cn } from "@/lib/utils";
-import { JSX } from "react";
 import { Bar, BarChart, CartesianGrid, Label, LabelList, Pie, PieChart, XAxis, YAxis } from "recharts";
 import { NameType, Payload, ValueType } from "recharts/types/component/DefaultTooltipContent";
 
+// Formats axis ticks to avoid floating point errors
 function percentTickFormatter(val: number) {
   return `${Math.round(val * 1000) / 10}%`;
 }
 
+// Formats pecentage labels
 function percentLabelFormatter(val: number) {
   return `${(val * 100).toFixed(0)}%`;
 }
 
+/**
+ * Helper function to find the proportion of each item out of all items from their counts
+ */
 function getProportions(data: { count: number }[]) {
   const totalCount = data.reduce((sum, item) => sum + item.count, 0);
   return data.map((item) => ({
@@ -28,6 +38,9 @@ function getProportions(data: { count: number }[]) {
   }));
 }
 
+/**
+ * Custom formatter to show the counts when hovering over chart components
+ */
 function CountTooltipFormatter(value?: ValueType, name?: NameType, item?: Payload<ValueType, NameType>) {
   return (
     <>
@@ -47,7 +60,10 @@ function CountTooltipFormatter(value?: ValueType, name?: NameType, item?: Payloa
   );
 }
 
-function MultipleCountTooltipFormatter(value?: ValueType, name?: NameType, item?: Payload<ValueType, NameType>) {
+/**
+ * Custom formatter to show the counts by group when hovering over chart components
+ */
+function GroupCountTooltipFormatter(value?: ValueType, name?: NameType, item?: Payload<ValueType, NameType>) {
   const originalKey = item ? item.dataKey!.toString().replace("_proportion", "") : "";
   return (
     <>
@@ -67,7 +83,32 @@ function MultipleCountTooltipFormatter(value?: ValueType, name?: NameType, item?
   );
 }
 
-export function ProportionalBarChart({
+/**
+ * Create a bar chart scaled by percentage
+ *
+ * @see {@link ProportionalBarChartProps}
+ * @example
+ * const chartData = [
+ *  { category: "no", count: 2, fill: "var(--color-no)" },
+ *  { category: "yes", count: 8, fill: "var(--color-yes)" },
+ * ];
+ * 
+ * const chartConfig = {
+ *   no: {
+ *     label: "No",
+ *     color: "var(--chart-1)",
+ *   },
+ *   yes: {
+ *     label: "Yes",
+ *     color: "var(--chart-2)",
+ *  },
+ * } satisfies ChartConfig;
+ * 
+ * <ProportionalBarChart 
+ *    title={"Title"} description={"Description"} chartData={chartData} chartConfig={chartConfig}
+ * />
+ */
+function ProportionalBarChart({
   title,
   description,
   chartData,
@@ -78,18 +119,7 @@ export function ProportionalBarChart({
   vertical = false,
   minHeight = 200,
   maxHeight = 500,
-}: {
-  title: string;
-  description: string;
-  chartData: { category: string; count: number; fill: string; proportion?: number }[];
-  chartConfig: ChartConfig;
-  margin?: Partial<{ top: number; right: number; bottom: number; left: number }>;
-  hideAxis?: boolean;
-  hideLabel?: boolean;
-  vertical?: boolean;
-  minHeight?: number;
-  maxHeight?: number;
-}) {
+}: ProportionalBarChartProps) {
   const percentageChartData =
     "proportion" in (chartData[0] ?? {})
       ? chartData
@@ -171,7 +201,32 @@ export function ProportionalBarChart({
   );
 }
 
-export function MultipleProportionalBarChart({
+/**
+ * Create a grouped bar chart scaled by percentage
+ *
+ * @see {@link GroupProportionalBarChartProps}
+ * @example 
+ * const chartData = [
+ *  { category: "no", measured: 2, diagnosed: 3, fill: "var(--color-no)" },
+ *  { category: "yes", measured: 8, diagnosed: 10, fill: "var(--color-yes)" },
+ * ];
+ * 
+ * const chartConfig = {
+ *   measured: {
+ *     label: "Measured",
+ *     color: "var(--chart-1)",
+ *   },
+ *   diagnosed: {
+ *     label: "Diagnosed",
+ *     color: "var(--chart-2)",
+ *  },
+ * } satisfies ChartConfig;
+ * 
+ * <GroupProportionalBarChart 
+ *    title={"Title"} description={"Description"} chartData={chartData} chartConfig={chartConfig}
+ * />
+ */
+function GroupProportionalBarChart({
   title,
   description,
   chartData,
@@ -180,18 +235,9 @@ export function MultipleProportionalBarChart({
   hideAxis = false,
   hideLabel = false,
   vertical = false,
+  minHeight = 200,
   maxHeight = 500,
-}: {
-  title: string;
-  description: string;
-  chartData: { category: string; [key: string]: number | string }[];
-  chartConfig: ChartConfig;
-  margin?: Partial<{ top: number; right: number; bottom: number; left: number }>;
-  hideAxis?: boolean;
-  hideLabel?: boolean;
-  vertical?: boolean;
-  maxHeight?: number;
-}) {
+}: GroupProportionalBarChartProps) {
   const percentageChartConfig = Object.entries(chartConfig).reduce((acc, [key, config]) => {
     acc[`${key}_proportion`] = {
       label: config.label,
@@ -229,7 +275,7 @@ export function MultipleProportionalBarChart({
       <CartesianGrid horizontal={false} strokeDasharray="3 3" className="stroke-muted" />
       <XAxis type="number" tickLine={false} axisLine={false} hide={hideAxis} tickFormatter={percentTickFormatter} />
       <YAxis dataKey="category" type="category" tickLine={false} tickMargin={10} axisLine={false} />
-      <ChartTooltip content={<ChartTooltipContent nameKey="category" formatter={MultipleCountTooltipFormatter} />} />
+      <ChartTooltip content={<ChartTooltipContent nameKey="category" formatter={GroupCountTooltipFormatter} />} />
       <ChartLegend content={<ChartLegendContent />} />
       {Object.keys(percentageChartData[0])
         .filter((key) => key.includes("_proportion"))
@@ -262,7 +308,7 @@ export function MultipleProportionalBarChart({
         tickFormatter={percentTickFormatter}
         hide={hideAxis}
       />
-      <ChartTooltip content={<ChartTooltipContent nameKey="category" formatter={MultipleCountTooltipFormatter} />} />
+      <ChartTooltip content={<ChartTooltipContent nameKey="category" formatter={GroupCountTooltipFormatter} />} />
       <ChartLegend content={<ChartLegendContent />} />
       {Object.keys(percentageChartData[0])
         .filter((key) => key.includes("_proportion"))
@@ -293,7 +339,7 @@ export function MultipleProportionalBarChart({
         <ChartContainer
           config={percentageChartConfig}
           className="w-full h-full"
-          style={{ minHeight: "200px", maxHeight: `${maxHeight}px` }}
+          style={{ minHeight: `${minHeight}px`, maxHeight: `${maxHeight}px` }}
         >
           {vertical ? verticalBar : horizontalBar}
         </ChartContainer>
@@ -302,7 +348,32 @@ export function MultipleProportionalBarChart({
   );
 }
 
-export function LabelledPieChart({
+/**
+ * Create a labelled pie chart
+ *
+ * @see {@link LabelledPieChartProps}
+ * @example
+ * const chartData = [
+ *  { category: "no", count: 2, fill: "var(--color-no)" },
+ *  { category: "yes", count: 8, fill: "var(--color-yes)" },
+ * ];
+ * 
+ * const chartConfig = {
+ *   no: {
+ *     label: "No",
+ *     color: "var(--chart-muted)",
+ *   },
+ *   yes: {
+ *     label: "Yes",
+ *     color: "var(--chart-4)",
+ *  },
+ * } satisfies ChartConfig;
+ * 
+ * <LabelledPieChart 
+ *    title={"Title"} description={"Description"} chartData={chartData} chartConfig={chartConfig}
+ * />
+ */
+function LabelledPieChart({
   title,
   description,
   chartData,
@@ -312,17 +383,7 @@ export function LabelledPieChart({
   donutStat = null,
   gridLegend = false,
   hideLegend = false,
-}: {
-  title: string;
-  description: string;
-  chartData: { category: string; count: number; fill: string }[];
-  chartConfig: ChartConfig;
-  disableAnimation?: boolean;
-  donut?: boolean;
-  donutStat?: { key: string; label: string } | null;
-  gridLegend?: boolean;
-  hideLegend?: boolean;
-}) {
+}: LabelledPieChartProps) {
   const percentageChartData = getProportions(chartData);
 
   const pieLabel = ({ payload, ...props }: any) => {
@@ -414,7 +475,16 @@ export function LabelledPieChart({
   );
 }
 
-export function StatCard({
+/**
+ * Creates a statistic card
+ *
+ * @see {@link StatCardProps}
+ * @example
+ * import { Users } from "lucide-react";
+ * 
+ * <StatCard title={"Title"} description={"Description"} value={2000} icon={Users} />
+ */
+function StatCard({
   title,
   subtitle,
   value,
@@ -423,16 +493,7 @@ export function StatCard({
   description,
   centered = false,
   icon: Icon,
-}: {
-  title: string;
-  subtitle?: string;
-  value: number | string;
-  prefix?: string;
-  suffix?: string;
-  description?: JSX.Element | string;
-  centered?: boolean;
-  icon: React.ComponentType<{ className?: string }>;
-}) {
+}: StatCardProps) {
   return (
     <Card>
       <CardHeader className="flex-1 flex-col">
@@ -459,3 +520,6 @@ export function StatCard({
     </Card>
   );
 }
+
+export { GroupProportionalBarChart, LabelledPieChart, ProportionalBarChart, StatCard };
+
