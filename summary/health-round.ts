@@ -1,4 +1,4 @@
-import { RecValue, summariseBy, binaryOption } from "@/lib/summarise";
+import { binaryOption, RecValue, summariseBy } from "@/lib/summarise";
 
 /*
  * Maps derived from the dataset codebook, with keys as the codes and values as descriptive labels. Codebook maps are

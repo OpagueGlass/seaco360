@@ -3,7 +3,7 @@ import quickselect from "quickselect";
 // Constants
 const NA = "";
 const TRUE = "1";
-export const binaryOption = new Map([
+const binaryOption = new Map([
   [0, "no"],
   [1, "yes"],
 ] as const);
@@ -612,4 +612,5 @@ function summariseBy<
   return result;
 }
 
-export { summariseBy };
+export { binaryOption, summariseBy };
+

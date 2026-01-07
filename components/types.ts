@@ -33,8 +33,17 @@ interface GroupData {
   /** Count of each category as an object of keys with the category name and values as their associated counts */
   [key: string]: number | string;
 }
-
-interface ProportionalProps {
+/**
+ * Configuration for Chart Cards
+ *
+ * @property title - Title of the chart
+ * @property description - Description of the chart
+ * @property chartConfig - An object containing the category names in chartData as keys (case-sensitive) and values as
+ *    an object containing the label and color of the category.
+ * @property minHeight - The minimum height of the chart in pixels.
+ * @property maxHeight - The maximum height of the chart in pixels.
+ */
+export interface ChartProps {
   /** Title of the chart */
   title: string;
   /** Description of the chart  */
@@ -42,13 +51,13 @@ interface ProportionalProps {
   /**An object containing the categories in chartData as keys (case-sensitive) and values as an object containing the
    * label and color of the category. */
   chartConfig: ChartConfig;
-  /** The minimum height of the chart. Defaults to 200px */
+  /** The minimum height of the chart in pixels. */
   minHeight?: number;
-  /** The maximum height of the chart. Defaults to 500px */
+  /** The maximum height of the chart in pixels. */
   maxHeight?: number;
 }
 
-interface ProportionalBarProps extends ProportionalProps {
+interface ProportionalBarProps extends ChartProps {
   /** Switches the bar chart to vertical mode which swaps the axes. Horizontal (False) by default, with categories on
    * the X-axis and proportion on the Y-axis. */
   vertical?: boolean;
@@ -69,8 +78,8 @@ interface ProportionalBarProps extends ProportionalProps {
  * @property chartData - An array of {@link CategoryData}
  * @property chartConfig - An object containing the category names in chartData as keys (case-sensitive) and values as
  *    an object containing the label and color of the category.
- * @property minHeight - The minimum height of the chart. Defaults to 200px
- * @property maxHeight - The maximum height of the chart. Defaults to 500px
+ * @property minHeight - The minimum height of the chart in pixels. Defaults to 200px
+ * @property maxHeight - The maximum height of the chart in pixels. Defaults to 500px
  * @property vertical - Switches the bar chart to vertical mode which swaps the axes. Horizontal (False) by default,
  *    with categories on the X-axis and proportion on the Y-axis.
  * @property margin - An optional object partially containing the margin for the chart. Particular useful for providing
@@ -91,8 +100,8 @@ export interface ProportionalBarChartProps extends ProportionalBarProps {
  * @property chartData - An array of {@link GroupData}
  * @property chartConfig - An object containing the category names in chartData as keys (case-sensitive) and values as
  *    an object containing the label and color of the category.
- * @property minHeight - The minimum height of the chart. Defaults to 200px
- * @property maxHeight - The maximum height of the chart. Defaults to 500px
+ * @property minHeight - The minimum height of the chart in pixels. Defaults to 200px
+ * @property maxHeight - The maximum height of the chart in pixels. Defaults to 500px
  * @property vertical - Switches the bar chart to vertical mode which swaps the axes. Horizontal (False) by default,
  *    with categories on the X-axis and proportion on the Y-axis.
  * @property margin - An optional object partially containing the margin for the chart. Particular useful for providing
@@ -112,6 +121,8 @@ export interface GroupProportionalBarChartProps extends ProportionalBarProps {
  * @property chartData - An array of {@link CategoryData}
  * @property chartConfig - An object containing the category names in chartData as keys (case-sensitive) and values as
  *    an object containing the label and color of the category.
+ * @property minHeight - The minimum height of the chart in pixels. Defaults to 320px
+ * @property maxHeight - The maximum height of the chart in pixels. Defaults to 320px
  * @property donut - Switches to donut chart. Pie chart (False) by default.
  * @property donutStat - The statistic to show in the donut chart as an object containing the key (category) and label
  * @property gridLegend - Turns the legend into a grid, particularly useful with many categories. False by default.
@@ -119,7 +130,7 @@ export interface GroupProportionalBarChartProps extends ProportionalBarProps {
  * @property disableAnimation - Turns off the animation of the chart to constantly show labels, particularly useful with
  *    very similar values between different groups
  */
-export interface LabelledPieChartProps extends ProportionalProps {
+export interface LabelledPieChartProps extends ChartProps {
   /** An array of {@link CategoryData} */
   chartData: CategoryData[];
   /** Switches to donut chart. Pie chart (False) by default. */

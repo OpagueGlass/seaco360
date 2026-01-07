@@ -2,6 +2,7 @@ import {
   GroupProportionalBarChartProps,
   LabelledPieChartProps,
   ProportionalBarChartProps,
+  ChartProps,
   StatCardProps,
 } from "@/components/types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,7 +15,18 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { cn } from "@/lib/utils";
-import { Bar, BarChart, CartesianGrid, Label, LabelList, Pie, PieChart, XAxis, YAxis } from "recharts";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Label,
+  LabelList,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { NameType, Payload, ValueType } from "recharts/types/component/DefaultTooltipContent";
 
 // Formats axis ticks to avoid floating point errors
@@ -84,6 +96,40 @@ function GroupCountTooltipFormatter(value?: ValueType, name?: NameType, item?: P
 }
 
 /**
+ * Card wrapper for charts
+ *
+ * @see {@link ChartProps}
+ */
+function ChartCard({
+  title,
+  description,
+  chartConfig,
+  minHeight,
+  maxHeight,
+  children,
+}: ChartProps & {
+  children: React.ComponentProps<typeof ResponsiveContainer>["children"];
+}) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
+        <CardDescription>{description}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ChartContainer
+          config={chartConfig}
+          className="w-full h-full"
+          style={{ minHeight: `${minHeight}px`, maxHeight: `${maxHeight}px` }}
+        >
+          {children}
+        </ChartContainer>
+      </CardContent>
+    </Card>
+  );
+}
+
+/**
  * Create a bar chart scaled by percentage
  *
  * @see {@link ProportionalBarChartProps}
@@ -92,7 +138,7 @@ function GroupCountTooltipFormatter(value?: ValueType, name?: NameType, item?: P
  *  { category: "no", count: 2, fill: "var(--color-no)" },
  *  { category: "yes", count: 8, fill: "var(--color-yes)" },
  * ];
- * 
+ *
  * const chartConfig = {
  *   no: {
  *     label: "No",
@@ -103,8 +149,8 @@ function GroupCountTooltipFormatter(value?: ValueType, name?: NameType, item?: P
  *     color: "var(--chart-2)",
  *  },
  * } satisfies ChartConfig;
- * 
- * <ProportionalBarChart 
+ *
+ * <ProportionalBarChart
  *    title={"Title"} description={"Description"} chartData={chartData} chartConfig={chartConfig}
  * />
  */
@@ -183,21 +229,15 @@ function ProportionalBarChart({
   );
 
   return (
-    <Card className="flex flex-col h-full w-full">
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-      <CardContent className="flex-1 flex flex-col">
-        <ChartContainer
-          config={chartConfig}
-          className="w-full h-full"
-          style={{ minHeight: `${minHeight}px`, maxHeight: `${maxHeight}px` }}
-        >
-          {vertical ? verticalBar : horizontalBar}
-        </ChartContainer>
-      </CardContent>
-    </Card>
+    <ChartCard
+      title={title}
+      description={description}
+      chartConfig={chartConfig}
+      minHeight={minHeight}
+      maxHeight={maxHeight}
+    >
+      {vertical ? verticalBar : horizontalBar}
+    </ChartCard>
   );
 }
 
@@ -205,12 +245,12 @@ function ProportionalBarChart({
  * Create a grouped bar chart scaled by percentage
  *
  * @see {@link GroupProportionalBarChartProps}
- * @example 
+ * @example
  * const chartData = [
  *  { category: "no", measured: 2, diagnosed: 10 },
  *  { category: "yes", measured: 8, diagnosed: 3 },
  * ];
- * 
+ *
  * const chartConfig = {
  *   measured: {
  *     label: "Measured",
@@ -221,8 +261,8 @@ function ProportionalBarChart({
  *     color: "var(--chart-2)",
  *  },
  * } satisfies ChartConfig;
- * 
- * <GroupProportionalBarChart 
+ *
+ * <GroupProportionalBarChart
  *    title={"Title"} description={"Description"} chartData={chartData} chartConfig={chartConfig}
  * />
  */
@@ -330,21 +370,15 @@ function GroupProportionalBarChart({
   );
 
   return (
-    <Card className="flex flex-col h-full w-full">
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-      <CardContent className="flex-1 flex flex-col">
-        <ChartContainer
-          config={percentageChartConfig}
-          className="w-full h-full"
-          style={{ minHeight: `${minHeight}px`, maxHeight: `${maxHeight}px` }}
-        >
-          {vertical ? verticalBar : horizontalBar}
-        </ChartContainer>
-      </CardContent>
-    </Card>
+    <ChartCard
+      title={title}
+      description={description}
+      chartConfig={percentageChartConfig}
+      minHeight={minHeight}
+      maxHeight={maxHeight}
+    >
+      {vertical ? verticalBar : horizontalBar}
+    </ChartCard>
   );
 }
 
@@ -357,7 +391,7 @@ function GroupProportionalBarChart({
  *  { category: "no", count: 2, fill: "var(--color-no)" },
  *  { category: "yes", count: 8, fill: "var(--color-yes)" },
  * ];
- * 
+ *
  * const chartConfig = {
  *   no: {
  *     label: "No",
@@ -368,8 +402,8 @@ function GroupProportionalBarChart({
  *     color: "var(--chart-4)",
  *  },
  * } satisfies ChartConfig;
- * 
- * <LabelledPieChart 
+ *
+ * <LabelledPieChart
  *    title={"Title"} description={"Description"} chartData={chartData} chartConfig={chartConfig}
  * />
  */
@@ -383,6 +417,8 @@ function LabelledPieChart({
   donutStat = null,
   gridLegend = false,
   hideLegend = false,
+  minHeight = 320,
+  maxHeight = 320,
 }: LabelledPieChartProps) {
   const percentageChartData = getProportions(chartData);
 
@@ -452,26 +488,21 @@ function LabelledPieChart({
   const legendClass = `grid grid-cols-${colCount} xl:flex xl:flex-row`;
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig} className="min-h-[320px] max-h-[320px] w-full h-full">
-          <PieChart accessibilityLayer margin={{ top: 10 }}>
-            {donut ? donutChart : pieChart}
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel formatter={CountTooltipFormatter} />}
-            />
-            {!hideLegend && (
-              <ChartLegend content={<ChartLegendContent />} className={gridLegend ? legendClass : undefined} />
-            )}
-          </PieChart>
-        </ChartContainer>
-      </CardContent>
-    </Card>
+    <ChartCard
+      title={title}
+      description={description}
+      chartConfig={chartConfig}
+      minHeight={minHeight}
+      maxHeight={maxHeight}
+    >
+      <PieChart accessibilityLayer margin={{ top: 10 }}>
+        {donut ? donutChart : pieChart}
+        <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel formatter={CountTooltipFormatter} />} />
+        {!hideLegend && (
+          <ChartLegend content={<ChartLegendContent />} className={gridLegend ? legendClass : undefined} />
+        )}
+      </PieChart>
+    </ChartCard>
   );
 }
 
@@ -481,7 +512,7 @@ function LabelledPieChart({
  * @see {@link StatCardProps}
  * @example
  * import { Users } from "lucide-react";
- * 
+ *
  * <StatCard title={"Title"} description={"Description"} value={2000} icon={Users} />
  */
 function StatCard({
