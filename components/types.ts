@@ -9,7 +9,7 @@ import { ChartConfig } from "@/components/ui/chart";
  * @property fill - The colour to represent this category
  * @property proportion - If present, the chart will use those proportions instead of inferring from the counts
  */
-interface CategoryData {
+export interface CategoryData {
   /** The name of the category */
   category: string;
   /** The number of times this category appears */
@@ -27,7 +27,7 @@ interface CategoryData {
  * @property [key: string] - Count of each category as an object of keys as the category name and values as their
  *    associated counts
  */
-interface GroupData {
+export interface GroupData {
   /** The name of the group */
   category: string;
   /** Count of each category as an object of keys with the category name and values as their associated counts */
