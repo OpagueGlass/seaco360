@@ -116,18 +116,18 @@ export function getMenuList(pathname: string): Group[] {
     // },
   ];
 
-  // if (session) {
-  //   menuList.push({
-  //     groupLabel: "Administration",
-  //     menus: [
-  //       {
-  //         href: "/dashboard",
-  //         label: "Dashboard",
-  //         icon: LayoutDashboardIcon,
-  //       },
-  //     ],
-  //   });
-  // }
+  if (session) {
+    menuList.push({
+      groupLabel: "Administration",
+      menus: [
+        {
+          href: "/dashboard",
+          label: "Dashboard",
+          icon: LayoutDashboardIcon,
+        },
+      ],
+    });
+  }
 
   return menuList;
 }

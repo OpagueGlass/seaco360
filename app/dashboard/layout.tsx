@@ -7,7 +7,7 @@ import { Loader2, ShieldX } from "lucide-react";
 import Link from "next/link";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { session, authState } = useAuth();
+  const { session, authState, signIn } = useAuth();
 
   if (authState.isLoading) {
     return (
@@ -50,8 +50,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <Button asChild variant="outline" className="w-full sm:w-auto">
                 <Link href="/">Go Home</Link>
               </Button>
-              <Button asChild className="w-full sm:w-auto">
-                <Link href="/login">Sign In</Link>
+              <Button className="w-full sm:w-auto" onClick={signIn}>
+                Sign In
               </Button>
             </div>
           </EmptyContent>

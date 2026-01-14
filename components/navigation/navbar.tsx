@@ -5,14 +5,15 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as React from "react";
 import { AppSheet } from "./app-sheet";
-
 import { useAuth } from "@/context/auth-context";
 import { Button } from "../ui/button";
+import { useRouter } from "next/navigation";
 
 export function Navbar({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { session } = useAuth();
+  const { authState, session, signIn } = useAuth();
   const hideNavbar = pathname === "/login" || pathname === "/signup";
+  const router = useRouter();
 
   if (hideNavbar) {
     return <main>{children}</main>;
@@ -30,12 +31,10 @@ export function Navbar({ children }: { children: React.ReactNode }) {
               </Link>
               {/* <NavigationMenuDemo /> */}
             </div>
-            {/* {!session ? (
-              <Button className="flex items-center gap-2" asChild>
-                <Link href="/login">
-                  <LogIn /> 
-                  Login
-                </Link>
+            {!session ? (
+              <Button className="flex items-center gap-2" onClick={signIn}>
+                <LogIn />
+                Login
               </Button>
             ) : (
               <Button className="flex items-center gap-2" asChild>
@@ -44,7 +43,7 @@ export function Navbar({ children }: { children: React.ReactNode }) {
                   Dashboard
                 </Link>
               </Button>
-            )} */}
+            )}
           </div>
         </div>
       </nav>
@@ -52,5 +51,3 @@ export function Navbar({ children }: { children: React.ReactNode }) {
     </>
   );
 }
-
-

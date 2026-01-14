@@ -19,7 +19,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
     const form = e.target as HTMLFormElement;
     const email = (form.elements.namedItem("email") as HTMLInputElement).value;
     const password = (form.elements.namedItem("password") as HTMLInputElement).value;
-    await signIn(email, password);
+    await signIn();
     if (!authState.error) {
       router.push("/dashboard");
     } else {
