@@ -10,7 +10,7 @@ function HRChronicDiseasesChart({ data }: { data: HealthRoundBySubdistrict }) {
   const { stroke, heartDisease, arthritis, kidneyDisease, hypertensionDiagnosed, diabetesDiagnosed } = data;
 
   const title = "Percentage of Reported Chronic Diseases";
-  const description = "Prevalence of chronic conditions in the population";
+  const description = "Prevalence of chronic conditions among participants";
 
   const chartData = [
     {
@@ -89,7 +89,7 @@ function HRChronicDiseasesChart({ data }: { data: HealthRoundBySubdistrict }) {
 function HRHypertensionScreenedChart({ data }: { data: HealthRoundBySubdistrict }) {
   const { no, yes } = data.hypertensionScreened;
   const title = "Hypertension Screening";
-  const description = "Proportion of population who have been screened for hypertension";
+  const description = "Proportion of participants who have been screened for hypertension";
   const chartData = [
     { category: "no", count: no, fill: "var(--color-no)" },
     { category: "yes", count: yes, fill: "var(--color-yes)" },
@@ -122,7 +122,7 @@ function HRHypertensionPrevalenceChart({ data }: { data: HealthRoundBySubdistric
   const { yes: yesHptDiagnosed } = hypertensionDiagnosed;
 
   const title = "Hypertension Prevalence";
-  const description = "Proportion of population with hypertension diagnosed and measured";
+  const description = "Proportion of participants with hypertension diagnosed and measured";
   const chartData = [
     {
       category: "Measured",
@@ -163,7 +163,7 @@ function HRHypertensionPrevalenceChart({ data }: { data: HealthRoundBySubdistric
 function HRDiabetesScreenedChart({ data }: { data: HealthRoundBySubdistrict }) {
   const { no, yes } = data.diabetesScreened;
   const title = "Diabetes Screening";
-  const description = "Proportion of population who have been screened for diabetes";
+  const description = "Proportion of participants who have been screened for diabetes";
   const chartData = [
     { category: "no", count: no, fill: "var(--color-no)" },
     { category: "yes", count: yes, fill: "var(--color-yes)" },
@@ -195,7 +195,7 @@ function HRDiabetesPrevalenceChart({ data }: { data: HealthRoundBySubdistrict })
   const { no: noDiabMeasured, yes: yesDiabMeasured } = diabetesMeasured;
   const { no: noDiabDiagnosed, yes: yesDiabDiagnosed } = diabetesDiagnosed;
   const title = "Diabetes Prevalence";
-  const description = "Proportion of population with diabetes diagnosed and measured";
+  const description = "Proportion of participants with diabetes diagnosed and measured";
   const chartData = [
     {
       category: "Measured",
@@ -236,7 +236,7 @@ function HRDiabetesPrevalenceChart({ data }: { data: HealthRoundBySubdistrict })
 function HRDialysisChart({ data }: { data: HealthRoundBySubdistrict }) {
   const { no, yes } = data.underDialysis!;
   const title = "On Dialysis";
-  const description = "Proportion of population on dialysis";
+  const description = "Proportion of participants on dialysis";
   const chartData = [
     { category: "no", count: no, fill: "var(--color-no)" },
     { category: "yes", count: yes, fill: "var(--color-yes)" },
@@ -266,7 +266,7 @@ function HRDialysisChart({ data }: { data: HealthRoundBySubdistrict }) {
 function HRUTIPastYearChart({ data }: { data: HealthRoundBySubdistrict }) {
   const { no, yes } = data.hadUTIPastYear;
   const title = "Had Urinary Tract Infection (UTI) in Past Year";
-  const description = "Proportion of population who have had UTI in the past year";
+  const description = "Proportion of participants who have had UTI in the past year";
   const chartData = [
     { category: "no", count: no, fill: "var(--color-no)" },
     { category: "yes", count: yes, fill: "var(--color-yes)" },
@@ -296,7 +296,7 @@ function HRUTIPastYearChart({ data }: { data: HealthRoundBySubdistrict }) {
 function HRDengueBeforeChart({ data }: { data: HealthRoundBySubdistrict }) {
   const { no, yes } = data.hadDengueBefore;
   const title = "Had Dengue Before";
-  const description = "Proportion of population who have had dengue before";
+  const description = "Proportion of participants who have had dengue before";
   const chartData = [
     { category: "no", count: no, fill: "var(--color-no)" },
     { category: "yes", count: yes, fill: "var(--color-yes)" },
@@ -326,7 +326,7 @@ function HRDengueBeforeChart({ data }: { data: HealthRoundBySubdistrict }) {
 function HRDenguePastYearChart({ data }: { data: HealthRoundBySubdistrict }) {
   const { no, yes } = data.hadDenguePastYear;
   const title = "Had Dengue in Past Year";
-  const description = "Proportion of population who have had dengue in the past year";
+  const description = "Proportion of participants who have had dengue in the past year";
   const chartData = [
     { category: "no", count: no, fill: "var(--color-no)" },
     { category: "yes", count: yes, fill: "var(--color-yes)" },

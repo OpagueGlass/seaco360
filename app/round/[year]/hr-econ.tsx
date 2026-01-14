@@ -7,7 +7,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 function HREmploymentStatusChart({ data }: { data: HealthRoundBySubdistrict }) {
   const { student, homemaker, notWorking, working, pensioner, selfEmployed } = data.employmentStatus;
   const title = "Employment Status";
-  const description = "Population breakdown by employment status";
+  const description = "Participants breakdown by employment status";
 
   const chartData = [
     { category: "Employed", count: working, fill: "var(--color-employed)" },
@@ -65,7 +65,7 @@ function HREmploymentStatusChart({ data }: { data: HealthRoundBySubdistrict }) {
 function HRMedianIncomeStat({ data }: { data: HealthRoundBySubdistrict }) {
   const { medianIncome } = data.statistics;
   const title = "Median Monthly Household Income";
-  const description = "Median monthly household income of the population";
+  const description = "Median monthly household income among participants";
   return (
     <StatCard title={title} prefix="RM " value={medianIncome} description={description} icon={DollarSign} centered />
   );
@@ -75,7 +75,7 @@ function HRIncomeChart({ data }: { data: HealthRoundBySubdistrict }) {
   const income = data.income;
 
   const title = "Monthly Household Income";
-  const description = "Population breakdown by monthly household income";
+  const description = "Participants breakdown by monthly household income";
 
   const chartData = [
     { category: "RM0-499", count: income["RM0-499"], fill: "var(--color-2)" },
@@ -129,7 +129,7 @@ function HREducationLevelChart({ data }: { data: HealthRoundBySubdistrict }) {
   const { primary, secondary, tertiary, noFormalEducation, other } = data.educationLevel;
 
   const title = "Education Level";
-  const description = "Population breakdown by highest education level attained";
+  const description = "Participants breakdown by highest education level attained";
   const chartData = [
     { category: "noFormalEducation", count: noFormalEducation, fill: "var(--color-noFormalEducation)" },
     { category: "primary", count: primary, fill: "var(--color-primary)" },

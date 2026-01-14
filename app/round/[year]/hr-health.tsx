@@ -6,7 +6,7 @@ function HRBMIChart({ data }: { data: HealthRoundBySubdistrict }) {
   const { underweight, normal, overweight, obese } = data.bmiCategory;
 
   const title = "BMI Categories";
-  const description = "Population breakdown by BMI category";
+  const description = "Participants breakdown by BMI category";
   const chartData = [
     { category: "Underweight", count: underweight, fill: "var(--color-underweight)" },
     { category: "Normal", count: normal, fill: "var(--color-normal)" },
@@ -45,7 +45,7 @@ function HRBMIChart({ data }: { data: HealthRoundBySubdistrict }) {
 function HRCentralObesityChart({ data }: { data: HealthRoundBySubdistrict }) {
   const { no, yes } = data.centralObesity;
   const title = "Central Obesity Prevalence";
-  const description = "Proportion of population with central obesity";
+  const description = "Proportion of participants with central obesity";
   const chartData = [
     { category: "no", count: no, fill: "var(--color-no)" },
     { category: "yes", count: yes, fill: "var(--color-yes)" },
@@ -75,7 +75,7 @@ function HRCentralObesityChart({ data }: { data: HealthRoundBySubdistrict }) {
 function HRSmokedBeforeChart({ data }: { data: HealthRoundBySubdistrict }) {
   const { no, yes } = data.hadDengueBefore;
   const title = "Smoked Before";
-  const description = "Proportion of population who have smoked before";
+  const description = "Proportion of participants who have smoked before";
   const chartData = [
     { category: "no", count: no, fill: "var(--color-no)" },
     { category: "yes", count: yes, fill: "var(--color-yes)" },
@@ -106,7 +106,7 @@ function HRSmokedBeforeChart({ data }: { data: HealthRoundBySubdistrict }) {
 function HRSmokesNowChart({ data }: { data: HealthRoundBySubdistrict }) {
   const { no, yes } = data.isCurrentlySmoking;
   const title = "Smokes Now";
-  const description = "Proportion of population who currently smoke";
+  const description = "Proportion of participants who currently smoke";
   const chartData = [
     { category: "no", count: no, fill: "var(--color-no)" },
     { category: "yes", count: yes, fill: "var(--color-yes)" },
@@ -137,7 +137,7 @@ function HRInadequateFruitVegChart({ data }: { data: HealthRoundBySubdistrict })
   const { no: noFruit, yes: yesFruit } = data.inadequateFruit!;
   const { no: noVeg, yes: yesVeg } = data.inadequateVegetable!;
   const title = "Inadequate Fruit & Vegetable Intake";
-  const description = "Proportion of population with inadequate fruit and vegetable intake";
+  const description = "Proportion of participants with inadequate fruit and vegetable intake";
 
   const chartData = [
     { category: "Fruit", count: yesFruit, proportion: yesFruit / (yesFruit + noFruit), fill: "var(--color-fruit)" },

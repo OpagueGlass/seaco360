@@ -37,7 +37,7 @@ function HRAgeChart({ data }: { data: HealthRoundBySubdistrict }) {
   const {"0-4": _, ...ageGroups} = data.age;
 
   const title = "Age Distribution";
-  const description = "Population breakdown by age group";
+  const description = "Participants breakdown by age group";
 
   const chartData = Object.entries(ageGroups)
     .sort(([a], [b]) => parseInt(a) - parseInt(b))
@@ -71,7 +71,7 @@ function HREthnicityChart({ data }: { data: HealthRoundBySubdistrict }) {
   const { malay, chinese, indian, orangAsli, nonCitizen, other } = data.ethnicity;
 
   const title = "Ethnic Composition";
-  const description = "Population breakdown by ethnicity";
+  const description = "Participants breakdown by ethnicity";
 
   const chartData = [
     { category: "Malay", count: malay, fill: "var(--color-malay)" },
@@ -124,7 +124,7 @@ function HREthnicityChart({ data }: { data: HealthRoundBySubdistrict }) {
 function HRGenderChart({ data }: { data: HealthRoundBySubdistrict }) {
   const { male, female } = data.sex;
   const title = "Gender Distribution";
-  const description = "Population breakdown by gender";
+  const description = "Participants breakdown by gender";
 
   const chartData = [
     { category: "male", count: male, fill: "var(--color-male)" },

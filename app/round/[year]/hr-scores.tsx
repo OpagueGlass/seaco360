@@ -76,7 +76,7 @@ function HRDomainScoresChart({ data }: { data: HealthRoundBySubdistrict }) {
   const { physicalHealth, psychologicalHealth, socialRelationships, environment } = data;
 
   const title = "Quality of Life Scores by Domain";
-  const description = "Scores for each domain across the population";
+  const description = "Scores for each domain among participants";
 
   const chartData = [
     { category: "Physical Health", fill: "var(--color-physicalHealth)", ...physicalHealth },
@@ -112,7 +112,7 @@ function HROverallScoreStat({ data }: { data: HealthRoundBySubdistrict }) {
   return (
     <StatCard
       title="Overall Quality of Life Score"
-      subtitle="Average score across all four domains for the population"
+      subtitle="Average score across all four domains among participants"
       value={mean.toFixed(2)}
       suffix={" / 20"}
       description={
