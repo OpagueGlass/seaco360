@@ -15,11 +15,6 @@ export interface CSVFile {
   year: number;
 }
 
-export interface UploadStatus {
-  type: "success" | "error" | null;
-  message: string;
-}
-
 export const csvTypes = Array.from(datasetMap.entries()).map(([value, { name }]) => ({
   value: value.toString(),
   label: name,

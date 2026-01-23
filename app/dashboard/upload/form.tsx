@@ -10,23 +10,20 @@ import { summariseHealthRound } from "@/summary/health-round";
 import { Calendar, FileSpreadsheet, Upload } from "lucide-react";
 import { parse, ParseResult } from "papaparse";
 import { Dispatch, DragEvent, SetStateAction, useCallback, useRef, useState } from "react";
-import { CSVFile, csvTypes, DatasetType, UploadStatus } from "./types";
+import { toast } from "sonner";
+import { CSVFile, csvTypes, DatasetType } from "./types";
 
 function updateResult(
   file: File,
   year: number,
   csvType: DatasetType,
   setCurrentFile: Dispatch<SetStateAction<CSVFile | null>>,
-  setUploadStatus: (status: UploadStatus) => void,
-  setIsLoading: (loading: boolean) => void
+  setIsLoading: (loading: boolean) => void,
 ) {
   const previewRows = 100;
   return (results: ParseResult<unknown>) => {
     if (results.errors.length > 0) {
-      setUploadStatus({
-        type: "error",
-        message: `Error parsing ${file.name}: ${results.errors.map((e) => e.message).join(", ")}`,
-      });
+      toast.error(`Error parsing ${file.name}: ${results.errors.map((e) => e.message).join(", ")}`);
       setIsLoading(false);
       return;
     } else {
@@ -50,21 +47,12 @@ function updateResult(
 
         setCurrentFile(newFile);
         setIsLoading(false);
-        setUploadStatus({
-          type: "success",
-          message: `${file.name} loaded successfully`,
-        });
+        toast.success(`${file.name} loaded successfully`);
       } catch (error) {
         if (error instanceof TypeError) {
-          setUploadStatus({
-            type: "error",
-            message: "Your CSV file is missing one or more required columns. Please ensure it matches the template.",
-          });
+          toast.error("Your CSV file is missing one or more required columns. Please ensure it matches the template.");
         } else {
-          setUploadStatus({
-            type: "error",
-            message: `Error processing ${file.name}: ${error instanceof Error ? error.message : String(error)}`,
-          });
+          toast.error(`Error processing ${file.name}: ${error instanceof Error ? error.message : String(error)}`);
         }
         setIsLoading(false);
       }
@@ -74,10 +62,8 @@ function updateResult(
 
 export default function FormView({
   setCurrentFile,
-  setUploadStatus,
 }: {
   setCurrentFile: Dispatch<SetStateAction<CSVFile | null>>;
-  setUploadStatus: (status: UploadStatus) => void;
 }) {
   const [isDragging, setIsDragging] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -86,54 +72,51 @@ export default function FormView({
   const [year, setYear] = useState<number | undefined>(undefined);
   const [csvType, setCsvType] = useState<string | undefined>(undefined);
 
-  const handleFileUpload = useCallback((uploadedFiles: FileList | null) => {
-    if (!uploadedFiles || uploadedFiles.length === 0) return;
+  const handleFileUpload = useCallback(
+    (uploadedFiles: FileList | null) => {
+      if (!uploadedFiles || uploadedFiles.length === 0) return;
 
-    const file = uploadedFiles[0]; // Only take the first file
+      const file = uploadedFiles[0]; // Only take the first file
 
-    const prefix = file.name.split("_")[0];
-    const nameType = prefix.slice(0, 2);
-    const nameYear = Number(prefix.slice(2, 6));
+      const prefix = file.name.split("_")[0];
+      const nameType = prefix.slice(0, 2);
+      const nameYear = Number(prefix.slice(2, 6));
 
-    // Auto-detect from filename
-    let finalYear = year;
-    let finalCsvType = csvType;
+      // Auto-detect from filename
+      let finalYear = year;
+      let finalCsvType = csvType;
 
-    if (nameType === "HR" && csvType === undefined) {
-      finalCsvType = DatasetType.HealthRound.toString();
-      setCsvType(finalCsvType);
-    }
-    
-    if (nameYear >= 2013 && year === undefined) {
-      finalYear = nameYear;
-      setYear(finalYear);
-    }
+      if (nameType === "HR" && csvType === undefined) {
+        finalCsvType = DatasetType.HealthRound.toString();
+        setCsvType(finalCsvType);
+      }
 
-    if (finalYear === undefined || finalCsvType === undefined) {
-      setUploadStatus({
-        type: "error",
-        message: "Please select both a year and data type before uploading.",
+      if (nameYear >= 2013 && year === undefined) {
+        finalYear = nameYear;
+        setYear(finalYear);
+      }
+
+      if (finalYear === undefined || finalCsvType === undefined) {
+        toast.error("Please select both a year and data type before uploading.");
+        return;
+      }
+
+      if (!file.name.endsWith(".csv")) {
+        toast.error(`${file.name} is not a CSV file`);
+        return;
+      }
+
+      setIsLoading(true);
+      parse(file, {
+        delimiter: ",",
+        newline: "\r\n",
+        header: false,
+        fastMode: true,
+        complete: updateResult(file, finalYear, Number(finalCsvType), setCurrentFile, setIsLoading),
       });
-      return;
-    }
-
-    if (!file.name.endsWith(".csv")) {
-      setUploadStatus({
-        type: "error",
-        message: `${file.name} is not a CSV file`,
-      });
-      return;
-    }
-
-    setIsLoading(true);
-    parse(file, {
-      delimiter: ",",
-      newline: "\r\n",
-      header: false,
-      fastMode: true,
-      complete: updateResult(file, finalYear, Number(finalCsvType), setCurrentFile, setUploadStatus, setIsLoading),
-    });
-  }, [csvType, setCurrentFile, setUploadStatus, year]);
+    },
+    [csvType, setCurrentFile, year],
+  );
 
   const handleDragEnter = useCallback((e: DragEvent) => {
     e.preventDefault();
@@ -159,14 +142,14 @@ export default function FormView({
       setIsDragging(false);
       handleFileUpload(e.dataTransfer.files);
     },
-    [handleFileUpload]
+    [handleFileUpload],
   );
 
   return (
     <Card>
       <CardHeader>
         <CardTitle className="text-3xl">Upload Dataset</CardTitle>
-        <CardDescription>Configure and upload your CSV  file</CardDescription>
+        <CardDescription>Configure and upload your CSV file</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Dataset Configuration */}

@@ -9,7 +9,8 @@ import { addHealthRoundData, ERROR } from "@/lib/query";
 import { useQueryClient } from "@tanstack/react-query";
 import { FileSpreadsheet, Info, Save, X } from "lucide-react";
 import { Dispatch, SetStateAction, useState } from "react";
-import { CSVFile, UploadStatus } from "./types";
+import { toast } from "sonner";
+import { CSVFile } from "./types";
 
 function formatFileSize(bytes: number): string {
   if (bytes === 0) return "0 Bytes";
@@ -23,8 +24,7 @@ async function handleSave(
   currentFile: CSVFile | null,
   queryClient: ReturnType<typeof useQueryClient>,
   setCurrentFile: Dispatch<SetStateAction<CSVFile | null>>,
-  setUploadStatus: (status: UploadStatus) => void,
-  setIsSaving: Dispatch<SetStateAction<boolean>>
+  setIsSaving: Dispatch<SetStateAction<boolean>>,
 ) {
   if (!currentFile) return;
   setIsSaving(true);
@@ -33,17 +33,11 @@ async function handleSave(
   setIsSaving(false);
 
   if (result === ERROR) {
-    setUploadStatus({
-      type: "error",
-      message: `Error saving ${currentFile.name}`,
-    });
+    toast.error(`Error saving ${currentFile.name}`);
     return;
   }
   queryClient.invalidateQueries({ queryKey: ["health-round-years"] });
-  setUploadStatus({
-    type: "success",
-    message: `${currentFile.name} saved successfully`,
-  });
+  toast.success(`${currentFile.name} saved successfully`);
   setCurrentFile(null);
 }
 
@@ -90,18 +84,15 @@ function CSVDataTable({ currentFile }: { currentFile: CSVFile }) {
 export default function TableView({
   currentFile,
   setCurrentFile,
-  setUploadStatus,
 }: {
   currentFile: CSVFile;
   setCurrentFile: Dispatch<SetStateAction<CSVFile | null>>;
-  setUploadStatus: (status: UploadStatus) => void;
 }) {
   const [isSaving, setIsSaving] = useState(false);
   const queryClient = useQueryClient();
 
   const handleCancel = () => {
     setCurrentFile(null);
-    setUploadStatus({ type: null, message: "" });
   };
 
   return (
@@ -132,7 +123,7 @@ export default function TableView({
           Cancel
         </Button>
         <Button
-          onClick={() => handleSave(currentFile, queryClient, setCurrentFile, setUploadStatus, setIsSaving)}
+          onClick={() => handleSave(currentFile, queryClient, setCurrentFile, setIsSaving)}
           disabled={isSaving}
           className="w-full sm:w-auto"
         >
