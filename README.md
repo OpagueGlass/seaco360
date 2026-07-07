@@ -1,5 +1,5 @@
 # SEACO360
-An interactive Next.js and shadcn/ui dashboard to visualise data from SEACO360, a Health and Demographic Surveillance System (HDSS) to enable researchers to analyse socioeconomic and health trends without manual data processing.
+An interactive Next.js and shadcn/ui dashboard to visualise data from SEACO360, a Health and Demographic Surveillance System (HDSS), enabling researchers to analyse socioeconomic and health trends without manual data processing.
 
 ## Getting Started
 1. Install Dependencies:
